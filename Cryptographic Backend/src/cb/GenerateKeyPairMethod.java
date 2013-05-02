@@ -5,7 +5,15 @@ import java.security.KeyPairGenerator;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
+import com.google.gson.Gson;
+
 public class GenerateKeyPairMethod implements Method {
+	private class ReturnValue {
+		@SuppressWarnings("unused")
+		String publicKeyHandler;
+		@SuppressWarnings("unused")
+		String privateKeyHandler;
+	}
 	private String label, id, keyType;
 	private int keySize;
 	
@@ -22,6 +30,11 @@ public class GenerateKeyPairMethod implements Method {
 	
 	@Override
 	public ResponseMessage execute() {
+		/* Forma de usar gson bknmente. */
+		ReturnValue rv = new ReturnValue();
+		
+		Gson gson = new Gson();
+		
 		try {
 			KeyPairGenerator kpg = KeyPairGenerator.getInstance(keyType);
 			SecureRandom random = SecureRandom.getInstance("SHA1PRNG");
@@ -29,16 +42,22 @@ public class GenerateKeyPairMethod implements Method {
 			
 			KeyPair pair = kpg.generateKeyPair();
 			int handler = ks.storeKeyPair(id, label, keyType, keySize, pair);
+			rv.privateKeyHandler = rv.publicKeyHandler = Integer.toString(handler);
 			
-			ResponseMessage rm = ResponseMessage.OKMessage(
-					"{\"publicKeyHandler\" : \"" + handler +
-					",\"privateKeyHandler\" : \""+ handler + 
-					"\"");
+			
+			ResponseMessage rm = ResponseMessage.OKMessage(gson.toJson(rv));
 			return rm;
 		}
 		catch (NoSuchAlgorithmException e) {
 			return ResponseMessage.ErrorMessage(e.getLocalizedMessage()); 
 		}
+	}
+	
+	public static void main(String[] args) {
+		GenerateKeyPairMethod gkpm = 
+				new GenerateKeyPairMethod("hola", "mundo", "RSA", 1024);
+		ResponseMessage rm = gkpm.execute();
+		System.out.println(rm);
 	}
 
 }

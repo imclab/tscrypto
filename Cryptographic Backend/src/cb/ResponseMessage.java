@@ -8,6 +8,12 @@ public class ResponseMessage {
 		return new ResponseMessage(rc, null);
 	}
 	
+	@Override
+	public String toString() {
+		return "ResponseMessage [returnCode=" + returnCode + ", value=" + value
+				+ "]";
+	}
+
 	public static ResponseMessage OKMessage(String v) {
 		return new ResponseMessage("OK", v);
 	}
