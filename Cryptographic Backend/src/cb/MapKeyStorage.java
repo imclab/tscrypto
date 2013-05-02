@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 public class MapKeyStorage implements KeyStorage {
-	static final KeyStorage instance = new MapKeyStorage();
+	final static private KeyStorage instance = new MapKeyStorage();
 	HashMap<Integer, String[]> store;
 	
 	public static KeyStorage getInstance() {
