@@ -1,4 +1,4 @@
-package cb;
+package cb.backend;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -7,12 +7,20 @@ import java.security.PrivateKey;
 import com.google.gson.Gson;
 
 public class SignInitMethod implements Method {
+	public static class Args {
+		public String mechanism, privateKeyHandler;
+	}
 	private String mechanism;
 	private String privateKeyHandler;
 	
 	public SignInitMethod(String mechanism, String privateKeyHandler) {
 		this.mechanism = mechanism;
 		this.privateKeyHandler = privateKeyHandler;
+	}
+	
+	public SignInitMethod(Args args) {
+		this.mechanism = args.mechanism;
+		this.privateKeyHandler = args.privateKeyHandler;
 	}
 	
 	@Override
@@ -40,7 +48,7 @@ public class SignInitMethod implements Method {
 	
 	public static void main (String[] args) {
 		ResponseMessage rm;
-		GenerateKeyPairReturnValue rv;
+		GenerateKeyPairMethod.ReturnValue rv;
 		Gson gson = new Gson();
 		GenerateKeyPairMethod gkpm = 
 				new GenerateKeyPairMethod("hola", "mundo", "RSA", 1024);
@@ -49,7 +57,7 @@ public class SignInitMethod implements Method {
 		rm = gkpm.execute();
 		System.out.println(rm);
 		if (rm.getReturnCode().equals("OK")) {
-			rv = gson.fromJson (rm.getValue(), GenerateKeyPairReturnValue.class);
+			rv = gson.fromJson (rm.getValue(), GenerateKeyPairMethod.ReturnValue.class);
 			
 			sim = new SignInitMethod("SHA1withRSA", rv.privateKeyHandler);
 			rm = sim.execute();

@@ -1,4 +1,4 @@
-package cb;
+package cb.backend;
 import java.security.KeyPair;
 import java.security.PrivateKey;
 import java.security.PublicKey;

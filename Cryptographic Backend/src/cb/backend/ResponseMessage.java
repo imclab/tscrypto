@@ -1,4 +1,4 @@
-package cb;
+package cb.backend;
 
 public class ResponseMessage {
 	private String returnCode;

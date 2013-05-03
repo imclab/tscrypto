@@ -1,4 +1,4 @@
-package cb;
+package cb.backend;
 
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
@@ -7,12 +7,17 @@ import java.security.SecureRandom;
 
 import com.google.gson.Gson;
 
-class GenerateKeyPairReturnValue {
-	String publicKeyHandler;
-	String privateKeyHandler;
-}
 
 public class GenerateKeyPairMethod implements Method {
+	public static class ReturnValue {
+		public String publicKeyHandler;
+		public String privateKeyHandler;
+	}
+	public static class Args {
+		public String label, id, keyType;
+		public int keySize;
+	}
+	
 	private String label, id, keyType;
 	private int keySize;
 	
@@ -27,10 +32,19 @@ public class GenerateKeyPairMethod implements Method {
 		this.ks = MapKeyStorage.getInstance();
 	}
 	
+	public GenerateKeyPairMethod(Args args) {
+		this.label = args.label;
+		this.id = args.id;
+		this.keyType = args.keyType;
+		this.keySize = args.keySize;
+		
+		this.ks = MapKeyStorage.getInstance();
+	}
+	
 	@Override
 	public ResponseMessage execute() {
 		/* Forma de usar gson bknmente. */
-		GenerateKeyPairReturnValue rv = new GenerateKeyPairReturnValue();
+		ReturnValue rv = new ReturnValue();
 		
 		Gson gson = new Gson();
 		

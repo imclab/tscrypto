@@ -1,4 +1,4 @@
-package cb;
+package cb.backend;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;

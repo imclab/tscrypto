@@ -1,18 +1,24 @@
-package cb;
+package cb.backend;
 
 import com.google.gson.Gson;
 
 
 public class SignMethod implements Method {
-	private class ReturnValue {
-		@SuppressWarnings("unused")
+	public static class ReturnValue {
 		String signedData;
 	}
-	
+	public static class Args {
+		String data;
+	}
+
 	private byte[] data;
 	
-	public SignMethod(String hexdata) {
-		data = Signer.hexToBytes(hexdata);
+	public SignMethod(String hexData) {
+		data = Signer.hexToBytes(hexData);
+	}
+	
+	public SignMethod(Args args) {
+		data = Signer.hexToBytes(args.data);
 	}
 	
 	@Override
@@ -30,7 +36,7 @@ public class SignMethod implements Method {
 	
 	public static void main (String[] args) {
 		ResponseMessage rm;
-		GenerateKeyPairReturnValue rv;
+		GenerateKeyPairMethod.ReturnValue rv;
 		Gson gson = new Gson();
 		GenerateKeyPairMethod gkpm = 
 				new GenerateKeyPairMethod("hola", "mundo", "RSA", 1024);
@@ -40,7 +46,7 @@ public class SignMethod implements Method {
 		rm = gkpm.execute();
 		System.out.println(rm);
 		if (rm.getReturnCode().equals("OK")) {
-			rv = gson.fromJson (rm.getValue(), GenerateKeyPairReturnValue.class);
+			rv = gson.fromJson (rm.getValue(), GenerateKeyPairMethod.ReturnValue.class);
 			
 			sim = new SignInitMethod("SHA1withRSA", rv.privateKeyHandler);
 			rm = sim.execute();
