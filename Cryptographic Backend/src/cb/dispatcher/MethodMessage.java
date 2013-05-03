@@ -1,7 +1,7 @@
 package cb.dispatcher;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 
 
 public class MethodMessage {
@@ -9,9 +9,9 @@ public class MethodMessage {
 	private JsonElement args;
 	
 	public MethodMessage(String method, String args) {
-		Gson gson = new Gson();
+		JsonParser parser = new JsonParser();
 		this.method = method;
-		this.args = gson.toJsonTree(args);
+		this.args = parser.parse(args);
 	}
 	
 	public String getMethod() {

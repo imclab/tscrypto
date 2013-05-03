@@ -1,17 +1,14 @@
 package cb.backend;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
+
 public class ResponseMessage {
 	private String returnCode;
-	private String value;
+	private JsonElement value;
 	
 	public static ResponseMessage ErrorMessage(String rc) {
 		return new ResponseMessage(rc, null);
-	}
-	
-	@Override
-	public String toString() {
-		return "ResponseMessage [returnCode=" + returnCode + ", value=" + value
-				+ "]";
 	}
 
 	public static ResponseMessage OKMessage(String v) {
@@ -19,15 +16,16 @@ public class ResponseMessage {
 	}
 	
 	private ResponseMessage(String rc, String v) {
+		JsonParser parser = new JsonParser();
 		returnCode = rc;
-		value = v;
+		value = parser.parse(v);
 	}
 	public String getReturnCode() {
 		return returnCode;
 	}
 	
 	public String getValue() {
-		return value;
+		return value.toString();
 	}
 	
 }

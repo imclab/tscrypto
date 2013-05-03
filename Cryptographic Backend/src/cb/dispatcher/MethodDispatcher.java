@@ -20,21 +20,24 @@ public class MethodDispatcher {
 			GenerateKeyPairMethod.Args args;
 			args = gson.fromJson(methodMsg.getArgs(), GenerateKeyPairMethod.Args.class);
 			method = new GenerateKeyPairMethod (args);
-		}
+
 			break;
+		}
 		case "SignInit":
 		{
 			SignInitMethod.Args args;
 			args = gson.fromJson(methodMsg.getArgs(), SignInitMethod.Args.class);
 			method = new SignInitMethod (args);
-		}
+			
 			break;
+		}
 		case "Sign":
 		{
 			SignMethod.Args args = gson.fromJson(methodMsg.getArgs(), SignMethod.Args.class);
 			method = new SignMethod (args);
-		}
+
 			break;
+		}
 		}
 	}
 	
@@ -54,6 +57,7 @@ public class MethodDispatcher {
 				+ " \"keyType\": \"RSA\", "
 				+ " \"keySize\":1024 } }";
 		MethodMessage mm = gson.fromJson(s, MethodMessage.class);
+		System.out.println(mm.getArgs());
 		MethodDispatcher md = new MethodDispatcher(mm);
 		String ret = md.dipatch();
 		System.out.println(ret);
