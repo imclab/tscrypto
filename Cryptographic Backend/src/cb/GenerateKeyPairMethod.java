@@ -7,13 +7,12 @@ import java.security.SecureRandom;
 
 import com.google.gson.Gson;
 
+class GenerateKeyPairReturnValue {
+	String publicKeyHandler;
+	String privateKeyHandler;
+}
+
 public class GenerateKeyPairMethod implements Method {
-	private class ReturnValue {
-		@SuppressWarnings("unused")
-		String publicKeyHandler;
-		@SuppressWarnings("unused")
-		String privateKeyHandler;
-	}
 	private String label, id, keyType;
 	private int keySize;
 	
@@ -31,7 +30,7 @@ public class GenerateKeyPairMethod implements Method {
 	@Override
 	public ResponseMessage execute() {
 		/* Forma de usar gson bknmente. */
-		ReturnValue rv = new ReturnValue();
+		GenerateKeyPairReturnValue rv = new GenerateKeyPairReturnValue();
 		
 		Gson gson = new Gson();
 		
@@ -42,8 +41,9 @@ public class GenerateKeyPairMethod implements Method {
 			
 			KeyPair pair = kpg.generateKeyPair();
 			int handler = ks.storeKeyPair(id, label, keyType, keySize, pair);
-			rv.privateKeyHandler = rv.publicKeyHandler = Integer.toString(handler);
 			
+			// Defino el return value, para ser luego serializado en json.
+			rv.privateKeyHandler = rv.publicKeyHandler = Integer.toString(handler);
 			
 			ResponseMessage rm = ResponseMessage.OKMessage(gson.toJson(rv));
 			return rm;

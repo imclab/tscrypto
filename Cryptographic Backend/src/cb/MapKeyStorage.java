@@ -21,36 +21,22 @@ public class MapKeyStorage implements KeyStorage {
 		store = new HashMap<Integer, String[]>();
 	}
 	
-	final private String bytesToHex(byte[] bytes) {
-		StringBuilder sb = new StringBuilder();
-		for (byte b: bytes) {
-			sb.append(String.format("%02X", b));
-		}
-		return sb.toString();
-	}
-	
-	final private byte[] hexToBytes(String s) {
-		
-		int len = s.length();
-		byte[] data = new byte[len/2];
-		
-		for (int i=0; i < len; i+=2) {
-			data[i/2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-					+ Character.digit(i+1, 16));
-		}
-		
-		return data;
-	}
 	@Override
 	public int storeKeyPair(String id, String label, String keyType,
 			int keySize, KeyPair pair) {
+		
+		X509EncodedKeySpec publicSpec = 
+				new X509EncodedKeySpec(pair.getPublic().getEncoded());
+		PKCS8EncodedKeySpec privateSpec =
+				new PKCS8EncodedKeySpec(pair.getPrivate().getEncoded());
+		
 		String[] vals = {
 				id, 
 				label, 
 				keyType, 
 				Integer.toString(keySize), 
-				bytesToHex(pair.getPublic().getEncoded()),
-				bytesToHex(pair.getPrivate().getEncoded())
+				Signer.bytesToHex(publicSpec.getEncoded()),
+				Signer.bytesToHex(privateSpec.getEncoded())
 		};
 		
 		Random random = new Random();
@@ -67,7 +53,7 @@ public class MapKeyStorage implements KeyStorage {
 	@Override
 	public PrivateKey getPrivateKey(int _handler) {
 		Integer handler = _handler;
-		byte[] byteKey = hexToBytes(store.get(handler)[5]);
+		byte[] byteKey = Signer.hexToBytes(store.get(handler)[5]);
 		PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(byteKey);
 		
 		try {
@@ -82,7 +68,7 @@ public class MapKeyStorage implements KeyStorage {
 	@Override
 	public PublicKey getPublicKey(int _handler) {
 		Integer handler = _handler;
-		byte[] byteKey = hexToBytes(store.get(new Integer(handler))[4]);
+		byte[] byteKey = Signer.hexToBytes(store.get(new Integer(handler))[4]);
 		X509EncodedKeySpec spec = new X509EncodedKeySpec(byteKey);
 		
 		try {

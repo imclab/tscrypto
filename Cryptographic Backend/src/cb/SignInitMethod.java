@@ -4,6 +4,8 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 
+import com.google.gson.Gson;
+
 public class SignInitMethod implements Method {
 	private String mechanism;
 	private String privateKeyHandler;
@@ -16,7 +18,8 @@ public class SignInitMethod implements Method {
 	@Override
 	public ResponseMessage execute() {
 		KeyStorage ks = MapKeyStorage.getInstance();
-		PrivateKey pk = ks.getPrivateKey(Integer.parseInt(privateKeyHandler));
+		int handler = Integer.parseInt(privateKeyHandler);
+		PrivateKey pk = ks.getPrivateKey(handler);
 		if (pk != null) {
 			Signer signer = Signer.getInstance();
 			try {
@@ -33,6 +36,27 @@ public class SignInitMethod implements Method {
 		} else {
 			return ResponseMessage.ErrorMessage("Llave no encontrada.");
 		}
+	}
+	
+	public static void main (String[] args) {
+		ResponseMessage rm;
+		GenerateKeyPairReturnValue rv;
+		Gson gson = new Gson();
+		GenerateKeyPairMethod gkpm = 
+				new GenerateKeyPairMethod("hola", "mundo", "RSA", 1024);
+		SignInitMethod sim;
+		
+		rm = gkpm.execute();
+		System.out.println(rm);
+		if (rm.getReturnCode().equals("OK")) {
+			rv = gson.fromJson (rm.getValue(), GenerateKeyPairReturnValue.class);
+			
+			sim = new SignInitMethod("SHA1withRSA", rv.privateKeyHandler);
+			rm = sim.execute();
+			System.out.println(rm);
+			
+		}
+		
 	}
 
 }
