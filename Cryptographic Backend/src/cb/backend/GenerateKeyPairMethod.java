@@ -10,8 +10,8 @@ import com.google.gson.Gson;
 
 public class GenerateKeyPairMethod implements Method {
 	public static class ReturnValue {
-		public String publicKeyHandler;
-		public String privateKeyHandler;
+		public int publicKeyHandler;
+		public int privateKeyHandler;
 	}
 	public static class Args {
 		public String label, id, keyType;
@@ -57,7 +57,7 @@ public class GenerateKeyPairMethod implements Method {
 			int handler = ks.storeKeyPair(id, label, keyType, keySize, pair);
 			
 			// Defino el return value, para ser luego serializado en json.
-			rv.privateKeyHandler = rv.publicKeyHandler = Integer.toString(handler);
+			rv.privateKeyHandler = rv.publicKeyHandler = handler;
 			
 			ResponseMessage rm = ResponseMessage.OKMessage(gson.toJson(rv));
 			return rm;

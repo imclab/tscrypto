@@ -4,6 +4,12 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonParser;
 
 public class ResponseMessage {
+	@Override
+	public String toString() {
+		return "ResponseMessage [returnCode=" + returnCode + ", value=" + value
+				+ "]";
+	}
+
 	private String returnCode;
 	private JsonElement value;
 	
@@ -18,7 +24,7 @@ public class ResponseMessage {
 	private ResponseMessage(String rc, String v) {
 		JsonParser parser = new JsonParser();
 		returnCode = rc;
-		value = parser.parse(v);
+		value = v == null? null : parser.parse(v);
 	}
 	public String getReturnCode() {
 		return returnCode;
