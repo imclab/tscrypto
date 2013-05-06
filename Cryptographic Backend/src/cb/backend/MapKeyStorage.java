@@ -97,4 +97,24 @@ public class MapKeyStorage implements KeyStorage {
 		throw new Exception("Llave no encontrada.");
 	}
 
+	@Override
+	public String getAttribute(String attr, int handler) throws Exception {
+		String[] values = store.get(new Integer(handler));
+		if (attr.equals("id")) {
+			return values[0];
+		}
+		else if (attr.equals("label")) {
+			return values[1];
+		}
+		else if (attr.equals("keyType")) {
+			return values[2];
+		}
+		else if (attr.equals("keySize")) {
+			return values[3];
+		}
+		else {
+			throw new Exception("Atributo no valido.");
+		}
+	}
+
 }

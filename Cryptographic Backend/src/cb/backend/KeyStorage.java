@@ -9,4 +9,5 @@ public interface KeyStorage {
 	abstract public PrivateKey getPrivateKey(int handler);
 	abstract public PublicKey getPublicKey(int handler);
 	abstract public int findHandler(String id) throws Exception;
+	abstract public String getAttribute(String attr, int handler) throws Exception;
 }
