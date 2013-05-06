@@ -7,7 +7,10 @@ import java.security.PublicKey;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 public class MapKeyStorage implements KeyStorage {
 	final static private KeyStorage instance = new MapKeyStorage();
@@ -81,9 +84,17 @@ public class MapKeyStorage implements KeyStorage {
 	}
 
 	@Override
-	public int findHandler(String id) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int findHandler(String id) throws Exception {
+		Set<Map.Entry<Integer, String[]>> entries = store.entrySet();
+		
+		Iterator<Map.Entry<Integer, String[]>> it = entries.iterator();
+		while(it.hasNext()) {
+			Map.Entry<Integer, String[]> entry = it.next();
+			if (entry.getValue()[0].equals(id))
+				return entry.getKey().intValue();
+		}
+		
+		throw new Exception("Llave no encontrada.");
 	}
 
 }

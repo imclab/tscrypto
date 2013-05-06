@@ -34,15 +34,16 @@ public class SignInitMethod implements Method {
 			try {
 				signer.init(mechanism, pk);
 				return ResponseMessage.OKMessage(null);
-			} catch (InvalidKeyException e) {
+			} 
+			catch (InvalidKeyException e) {
 				return ResponseMessage.ErrorMessage(e.getLocalizedMessage());
 			}
 			catch (NoSuchAlgorithmException e) {
 				return ResponseMessage.ErrorMessage(e.getLocalizedMessage());
 			}
-			
-			
-		} else {
+
+		} 
+		else {
 			return ResponseMessage.ErrorMessage("Llave no encontrada.");
 		}
 	}
