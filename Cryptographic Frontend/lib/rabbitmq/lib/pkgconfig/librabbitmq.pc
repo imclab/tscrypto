@@ -1,0 +1,12 @@
+prefix=/home/franchoco/Documentos/NicLabs/librerias/rabbitmq-c-rabbitmq-c-v0.3.0/build/dest
+exec_prefix=/home/franchoco/Documentos/NicLabs/librerias/rabbitmq-c-rabbitmq-c-v0.3.0/build/dest/bin
+libdir=/home/franchoco/Documentos/NicLabs/librerias/rabbitmq-c-rabbitmq-c-v0.3.0/build/dest/lib
+includedir=/home/franchoco/Documentos/NicLabs/librerias/rabbitmq-c-rabbitmq-c-v0.3.0/build/dest/include
+
+Name: Librabbitmq
+Description: An AMQP 0-9-1 client library
+Version: 0.3.0
+Requires:
+Requires.private:
+Libs: -L${libdir} -lrabbitmq
+CFlags: -I${includedir}

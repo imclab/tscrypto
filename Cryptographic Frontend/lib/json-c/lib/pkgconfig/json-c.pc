@@ -1,0 +1,11 @@
+prefix=/home/franchoco/Documentos/NicLabs/librerias/json-c/build
+exec_prefix=${prefix}
+libdir=${exec_prefix}/lib
+includedir=${prefix}/include
+
+Name: json-c
+Description: JSON implementation in C
+Version: 0.11.99
+Requires: 
+Libs:  -L${libdir} -ljson-c
+Cflags: -I${includedir}/json-c
