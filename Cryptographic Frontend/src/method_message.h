@@ -9,13 +9,17 @@
 enum arg_type { INT, STRING };
 
 /* Declaraciones encapsuladas */
-struct arg_list;
+
+#ifndef ARG_LIST_T_DEFINED
+#define ARG_LIST_T_DEFINED
 typedef struct arg_list arg_list_t;
-struct method_message;
+#endif
+
+#ifndef METHOD_MESSAGE_T_DEFINED
+#define METHOD_MESSAGE_T_DEFINED
 typedef struct method_message method_message_t;
-
+#endif
 /* Funciones */
-
 /**
  * @return Una nueva lista de argumentos
  */

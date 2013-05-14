@@ -4,8 +4,13 @@
 #ifndef METHODS_H_
 #define METHODS_H_
 
-struct method_message;
+/* El struct method_message esta encapsulado para no
+ * ser manejado de manera directa por el usuario
+ */
+#ifndef METHOD_MESSAGE_T_DEFINED
+#define METHOD_MESSAGE_T_DEFINED
 typedef struct method_message method_message_t;
+#endif
 
 /**
  * @param label Etiqueda para asociar en el servidor al par de llaves.
