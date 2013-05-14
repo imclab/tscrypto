@@ -8,13 +8,10 @@
 #include <stdio.h>
 
 #include "method_message.h"
-#include "response_message.h"
+#include "methods.h"
 
 int main (int argc, char **argv) {
-	arg_list* args = new_arg_list();
-	arg_list_add_i(&args, "KeySize", 1024);
-	arg_list_add_i(&args, "Exponent", 65537);
-	method_message* msg = new_method_message("GenerateKeyPair", args);
+	method_message_t* msg = generate_key_pair_method("Hola", "Mundo", "RSA", 1024);
 	char const* json = method_message_serialize(msg);
 	printf("%s\n", json);
 	del_method_message(msg);

@@ -2,7 +2,7 @@ CC=clang
 LD=clang
 
 EXE = cfrontend
-OBJS = main.o method_message.o response_message.o
+OBJS = main.o method_message.o response_message.o methods.o
 INCLUDE_PATH =-I./lib/json-c/include -I./lib/rabbitmq/include
 LIBS =-ljson-c -lrabbitmq
 LIB_PATH =-L./lib/json-c/lib -L./lib/rabbitmq/lib
@@ -26,6 +26,8 @@ method_message.o: $(SRC_PATH)/method_message.c
 response_message.o: $(SRC_PATH)/response_message.c
 	$(CC) -c $(SRC_PATH)/response_message.c $(CCFLAGS)
 
+methods.o: $(SRC_PATH)/methods.c
+	$(CC) -c $(SRC_PATH)/methods.c $(CCFLAGS)
 clean:
 	rm *.o 
 

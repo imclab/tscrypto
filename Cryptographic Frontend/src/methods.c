@@ -38,7 +38,7 @@ method_message_t* sign_method (char const* data)
 method_message_t* find_key_method (char const* key_type, char const* id)
 {
   arg_list_t* args = new_arg_list();
-  arg_list_add_s(&args, "keyType" key_type);
+  arg_list_add_s(&args, "keyType", key_type);
   arg_list_add_s(&args, "id", id);
 
   return new_method_message("FindKey", args);

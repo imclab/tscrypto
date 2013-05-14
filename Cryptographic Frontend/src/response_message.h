@@ -36,7 +36,7 @@ typedef struct response_message {
 /**
  * @param json El cstring en formato json a partir del cual 
  * hay que generar el mensaje.
- * @param type El tipo del mensaje a parsear
+ * @param type El tipo del mensaje a parsear.
  * @return Una nueva estructura generada a partir de los parametros
  */
 response_message_t* new_response_message (char const* json, response_message_type type);
