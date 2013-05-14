@@ -22,22 +22,22 @@ struct arg_list {
 
 struct method_message {
 	char* method;
-	arg_list* args;
+	arg_list_t* args;
 };
 
 // Pa que no alegue vim :P...
 extern char* strdup(const char*);
 
-arg_list*
+arg_list_t*
 new_arg_list(void)
 {
   return NULL; /* Nadie tiene que saberlo :) */
 }
 
-static arg_list*
-arg_list_i(char const* arg_name, int value, arg_list* next)
+static arg_list_t*
+arg_list_i(char const* arg_name, int value, arg_list_t* next)
 {
-	arg_list* list = malloc(sizeof(*list));
+	arg_list_t* list = malloc(sizeof(*list));
 	list->name = strdup(arg_name);
 	list->type = INT;
 	list->val.i = value;
@@ -46,10 +46,10 @@ arg_list_i(char const* arg_name, int value, arg_list* next)
 	return list;
 }
 
-static arg_list*
-arg_list_s(char const* arg_name, char const* value, arg_list* next)
+static arg_list_t*
+arg_list_s(char const* arg_name, char const* value, arg_list_t* next)
 {
-	arg_list* list = malloc(sizeof(*list));
+	arg_list_t* list = malloc(sizeof(*list));
 	list->name = strdup(arg_name);
 	list->type = STRING;
 	list->val.s = strdup(value);
@@ -59,23 +59,23 @@ arg_list_s(char const* arg_name, char const* value, arg_list* next)
 }
 
 void
-arg_list_add_i(arg_list** args, char const* name, int value)
+arg_list_add_i(arg_list_t** args, char const* name, int value)
 {
 	if (args != NULL)
 		*args = arg_list_i(name, value, *args);
 }
 
 void
-arg_list_add_s(arg_list** args, char const* name, char const* value)
+arg_list_add_s(arg_list_t** args, char const* name, char const* value)
 {
 	if (args != NULL)
 		*args = arg_list_s(name, value, *args);
 }
 
-method_message*
-new_method_message(char const* method, arg_list* args)
+method_message_t*
+new_method_message(char const* method, arg_list_t* args)
 {
-	method_message* message = malloc(sizeof(*message));
+	method_message_t* message = malloc(sizeof(*message));
 	message->method = strdup(method);
 	message->args = args;
 
@@ -83,7 +83,7 @@ new_method_message(char const* method, arg_list* args)
 }
 
 void
-del_arg_list(arg_list* args)
+del_arg_list(arg_list_t* args)
 {
 	if(args == NULL)
 		return;
@@ -96,7 +96,7 @@ del_arg_list(arg_list* args)
 }
 
 void
-del_method_message(method_message* msg)
+del_method_message(method_message_t* msg)
 {
 	free(msg->method);
 	del_arg_list(msg->args);
@@ -106,7 +106,7 @@ del_method_message(method_message* msg)
 
 
 const char*
-method_message_serialize(method_message const* msg)
+method_message_serialize(method_message_t const* msg)
 {
 	json_object* obj = json_object_new_object();
 
@@ -114,7 +114,7 @@ method_message_serialize(method_message const* msg)
 	json_object_object_add(obj, "Method", method);
 
 	json_object* args = json_object_new_object();
-	arg_list* arg = msg->args;
+	arg_list_t* arg = msg->args;
 	while (arg != NULL) {
 
 		if (arg->type == INT) {
