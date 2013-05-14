@@ -16,7 +16,8 @@
 
 extern char* strdup(const char*);
 
-static int generate_key_pair_parse(json_object* obj, response_message_t* rm)
+static int 
+generate_key_pair_parse(json_object* obj, response_message_t* rm)
 {
   json_object* value;
   if (json_object_is_type(obj, json_type_object)) {
@@ -41,7 +42,8 @@ static int generate_key_pair_parse(json_object* obj, response_message_t* rm)
     return -1;
 }
 
-static int sign_init_parse(json_object* obj)
+static int 
+sign_init_parse(json_object* obj)
 {
   if(json_object_is_type(obj, json_type_null))
     return 0;
@@ -49,7 +51,8 @@ static int sign_init_parse(json_object* obj)
     return -1;
 }
 
-static int sign_parse(json_object* obj, response_message_t* rm) 
+static int 
+sign_parse(json_object* obj, response_message_t* rm) 
 {
   json_object* value;
   if (json_object_is_type(obj, json_type_object) && 
@@ -63,7 +66,8 @@ static int sign_parse(json_object* obj, response_message_t* rm)
   return -1;
 }
 
-static int find_key_parse(json_object* obj, response_message_t* rm)
+static int 
+find_key_parse(json_object* obj, response_message_t* rm)
 {
   json_object* value;
   if (json_object_is_type(obj, json_type_object) && 
@@ -77,7 +81,8 @@ static int find_key_parse(json_object* obj, response_message_t* rm)
   return -1;
 }
 
-static int get_attribute_parse(json_object* obj, response_message_t* rm)
+static int 
+get_attribute_parse(json_object* obj, response_message_t* rm)
 {
   json_object* value;
   if (json_object_is_type(obj, json_type_object) && 
@@ -92,7 +97,8 @@ static int get_attribute_parse(json_object* obj, response_message_t* rm)
   return -1;
 }
 
-response_message_t* new_response_message_json (char const* json, response_message_type type) 
+response_message_t* 
+new_response_message_json (char const* json, response_message_type type) 
 {
   response_message_t* rm = malloc(sizeof(*rm));
   if (rm != NULL) { /* Se pudo allocar la memoria */
@@ -153,7 +159,8 @@ on_error:
   return NULL;
 }
 
-void free_response_message (response_message_t* rm)
+void 
+free_response_message (response_message_t* rm)
 {
   if (rm != NULL) {
     if (rm->type == GENERATE_KEY_PAIR) {

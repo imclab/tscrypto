@@ -9,27 +9,29 @@
 #include <json-c/json_object.h>
 #include "method_message.h"
 
+struct arg_list {
+	char *name;
+	enum arg_type type;
+	union {
+		int i;
+		char* s;
+	} val;
+
+	struct arg_list* next;
+};
+
+struct method_message {
+	char* method;
+	arg_list* args;
+};
 
 // Pa que no alegue vim :P...
 extern char* strdup(const char*);
 
-/* Declaraciones de funciones estaticas */
-static arg_list*
-arg_list_i(char const* arg_name, int value, arg_list* next);
-
-static arg_list*
-arg_list_s(char const* arg_name, char const* value, arg_list* next);
-
 arg_list*
-new_arg_list_i(char const* arg_name, int value)
+new_arg_list(void)
 {
-	return arg_list_i(arg_name, value, NULL);
-}
-
-arg_list*
-new_arg_list_s(char const* arg_name, char const* value)
-{
-	return arg_list_s(arg_name, value, NULL);
+  return NULL; /* Nadie tiene que saberlo :) */
 }
 
 static arg_list*
@@ -59,14 +61,14 @@ arg_list_s(char const* arg_name, char const* value, arg_list* next)
 void
 arg_list_add_i(arg_list** args, char const* name, int value)
 {
-	if (args != NULL && *args != NULL)
+	if (args != NULL)
 		*args = arg_list_i(name, value, *args);
 }
 
 void
 arg_list_add_s(arg_list** args, char const* name, char const* value)
 {
-	if (args != NULL && *args != NULL)
+	if (args != NULL)
 		*args = arg_list_s(name, value, *args);
 }
 
