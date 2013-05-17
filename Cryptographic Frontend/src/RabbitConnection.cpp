@@ -92,6 +92,10 @@ RabbitConnection::RabbitConnection(std::string host,
 {
   connection = amqp_new_connection();
   sockFd = amqp_open_socket(host.c_str(), port);
+
+  if (sockFd < 0) // Actualizo el manejo de errores a la antigua :P.
+    throw CannotConnectException();
+
   amqp_set_sockfd(connection, sockFd);
   amqp_login(connection, "/", 0, 131072, 0, AMQP_SASL_METHOD_PLAIN, "guest", "guest");
 
@@ -102,6 +106,9 @@ RabbitConnection::RabbitConnection(std::string host,
       amqp_queue_declare(connection, channel, amqp_empty_bytes, 0, 0, 0, 1, amqp_empty_table);
 
   replyToQueue = amqp_bytes_malloc_dup(r->queue);
+  if (replyToQueue.bytes == nullptr)
+    throw std::bad_alloc();
+
 
   exchange = exchange_;
   routingKey = routingKey_;
