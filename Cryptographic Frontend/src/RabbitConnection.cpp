@@ -24,12 +24,18 @@ void RabbitConnection::send(std::string message) const {
   props.content_type = amqp_cstring_bytes("text/plain");
   props.delivery_mode = 2; // Persistente
   props.reply_to = amqp_bytes_malloc_dup(replyToQueue);
+
+  if (props.reply_to.bytes == nullptr)
+    throw std::bad_alloc();
+
   props.correlation_id = amqp_cstring_bytes("1"); // Generar UUID para esto
 
   amqp_basic_publish(connection,
-                     1, amqp_cstring_bytes(exchange.c_str()),
+                     1,
+                     amqp_cstring_bytes(exchange.c_str()),
                      amqp_cstring_bytes(routingKey.c_str()),
-                     0, 0, &props, amqp_cstring_bytes(message.c_str()));
+                     0, 0, &props,
+                     amqp_cstring_bytes(message.c_str()));
 }
 
 
@@ -69,9 +75,8 @@ std::string RabbitConnection::receive() const {
       if (result < 0)
         break;
 
-      if (frame.frame_type != AMQP_FRAME_BODY) {
+      if (frame.frame_type != AMQP_FRAME_BODY)
         throw BadResponseException();
-      }
 
       bodyReceived += frame.payload.body_fragment.len;
 

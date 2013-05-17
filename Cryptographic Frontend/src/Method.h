@@ -15,20 +15,6 @@ namespace cf {
 
 class Connection;
 
-class CannotExecuteException : public std::exception {
-  std::string error;
-protected:
-  CannotExecuteException();
-public:
-  CannotExecuteException(std::string error_) {
-    error = error_;
-  }
-
-  const char* what() const throw() {
-    return error.c_str();
-  }
-};
-
 class Method { // Por ahora los metodos devuelven un string json...
 private:
   MethodMessage message;
@@ -37,6 +23,19 @@ protected:
   virtual void addArgument(Argument* argument);
 
 public:
+  class CannotExecuteException : public std::exception {
+    std::string error;
+  protected:
+    CannotExecuteException();
+  public:
+    CannotExecuteException(std::string error_) {
+      error = error_;
+    }
+
+    const char* what() const throw() {
+      return error.c_str();
+    }
+  };
   virtual std::string execute(Connection const& connection);
 };
 
