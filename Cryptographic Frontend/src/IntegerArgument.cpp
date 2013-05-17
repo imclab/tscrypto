@@ -15,6 +15,8 @@ ArgumentType IntegerArgument::type() const {
 }
 
 ArgumentValue IntegerArgument::value() {
-  return ArgumentValue {.i = val };
+  ArgumentValue value;
+  value.i = val;
+  return value;
 }
 
