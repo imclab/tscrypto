@@ -1,11 +1,12 @@
 CC=clang
+CXX=clang++
 LD=clang
 
 EXE = cfrontend
 OBJS = main.o method_message.o response_message.o methods.o
-INCLUDE_PATH =-I./lib/json-c/include -I./lib/rabbitmq/include
+INCLUDE_PATH =-I./lib/json/include -I./lib/rabbitmq/include
 LIBS =-ljson-c -lrabbitmq
-LIB_PATH =-L./lib/json-c/lib -L./lib/rabbitmq/lib
+LIB_PATH =-L./lib/rabbitmq/lib
 SRC_PATH =./src
 
 CCFLAGS=-g -Wall $(INCLUDE_PATH)

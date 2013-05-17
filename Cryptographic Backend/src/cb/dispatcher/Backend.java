@@ -2,7 +2,11 @@ package cb.dispatcher;
 
 import java.io.IOException;
 
+import cb.backend.ResponseMessage;
+
 import com.google.gson.Gson;
+import com.google.gson.JsonSyntaxException;
+import com.google.gson.stream.MalformedJsonException;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -78,7 +82,16 @@ public class Backend {
 				.build();
 			
 			String message = new String(delivery.getBody());
-			MethodMessage mmessage = gson.fromJson(message, MethodMessage.class);
+			System.err.println(message);
+			MethodMessage mmessage;
+			try {
+				mmessage = gson.fromJson(message, MethodMessage.class);
+			}
+			catch (JsonSyntaxException e) {
+				ResponseMessage.ErrorMessage(e.getLocalizedMessage());
+				System.err.println(e.getLocalizedMessage());
+				continue;
+			}
 			System.err.println("Ejecutando " + mmessage.getMethod() + "...");
 			MethodDispatcher dispatcher = new MethodDispatcher(mmessage);
 			String response = dispatcher.dipatch();

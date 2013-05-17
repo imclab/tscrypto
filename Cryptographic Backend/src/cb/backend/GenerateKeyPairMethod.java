@@ -8,6 +8,7 @@ import java.security.SecureRandom;
 import com.google.gson.Gson;
 
 
+
 public class GenerateKeyPairMethod implements Method {
 	public static class ReturnValue {
 		public int publicKeyHandler;
@@ -65,6 +66,7 @@ public class GenerateKeyPairMethod implements Method {
 		catch (NoSuchAlgorithmException e) {
 			return ResponseMessage.ErrorMessage(e.getLocalizedMessage()); 
 		}
+
 	}
 	
 	public static void main(String[] args) {

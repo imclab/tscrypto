@@ -3,16 +3,15 @@ import os
 flags = [
     '-Wall',
     '-Wextra',
-    '-std=c11',
+    '-std=c++11',
     '-x',
-    'c',
-    '-D__USE_BSD',
+    'c++',
     '-I',
     '/usr/include',
     '-I',
-    '../lib/json-c/include',
+    '../lib/rabbitmq/include',
     '-I',
-    '../lib/rabbitmq/include'
+    '../lib/json/include'
     ]
 
 
