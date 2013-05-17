@@ -6,7 +6,6 @@ import cb.backend.ResponseMessage;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
-import com.google.gson.stream.MalformedJsonException;
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
