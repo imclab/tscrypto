@@ -7,12 +7,16 @@ namespace cf {
 
 enum class ArgumentType { String, Integer };
 struct ArgumentValue {
+private:
   std::string s;
   union {
     int i;
   };
+public:
   ArgumentValue(std::string _s) : s(_s){}
   ArgumentValue(int _i) : i(_i){}
+  operator std::string() { return s; }
+  operator int() {return i;}
 };
 
 class Argument {

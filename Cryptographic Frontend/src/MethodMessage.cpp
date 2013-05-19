@@ -31,9 +31,9 @@ string MethodMessage::toJson() {
   
   for (auto const& arg: argList_) {
     if (arg->type() == ArgumentType::Integer) {
-      args[arg->getName()] = arg->value().i;
+      args[arg->getName()] = (int)(arg->value());
     } else if (arg->type() == ArgumentType::String) {
-      args[arg->getName()] = arg->value().s;
+      args[arg->getName()] = (std::string)(arg->value());
     }
   }
   
