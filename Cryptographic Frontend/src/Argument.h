@@ -2,21 +2,19 @@
 #define ARGUMENT_H_
 
 #include <string>
+#include <boost/variant.hpp>
 
 namespace cf {
 
 enum class ArgumentType { String, Integer };
 struct ArgumentValue {
 private:
-  std::string s;
-  union {
-    int i;
-  };
+  boost::variant<int, std::string> value; // El maravilloso variant!
 public:
-  ArgumentValue(std::string _s) : s(_s){}
-  ArgumentValue(int _i) : i(_i){}
-  operator std::string() { return s; }
-  operator int() {return i;}
+  ArgumentValue(std::string s) : value(s){}
+  ArgumentValue(int i) : value(i){}
+  operator std::string() { return boost::get<std::string>(value); }
+  operator int() {return boost::get<int>(value);}
 };
 
 class Argument {

@@ -15,7 +15,6 @@ ArgumentType StringArgument::type() const {
 }
 
 ArgumentValue StringArgument::value() {
-  ArgumentValue value(value_);
-  return value;
+  return ArgumentValue(value_);
 }
 

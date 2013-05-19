@@ -30,11 +30,10 @@ string MethodMessage::toJson() {
   Json::Value args;
   
   for (auto const& arg: argList_) {
-    if (arg->type() == ArgumentType::Integer) {
-      args[arg->getName()] = (int)(arg->value());
-    } else if (arg->type() == ArgumentType::String) {
-      args[arg->getName()] = (std::string)(arg->value());
-    }
+    if (arg->type() == ArgumentType::Integer)
+      args[arg->getName()] = static_cast<int>(arg->value());
+    else if (arg->type() == ArgumentType::String)
+      args[arg->getName()] = static_cast<std::string>(arg->value());
   }
   
   obj["args"] = args;
