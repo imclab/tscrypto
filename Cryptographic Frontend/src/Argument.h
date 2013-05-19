@@ -13,8 +13,8 @@ private:
 public:
   ArgumentValue(std::string s) : value(s){}
   ArgumentValue(int i) : value(i){}
-  operator std::string() { return boost::get<std::string>(value); }
-  operator int() {return boost::get<int>(value);}
+  explicit operator std::string() { return boost::get<std::string>(value); }
+  explicit operator int() {return boost::get<int>(value);}
 };
 
 class Argument {
