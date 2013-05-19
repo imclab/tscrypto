@@ -5,12 +5,12 @@ using namespace cf;
 using std::string;
 
 Argument::Argument(string name) {
-  this->name = name;
+  this->name_ = name;
 }
 
 Argument::~Argument() {}
 
 string Argument::getName() {
-  return name;
+  return name_;
 }
 

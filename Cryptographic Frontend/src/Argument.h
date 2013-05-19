@@ -6,19 +6,21 @@
 namespace cf {
 
 enum class ArgumentType { String, Integer };
-struct ArgumentValue { 
-  std::string s; 
+struct ArgumentValue {
+  std::string s;
   union {
     int i;
   };
+  ArgumentValue(std::string _s) : s(_s){}
+  ArgumentValue(int _i) : i(_i){}
 };
 
 class Argument {
   protected:
-    std::string name;
+    std::string name_;
 
   public:
-    Argument(std::string name);
+    Argument(std::string name_);
     virtual ~Argument();
     virtual std::string getName();
     virtual ArgumentType type() const = 0;

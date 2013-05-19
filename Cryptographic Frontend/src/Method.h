@@ -17,23 +17,23 @@ class Connection;
 
 class Method { // Por ahora los metodos devuelven un string json...
 private:
-  MethodMessage message;
+  MethodMessage message_;
 protected:
   Method(std::string name);
-  virtual void addArgument(Argument* argument);
+  virtual void addArgument(ArgumentPtr argument);
 
 public:
   class CannotExecuteException : public std::exception {
-    std::string error;
+    std::string error_;
   protected:
     CannotExecuteException();
   public:
-    CannotExecuteException(std::string error_) {
-      error = error_;
+    CannotExecuteException(std::string error) {
+      error_ = error;
     }
 
     const char* what() const throw() {
-      return error.c_str();
+      return error_.c_str();
     }
   };
   virtual std::string execute(Connection const& connection);

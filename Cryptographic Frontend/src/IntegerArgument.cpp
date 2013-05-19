@@ -5,7 +5,7 @@ using namespace cf;
 using std::string;
 
 IntegerArgument::IntegerArgument(string name, int value) : Argument(name) {
-  val = value;
+  value_ = value;
 }
 
 IntegerArgument::~IntegerArgument() {}
@@ -15,8 +15,7 @@ ArgumentType IntegerArgument::type() const {
 }
 
 ArgumentValue IntegerArgument::value() {
-  ArgumentValue value;
-  value.i = val;
+  ArgumentValue value(value_);
   return value;
 }
 

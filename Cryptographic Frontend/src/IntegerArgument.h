@@ -8,7 +8,7 @@
 namespace cf {
 class IntegerArgument : public Argument {
   private:
-    int val;
+    int value_;
   public:
     IntegerArgument(std::string name, int value);
     virtual ~IntegerArgument();

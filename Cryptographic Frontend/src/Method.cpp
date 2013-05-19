@@ -2,20 +2,20 @@
 #include "Connection.h"
 
 cf::Method::Method(std::string name)
-  : message(name)
+  : message_(name)
 {
 }
 
-void cf::Method::addArgument(cf::Argument* argument)
+void cf::Method::addArgument(cf::ArgumentPtr argument)
 {
-  message.addArgument(argument);
+  message_.addArgument(std::move(argument));
 }
 
 std::string cf::Method::execute(const Connection &connection)
 {
   std::string response;
   try {
-    response = connection.executeRpc(message.toJson());
+    response = connection.executeRpc(message_.toJson());
   } catch(std::exception& e) {
     throw CannotExecuteException(e.what());
   }

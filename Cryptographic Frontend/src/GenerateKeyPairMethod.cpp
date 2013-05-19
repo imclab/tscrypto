@@ -16,14 +16,9 @@ GenerateKeyPairMethod::GenerateKeyPairMethod(string label,
                                              int keySize)
   : Method("GenerateKeyPair")
 {
-  Argument* labelArg = new StringArgument("label", label);
-  Argument* idArg = new StringArgument("id", id);
-  Argument* keyTypeArg = new StringArgument("keyType", keyType);
-  Argument* keySizeArg = new IntegerArgument("keySize", keySize);
-
   /* methodMessage es dueño de los argumentos */
-  addArgument(labelArg);
-  addArgument(idArg);
-  addArgument(keyTypeArg);
-  addArgument(keySizeArg);
+  addArgument(ArgumentPtr(new StringArgument("label", label)));
+  addArgument(ArgumentPtr(new StringArgument("id", id)));
+  addArgument(ArgumentPtr(new StringArgument("keyType", keyType)));
+  addArgument(ArgumentPtr(new IntegerArgument("keySize", keySize)));
 }

@@ -14,26 +14,22 @@ using std::stringstream;
 namespace cf {
 
 MethodMessage::MethodMessage(string name) {
-  this->name = name;
+  name_ = name;
 }
 
-MethodMessage::~MethodMessage() {
-  for (Argument* arg : argList) {
-    delete arg;
-  }
-}
+MethodMessage::~MethodMessage() {}
 
-void MethodMessage::addArgument(Argument* arg) {
-  argList.push_back(arg);
+void MethodMessage::addArgument(ArgumentPtr arg) {
+  argList_.push_back(std::move(arg));
 }
 
 string MethodMessage::toJson() {
   Json::Value obj;
-  obj["method"] = Json::Value(this->name);
+  obj["method"] = Json::Value(name_);
   
   Json::Value args;
   
-  for (auto arg: argList) {
+  for (auto const& arg: argList_) {
     if (arg->type() == ArgumentType::Integer) {
       args[arg->getName()] = arg->value().i;
     } else if (arg->type() == ArgumentType::String) {

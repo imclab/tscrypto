@@ -4,6 +4,6 @@
 cf::SignMethod::SignMethod(std::string data)
   : Method("Sign")
 {
-  addArgument(new StringArgument("data", data));
+  addArgument(ArgumentPtr(new StringArgument("data", data)));
 }
 

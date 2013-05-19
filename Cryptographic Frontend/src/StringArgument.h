@@ -8,7 +8,7 @@ namespace cf {
 
   class StringArgument : public Argument {
     private:
-      std::string val;
+      std::string value_;
 
     public:
       StringArgument(std::string name, std::string value);

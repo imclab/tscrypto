@@ -3,8 +3,9 @@
 
 using namespace cf;
 
-StringArgument::StringArgument(std::string name, std::string value) : Argument(name) {
-  val = value;
+StringArgument::StringArgument(std::string name, std::string value)
+  : Argument(name), value_(value)
+{
 }
 
 StringArgument::~StringArgument() {}
@@ -14,6 +15,7 @@ ArgumentType StringArgument::type() const {
 }
 
 ArgumentValue StringArgument::value() {
-  return ArgumentValue {.s = val } ;
+  ArgumentValue value(value_);
+  return value;
 }
 

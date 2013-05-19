@@ -12,12 +12,12 @@ namespace cf {
 
 class RabbitConnection : public Connection { 
   private:
-    int sockFd;
-    amqp_connection_state_t connection;
-    amqp_channel_t channel;
-    amqp_bytes_t replyToQueue;
-    std::string exchange;
-    std::string routingKey;
+    int sockFd_;
+    amqp_connection_state_t connection_;
+    amqp_channel_t channel_;
+    amqp_bytes_t replyToQueue_;
+    std::string exchange_;
+    std::string routingKey_;
 
     RabbitConnection& operator=(RabbitConnection const& rhs);
   protected:
