@@ -14,7 +14,6 @@ ArgumentType StringArgument::type() const {
   return ArgumentType::String;
 }
 
-ArgumentValue StringArgument::value() {
-  return ArgumentValue(value_);
+StringArgument::operator std::string() const {
+  return value_;
 }
-

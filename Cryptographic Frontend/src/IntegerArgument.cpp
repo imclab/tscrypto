@@ -14,8 +14,6 @@ ArgumentType IntegerArgument::type() const {
   return ArgumentType::Integer;
 }
 
-ArgumentValue IntegerArgument::value() {
-  ArgumentValue value(value_);
-  return value;
+IntegerArgument::operator int() const {
+  return value_;
 }
-

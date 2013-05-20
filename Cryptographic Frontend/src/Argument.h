@@ -3,21 +3,17 @@
 
 #include <string>
 #include <boost/variant.hpp>
+#include <exception>
 
 namespace cf {
 
 enum class ArgumentType { String, Integer };
-struct ArgumentValue {
-private:
-  boost::variant<int, std::string> value; // El maravilloso variant!
-public:
-  ArgumentValue(std::string s) : value(s){}
-  ArgumentValue(int i) : value(i){}
-  explicit operator std::string() { return boost::get<std::string>(value); }
-  explicit operator int() {return boost::get<int>(value);}
-};
-
 class Argument {
+  class BadConversion : public std::exception {
+    char const* what() const throw() {
+	return "Error al realizar conversion de datos";
+    }
+  };
   protected:
     std::string name_;
 
@@ -26,7 +22,8 @@ class Argument {
     virtual ~Argument();
     virtual std::string getName();
     virtual ArgumentType type() const = 0;
-    virtual ArgumentValue value() = 0;
+    virtual explicit operator std::string() const;
+    virtual explicit operator int() const;
 };
 
 }

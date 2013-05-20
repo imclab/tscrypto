@@ -12,8 +12,8 @@ class IntegerArgument : public Argument {
   public:
     IntegerArgument(std::string name, int value);
     virtual ~IntegerArgument();
-    virtual ArgumentType type() const;
-    virtual ArgumentValue value();
+    ArgumentType type() const;
+    operator int() const;
 };
 }
 

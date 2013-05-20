@@ -14,3 +14,10 @@ string Argument::getName() {
   return name_;
 }
 
+Argument::operator std::string() const {
+  throw BadConversion();
+}
+
+Argument::operator int() const {
+  throw BadConversion();
+}

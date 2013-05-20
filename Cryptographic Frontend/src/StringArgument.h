@@ -13,8 +13,8 @@ namespace cf {
     public:
       StringArgument(std::string name, std::string value);
       virtual ~StringArgument();
-      virtual ArgumentType type() const;
-      virtual ArgumentValue value();
+      ArgumentType type() const;
+      operator std::string() const;
   };
 
 

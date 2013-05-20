@@ -4,7 +4,6 @@
 #include <iostream>
 #include <json/json.h>
 
-// #include "Argument.h"
 #include "MethodMessage.h"
 
 using std::string;
@@ -31,9 +30,9 @@ string MethodMessage::toJson() {
   
   for (auto const& arg: argList_) {
     if (arg->type() == ArgumentType::Integer)
-      args[arg->getName()] = static_cast<int>(arg->value());
+      args[arg->getName()] = static_cast<int>(*arg);
     else if (arg->type() == ArgumentType::String)
-      args[arg->getName()] = static_cast<std::string>(arg->value());
+      args[arg->getName()] = static_cast<std::string>(*arg);
   }
   
   obj["args"] = args;
