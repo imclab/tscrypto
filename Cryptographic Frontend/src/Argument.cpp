@@ -2,10 +2,10 @@
 #include "Argument.h"
 
 using namespace cf;
-using std::string;
 
-Argument::Argument(string name) {
-  this->name_ = name;
+Argument::Argument(std::string name) 
+  : name_(name)
+{
 }
 
 Argument::~Argument() {}

@@ -3,7 +3,6 @@
 #include <sstream>
 #include <iostream>
 #include <json/json.h>
-
 #include "MethodMessage.h"
 
 using std::string;
