@@ -95,6 +95,7 @@ public class Backend {
 			MethodDispatcher dispatcher = new MethodDispatcher(mmessage);
 			String response = dispatcher.dipatch();
 			try {
+				System.err.println("Enviando " + response + "...");
 				channel.basicPublish("", props.getReplyTo(), replyProps, response.getBytes());
 				channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
 			}

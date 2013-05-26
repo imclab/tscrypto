@@ -1,24 +1,23 @@
-#include "Method.h"
-#include "Connection.h"
+#include <Method.hpp>
+#include <Connection.hpp>
+#include <ResponseMessage.hpp>
 
 cf::Method::Method(std::string name)
-  : message_(name)
+    : message_(name)
 {
 }
 
 void cf::Method::addArgument(cf::ArgumentPtr argument)
 {
-  message_.addArgument(std::move(argument));
+    message_.addArgument(std::move(argument));
 }
 
-std::string cf::Method::execute(const Connection &connection)
+void cf::Method::execute(Connection const &connection) throw (ConnectionException)
 {
-  std::string response;
-  try {
-    response = connection.executeRpc(message_.toJson());
-  } catch(std::exception& e) {
-    throw CannotExecuteException(e.what());
-  }
+    response_ = connection.executeRpc(message_.toJson());
+}
 
-  return response;
+cf::ResponseMessagePtr cf::Method::getResponse()
+{
+    return cf::ResponseMessage::responseMessageFactory(response_, getStrategy());
 }

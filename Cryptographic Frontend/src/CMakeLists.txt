@@ -1,8 +1,19 @@
 set (src_dir ${cryptographic_frontend_SOURCE_DIR})
-include_directories (${src_dir}/json/include ${src_dir}/lib/rabbitmq/include)
+include_directories (${src_dir}/json/include ${src_dir}/lib/rabbitmq/include ${src_dir}/boost/include
+${src_dir}/src)
 link_directories (${src_dir}/lib/rabbitmq/lib)
 
-file (GLOB SOURCES *.cpp *.h)
+set (SOURCES Argument.hpp Connection.hpp
+methods/FindKeyMethod.hpp methods/GenerateKeyPairMethod.hpp 
+methods/GetAttributeMethod.hpp IntegerArgument.hpp 
+Method.hpp MethodMessage.hpp RabbitConnection.hpp 
+methods/SignInitMethod.hpp methods/SignMethod.hpp StringArgument.hpp
+ResponseMessage.hpp Argument.cpp 
+methods/GenerateKeyPairMethod.cpp  IntegerArgument.cpp  
+main.cpp MethodMessage.cpp methods/SignInitMethod.cpp 
+StringArgument.cpp methods/FindKeyMethod.cpp 
+methods/GetAttributeMethod.cpp jsoncpp.cpp Method.cpp 
+RabbitConnection.cpp methods/SignMethod.cpp ResponseMessage.cpp)
 
 add_executable (cryptographic_frontend ${SOURCES})
 
