@@ -4,7 +4,6 @@
 #include <sstream>
 #include <RabbitConnection.hpp>
 
-
 using namespace cf;
 
 // RAII :)
@@ -13,6 +12,7 @@ RabbitConnection::~RabbitConnection()
     amqp_bytes_free(replyToQueue_);
     amqp_channel_close(connection_, channel_, AMQP_REPLY_SUCCESS);
     amqp_connection_close(connection_, AMQP_REPLY_SUCCESS);
+    amqp_destroy_connection(connection_);
 }
 
 void RabbitConnection::send(std::string message) const
@@ -38,6 +38,7 @@ void RabbitConnection::send(std::string message) const
                        amqp_cstring_bytes(routingKey_.c_str()),
                        0, 0, &props,
                        amqp_cstring_bytes(message.c_str()));
+    amqp_bytes_free(props.reply_to);
 }
 
 

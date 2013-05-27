@@ -17,18 +17,18 @@ int main()
         std::unique_ptr<Method> method(new GenerateKeyPairMethod("hola", "mundo", "RSA", 1024));
         method->execute(connection);
         ResponseMessagePtr response(method->getResponse());
-        std::cout << response->getValue<int>("publicKeyHandler") << std::endl;
+        
+        // Esta interfaz probablemente cambiará a algo mejor, pero por mientras sirve...
+        std::cout << response->getValue<int>("publicKeyHandler") << std::endl; 
         
         method.reset(new SignInitMethod("SHA1withRSA", response->getValue<int>("privateKeyHandler")));
         method->execute(connection);
-        response.reset();
-        response = method->getResponse();
+        response.reset(method->getResponse().release());
         std::cout << "OK!" << std::endl;
         
         method.reset(new SignMethod("FFAACCDDBB009966"));
         method->execute(connection);
-        response.reset();
-        response = method->getResponse();
+        response.reset(method->getResponse().release());
         std::cout << response->getValue<std::string>("signedData") << std::endl;
         
         
