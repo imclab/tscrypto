@@ -10,12 +10,16 @@ Method.hpp MethodMessage.hpp RabbitConnection.hpp
 methods/SignInitMethod.hpp methods/SignMethod.hpp StringArgument.hpp
 ResponseMessage.hpp Argument.cpp 
 methods/GenerateKeyPairMethod.cpp  IntegerArgument.cpp  
-main.cpp MethodMessage.cpp methods/SignInitMethod.cpp 
+MethodMessage.cpp methods/SignInitMethod.cpp 
 StringArgument.cpp methods/FindKeyMethod.cpp 
 methods/GetAttributeMethod.cpp jsoncpp.cpp Method.cpp 
 RabbitConnection.cpp methods/SignMethod.cpp ResponseMessage.cpp)
 
-add_executable (cryptographic_frontend ${SOURCES})
 
+add_library (cryptographic_frontend SHARED ${SOURCES})
 target_link_libraries (cryptographic_frontend rabbitmq)
 set_target_properties (cryptographic_frontend PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${src_dir}/build)
+
+add_executable (cf main.cpp)
+target_link_libraries (cf cryptographic_frontend)
+set_target_properties (cf PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${src_dir}/build)
