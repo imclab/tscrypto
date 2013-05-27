@@ -7,9 +7,10 @@ namespace cf
 
 class SignMethod : public Method
 {
+protected:
+    virtual ResponseMessageStrategy getStrategy() const override;
 public:
-  SignMethod(std::string data);
-  virtual ResponseMessageStrategy getStrategy() const;
+    SignMethod(std::string data);
 };
 
 }

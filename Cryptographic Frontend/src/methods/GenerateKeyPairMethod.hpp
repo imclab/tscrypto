@@ -16,7 +16,7 @@ namespace cf {
   class GenerateKeyPairMethod : public Method {
     
   protected:
-    virtual ResponseMessageStrategy getStrategy() const;
+    virtual ResponseMessageStrategy getStrategy() const override;
     
   public: 
     GenerateKeyPairMethod(std::string label, std::string id, std::string keyType, int keySize);

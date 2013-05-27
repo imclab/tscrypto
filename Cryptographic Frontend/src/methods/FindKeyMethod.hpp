@@ -5,9 +5,10 @@ namespace cf {
 
 class FindKeyMethod : public Method
 {
+protected:
+    virtual ResponseMessageStrategy getStrategy() const override;
 public:
     FindKeyMethod(std::string keyType, std::string id);
-    virtual ResponseMessageStrategy getStrategy() const;
 };
 
 }
