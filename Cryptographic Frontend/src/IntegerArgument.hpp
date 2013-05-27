@@ -14,8 +14,8 @@ private:
 public:
     IntegerArgument(std::string name, int value);
     virtual ~IntegerArgument();
-    ArgumentType type() const;
-    operator int() const;
+    virtual void accept(ArgumentVisitor &visitor);
+    virtual int value();
 };
 }
 

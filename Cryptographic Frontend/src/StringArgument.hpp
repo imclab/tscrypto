@@ -15,8 +15,8 @@ private:
 public:
     StringArgument(std::string name, std::string value);
     virtual ~StringArgument();
-    ArgumentType type() const;
-    operator std::string() const;
+    virtual void accept(ArgumentVisitor &visitor);
+    virtual std::string value();
 };
 
 

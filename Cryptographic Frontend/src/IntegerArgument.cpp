@@ -11,12 +11,12 @@ IntegerArgument::IntegerArgument(string name, int value) : Argument(name)
 
 IntegerArgument::~IntegerArgument() {}
 
-ArgumentType IntegerArgument::type() const
+void IntegerArgument::accept(ArgumentVisitor &visitor)
 {
-    return ArgumentType::Integer;
+    visitor.visit(*this);
 }
 
-IntegerArgument::operator int() const
+int IntegerArgument::value()
 {
     return value_;
 }

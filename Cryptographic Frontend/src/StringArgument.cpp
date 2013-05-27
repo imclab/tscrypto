@@ -10,12 +10,12 @@ StringArgument::StringArgument(std::string name, std::string value)
 
 StringArgument::~StringArgument() {}
 
-ArgumentType StringArgument::type() const
+void StringArgument::accept(ArgumentVisitor &visitor)
 {
-    return ArgumentType::String;
+    visitor.visit(*this);
 }
 
-StringArgument::operator std::string() const
+std::string StringArgument::value()
 {
     return value_;
 }
