@@ -2,7 +2,6 @@
 #define ARGUMENT_H_
 
 #include <string>
-#include <boost/variant.hpp>
 #include <exception>
 
 namespace cf

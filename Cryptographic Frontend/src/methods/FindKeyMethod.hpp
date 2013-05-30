@@ -5,6 +5,8 @@ namespace cf {
 
 class FindKeyMethod : public Method
 {
+private:
+    bool privateKey_;
 protected:
     virtual ResponseMessageStrategy getStrategy() const override;
 public:

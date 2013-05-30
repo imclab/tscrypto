@@ -9,7 +9,6 @@
 #include <string>
 #include <stdexcept>
 
-#include <Connection.hpp>
 #include <MethodMessage.hpp>
 
 
@@ -17,6 +16,7 @@ namespace cf
 {
     
     class ResponseMessage;
+    class Connection;
     typedef std::unique_ptr<ResponseMessage> ResponseMessagePtr;
     typedef std::function<ResponseMessagePtr(std::string const &)> ResponseMessageStrategy;
     
@@ -32,7 +32,7 @@ namespace cf
         virtual ResponseMessageStrategy getStrategy() const = 0;
         
     public:
-        virtual void execute(Connection const &connection) throw (ConnectionException);
+        virtual void execute(Connection const &connection); // throw (ConnectionException);
         virtual ResponseMessagePtr getResponse();
         
     };

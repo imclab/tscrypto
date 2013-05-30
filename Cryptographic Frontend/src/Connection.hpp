@@ -8,46 +8,42 @@
 
 #include <string>
 #include <exception>
-#include <amqp.h>
-#include <amqp_framing.h>
 
 namespace cf
 {
-
-class ConnectionException : public std::exception
-{
-
-};
-
-class Connection
-{
-
-protected:
-    virtual void send(std::string message) const = 0;
-    virtual std::string receive() const = 0;
-public:
-
-    class BadResponseException : public ConnectionException
+    
+    class ConnectionException : public std::exception {};
+    
+    class Connection
     {
-        const char *what() const throw() {
-            return "Error al recibir respuesta";
+        
+    protected:
+        virtual void send(std::string message) const = 0;
+        virtual std::string receive() const = 0;
+    public:
+        
+        class BadResponseException : public ConnectionException
+        {
+            const char *what() const throw() {
+                return "Error al recibir respuesta";
+            }
+        };
+        
+        class CannotConnectException : public ConnectionException
+        {
+            const char *what() const throw() {
+                return "No se puede conectar";
+            }
+        };
+        
+        // Template method...
+        virtual std::string executeRpc(std::string message) const // throw (ConnectionException) 
+        {
+            send(message);
+            return receive();
         }
     };
-
-    class CannotConnectException : public ConnectionException
-    {
-        const char *what() const throw() {
-            return "No se puede conectar";
-        }
-    };
-
-    // Trait...
-    virtual std::string executeRpc(std::string message) const throw (ConnectionException) {
-        send(message);
-        return receive();
-    }
-};
-
+    
 }
 
 #endif // Connection_H_
