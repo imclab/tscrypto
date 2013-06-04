@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="88">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="SoftHSM">
+      <df name="autom4te.cache">
+      </df>
+      <df name="checks">
+        <in>checks.c</in>
+        <in>checks.h</in>
+        <in>cryptoki.h</in>
+      </df>
+      <df name="m4">
+      </df>
+      <df name="src">
+        <df name="bin">
+          <in>base64.c</in>
+          <in>cryptoki.h</in>
+          <in>softhsm-keyconv.cpp</in>
+          <in>softhsm-keyconv.h</in>
+          <in>softhsm.cpp</in>
+          <in>softhsm.h</in>
+        </df>
+        <df name="lib">
+          <df name="cryptoki_compat">
+            <in>pkcs11.h</in>
+          </df>
+          <in>MutexFactory.cpp</in>
+          <in>MutexFactory.h</in>
+          <in>SoftDatabase.cpp</in>
+          <in>SoftDatabase.h</in>
+          <in>SoftFind.cpp</in>
+          <in>SoftFind.h</in>
+          <in>SoftHSMInternal.cpp</in>
+          <in>SoftHSMInternal.h</in>
+          <in>SoftKeyStore.cpp</in>
+          <in>SoftKeyStore.h</in>
+          <in>SoftSession.cpp</in>
+          <in>SoftSession.h</in>
+          <in>SoftSlot.cpp</in>
+          <in>SoftSlot.h</in>
+          <in>attribute.cpp</in>
+          <in>attribute.h</in>
+          <in>botan_compat.cpp</in>
+          <in>botan_compat.h</in>
+          <in>cryptoki.h</in>
+          <in>file.cpp</in>
+          <in>file.h</in>
+          <in>log.cpp</in>
+          <in>log.h</in>
+          <in>main.cpp</in>
+          <in>main.h</in>
+          <in>mechanisms.cpp</in>
+          <in>mechanisms.h</in>
+          <in>osmutex.cpp</in>
+          <in>osmutex.h</in>
+          <in>tokenhandling.cpp</in>
+          <in>tokenhandling.h</in>
+          <in>userhandling.cpp</in>
+          <in>userhandling.h</in>
+          <in>util.h</in>
+        </df>
+      </df>
+      <df name="testing">
+      </df>
+      <in>config.h</in>
+    </df>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <developmentServer>localhost</developmentServer>
+        <platform>2</platform>
+      </toolsSet>
+      <dbx_gdbdebugger version="1">
+        <gdb_pathmaps>
+        </gdb_pathmaps>
+        <gdb_interceptlist>
+          <gdbinterceptoptions gdb_all="false" gdb_unhandled="true" gdb_unexpected="true"/>
+        </gdb_interceptlist>
+        <gdb_options>
+          <DebugOptions>
+          </DebugOptions>
+        </gdb_options>
+        <gdb_buildfirst gdb_buildfirst_overriden="false" gdb_buildfirst_old="false"/>
+      </dbx_gdbdebugger>
+      <nativedebugger version="1">
+        <engine>gdb</engine>
+      </nativedebugger>
+      <runprofile version="9">
+        <runcommandpicklist>
+          <runcommandpicklistitem>"${OUTPUT_PATH}"</runcommandpicklistitem>
+        </runcommandpicklist>
+        <runcommand>"${OUTPUT_PATH}"</runcommand>
+        <rundir>.</rundir>
+        <buildfirst>true</buildfirst>
+        <terminal-type>0</terminal-type>
+        <remove-instrumentation>0</remove-instrumentation>
+        <environment>
+        </environment>
+      </runprofile>
+    </conf>
+  </confs>
+</configurationDescriptor>

@@ -1,0 +1,119 @@
+/* config.h.in.  Generated from configure.ac by autoheader.  */
+
+/* A bug in Botan prevents reuse of PK_Signer */
+#undef BOTAN_NO_PK_SIGNER_REUSE
+
+/* Fixes an API change within Botan */
+#undef BOTAN_PRE_1_9_10_FIX
+
+/* Fixes an API change within Botan */
+#undef BOTAN_PRE_1_9_4_FIX
+
+/* Fixes an API problem within Botan */
+#undef BOTAN_RESEED_FIX
+
+/* The default PKCS#11 library */
+#undef DEFAULT_PKCS11_LIB
+
+/* The default location of softhsm.conf */
+#undef DEFAULT_SOFTHSM_CONF
+
+/* Define to 1 if you have the <dlfcn.h> header file. */
+#undef HAVE_DLFCN_H
+
+/* Define if you have dlopen */
+#undef HAVE_DLOPEN
+
+/* Define to 1 if you have the `getpassphrase' function. */
+#undef HAVE_GETPASSPHRASE
+
+/* Define to 1 if you have the <inttypes.h> header file. */
+#undef HAVE_INTTYPES_H
+
+/* Define to 1 if you have the `sqlite3' library (-lsqlite3). */
+#undef HAVE_LIBSQLITE3
+
+/* Define if you have LoadLibrary */
+#undef HAVE_LOADLIBRARY
+
+/* Define to 1 if you have the <memory.h> header file. */
+#undef HAVE_MEMORY_H
+
+/* Define to 1 if you have the <pthread.h> header file. */
+#undef HAVE_PTHREAD_H
+
+/* Define to 1 if you have the <stdint.h> header file. */
+#undef HAVE_STDINT_H
+
+/* Define to 1 if you have the <stdlib.h> header file. */
+#undef HAVE_STDLIB_H
+
+/* Define to 1 if you have the <strings.h> header file. */
+#undef HAVE_STRINGS_H
+
+/* Define to 1 if you have the <string.h> header file. */
+#undef HAVE_STRING_H
+
+/* Define to 1 if you have the <syslog.h> header file. */
+#undef HAVE_SYSLOG_H
+
+/* Define to 1 if you have the <sys/stat.h> header file. */
+#undef HAVE_SYS_STAT_H
+
+/* Define to 1 if you have the <sys/time.h> header file. */
+#undef HAVE_SYS_TIME_H
+
+/* Define to 1 if you have the <sys/types.h> header file. */
+#undef HAVE_SYS_TYPES_H
+
+/* Define to 1 if you have the <unistd.h> header file. */
+#undef HAVE_UNISTD_H
+
+/* Define to the sub-directory in which libtool stores uninstalled libraries.
+   */
+#undef LT_OBJDIR
+
+/* Maximum PIN length */
+#undef MAX_PIN_LEN
+
+/* Maximum number of concurrent sessions */
+#undef MAX_SESSION_COUNT
+
+/* Minimum PIN length */
+#undef MIN_PIN_LEN
+
+/* Name of package */
+#undef PACKAGE
+
+/* Define to the address where bug reports for this package should be sent. */
+#undef PACKAGE_BUGREPORT
+
+/* Define to the full name of this package. */
+#undef PACKAGE_NAME
+
+/* Define to the full name and version of this package. */
+#undef PACKAGE_STRING
+
+/* Define to the one symbol short name of this package. */
+#undef PACKAGE_TARNAME
+
+/* Define to the home page for this package. */
+#undef PACKAGE_URL
+
+/* Define to the version of this package. */
+#undef PACKAGE_VERSION
+
+/* The log level set by the user */
+#undef SOFTLOGLEVEL
+
+/* Define to 1 if you have the ANSI C header files. */
+#undef STDC_HEADERS
+
+/* Version number of package */
+#undef VERSION
+
+/* SoftHSM version number via PKCS#11 */
+#undef VERSION_MAJOR
+
+/* SoftHSM version number via PKCS#11 */
+#undef VERSION_MINOR

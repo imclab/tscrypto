@@ -1,0 +1,242 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="88">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <df root="." name="SoftHSM">
+      <df name="checks">
+        <in>checks.c</in>
+        <in>checks.h</in>
+        <in>cryptoki.h</in>
+      </df>
+      <df name="src">
+        <df name="bin">
+          <in>base64.c</in>
+          <in>cryptoki.h</in>
+          <in>softhsm-keyconv.cpp</in>
+          <in>softhsm-keyconv.h</in>
+          <in>softhsm.cpp</in>
+          <in>softhsm.h</in>
+        </df>
+        <df name="lib">
+          <df name="cryptoki_compat">
+            <in>pkcs11.h</in>
+          </df>
+          <in>MutexFactory.cpp</in>
+          <in>MutexFactory.h</in>
+          <in>SoftDatabase.cpp</in>
+          <in>SoftDatabase.h</in>
+          <in>SoftFind.cpp</in>
+          <in>SoftFind.h</in>
+          <in>SoftHSMInternal.cpp</in>
+          <in>SoftHSMInternal.h</in>
+          <in>SoftKeyStore.cpp</in>
+          <in>SoftKeyStore.h</in>
+          <in>SoftSession.cpp</in>
+          <in>SoftSession.h</in>
+          <in>SoftSlot.cpp</in>
+          <in>SoftSlot.h</in>
+          <in>attribute.cpp</in>
+          <in>attribute.h</in>
+          <in>botan_compat.cpp</in>
+          <in>botan_compat.h</in>
+          <in>cryptoki.h</in>
+          <in>file.cpp</in>
+          <in>file.h</in>
+          <in>log.cpp</in>
+          <in>log.h</in>
+          <in>main.cpp</in>
+          <in>main.h</in>
+          <in>mechanisms.cpp</in>
+          <in>mechanisms.h</in>
+          <in>osmutex.cpp</in>
+          <in>osmutex.h</in>
+          <in>tokenhandling.cpp</in>
+          <in>tokenhandling.h</in>
+          <in>userhandling.cpp</in>
+          <in>userhandling.h</in>
+          <in>util.h</in>
+        </df>
+      </df>
+      <in>config.h</in>
+    </df>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+      <itemPath>configure</itemPath>
+    </logicalFolder>
+  </logicalFolder>
+  <sourceFolderFilter>^(nbproject)$</sourceFolderFilter>
+  <sourceRootList>
+    <Elem>.</Elem>
+  </sourceRootList>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Default" type="0">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>false</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <codeAssistance>
+      </codeAssistance>
+      <makefileType>
+        <makeTool>
+          <buildCommandWorkingDir>.</buildCommandWorkingDir>
+          <buildCommand>${MAKE} -f Makefile</buildCommand>
+          <cleanCommand>${MAKE} -f Makefile clean</cleanCommand>
+          <executablePath></executablePath>
+          <cTool>
+            <preprocessorList>
+              <Elem>HAVE_CONFIG_H</Elem>
+            </preprocessorList>
+          </cTool>
+          <ccTool>
+            <preprocessorList>
+              <Elem>HAVE_CONFIG_H</Elem>
+            </preprocessorList>
+          </ccTool>
+        </makeTool>
+      </makefileType>
+      <item path="checks/checks.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="checks/checks.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="checks/cryptoki.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="config.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <folder path="SoftHSM/checks">
+        <cTool>
+          <incDir>
+            <pElem>checks</pElem>
+            <pElem>.</pElem>
+            <pElem>src/lib/cryptoki_compat</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>CHECKS_SOFTHSM_CONF="./softhsm.conf"</Elem>
+          </preprocessorList>
+        </cTool>
+      </folder>
+      <folder path="SoftHSM/src">
+        <cTool>
+          <incDir>
+            <pElem>src/bin</pElem>
+            <pElem>.</pElem>
+            <pElem>src/lib/cryptoki_compat</pElem>
+            <pElem>/usr/include/botan-1.10</pElem>
+            <pElem>/usr/include</pElem>
+          </incDir>
+        </cTool>
+      </folder>
+      <folder path="SoftHSM/src/bin">
+        <ccTool>
+          <incDir>
+            <pElem>src/bin</pElem>
+            <pElem>.</pElem>
+            <pElem>src/lib/cryptoki_compat</pElem>
+            <pElem>/usr/include/botan-1.10</pElem>
+            <pElem>/usr/include</pElem>
+          </incDir>
+        </ccTool>
+      </folder>
+      <folder path="SoftHSM/src/lib">
+        <ccTool>
+          <incDir>
+            <pElem>src/lib</pElem>
+            <pElem>.</pElem>
+            <pElem>src/lib/cryptoki_compat</pElem>
+            <pElem>/usr/include/botan-1.10</pElem>
+            <pElem>/usr/include</pElem>
+          </incDir>
+          <preprocessorList>
+            <Elem>PIC</Elem>
+          </preprocessorList>
+        </ccTool>
+      </folder>
+      <item path="src/bin/base64.c" ex="false" tool="0" flavor2="0">
+      </item>
+      <item path="src/bin/cryptoki.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/bin/softhsm-keyconv.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/bin/softhsm-keyconv.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/bin/softhsm.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/bin/softhsm.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/MutexFactory.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/MutexFactory.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/SoftDatabase.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/SoftDatabase.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/SoftFind.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/SoftFind.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/SoftHSMInternal.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/SoftHSMInternal.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/SoftKeyStore.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/SoftKeyStore.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/SoftSession.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/SoftSession.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/SoftSlot.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/SoftSlot.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/attribute.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/attribute.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/botan_compat.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/botan_compat.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/cryptoki.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/cryptoki_compat/pkcs11.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/file.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/file.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/log.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/log.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/main.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/mechanisms.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/mechanisms.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/osmutex.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/osmutex.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/tokenhandling.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/tokenhandling.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/userhandling.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="src/lib/userhandling.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="src/lib/util.h" ex="false" tool="3" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
