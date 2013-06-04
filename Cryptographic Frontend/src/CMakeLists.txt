@@ -1,7 +1,9 @@
 set (src_dir ${cryptographic_frontend_SOURCE_DIR})
-include_directories (${src_dir}/json/include ${src_dir}/lib/rabbitmq/include ${src_dir}/boost/include
-${src_dir}/src)
-link_directories (${src_dir}/lib/rabbitmq/lib)
+#include_directories (${src_dir}/json/include ${src_dir}/lib/rabbitmq/include ${src_dir}/boost/include ${src_dir}/src)
+#link_directories (${src_dir}/lib/rabbitmq/lib)
+find_package (RabbitMQ REQUIRED)
+
+include_directories (${src_dir}/json/include ${src_dir}/boost/include ${RABBITMQ_INCLUDE_DIR} ${src_dir}/src)
 
 set (SOURCES Argument.hpp Connection.hpp
 methods/FindKeyMethod.hpp methods/GenerateKeyPairMethod.hpp 
