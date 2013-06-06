@@ -5,3 +5,4 @@
 #endif
 
 #define __BYTE_ORDER __LITTLE_ENDIAN
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

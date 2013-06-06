@@ -18,3 +18,4 @@
 #define RTSIG_MAX	  32
 
 #endif
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

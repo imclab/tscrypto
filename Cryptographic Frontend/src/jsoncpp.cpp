@@ -4195,3 +4195,4 @@ std::ostream &operator<<(std::ostream &sout, const Value &root)
 
 
 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

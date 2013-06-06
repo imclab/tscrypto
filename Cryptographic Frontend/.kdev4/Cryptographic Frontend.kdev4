@@ -9,7 +9,7 @@ ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
 Build Directory Path=file:///home/franchoco/git/tcb-pkcs11/Cryptographic%20Frontend/build
-Build Type=
+Build Type=Debug
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=
 Extra Arguments=

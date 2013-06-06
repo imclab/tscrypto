@@ -36,11 +36,11 @@
         || defined(_GLIBCXX__PTHREADS) \
         || defined(_GLIBCXX_HAS_GTHREADS) \
         || defined(_WIN32)
-      //
-      // If the std lib has thread support turned on, then turn it on in Boost
-      // as well.  We do this because some gcc-3.4 std lib headers define _REENTANT
-      // while others do not...
-      //
+//
+// If the std lib has thread support turned on, then turn it on in Boost
+// as well.  We do this because some gcc-3.4 std lib headers define _REENTANT
+// while others do not...
+//
 #     define BOOST_HAS_THREADS
 #  else
 #     define BOOST_DISABLE_THREADS
@@ -48,7 +48,7 @@
 #elif defined(__GLIBCPP__) \
         && !defined(_GLIBCPP_HAVE_GTHR_DEFAULT) \
         && !defined(_GLIBCPP__PTHREADS)
-   // disable thread support if the std lib was built single threaded:
+// disable thread support if the std lib was built single threaded:
 #  define BOOST_DISABLE_THREADS
 #endif
 
@@ -124,8 +124,8 @@
 #  define BOOST_NO_CXX11_HDR_SYSTEM_ERROR
 #  define BOOST_NO_CXX11_SMART_PTR
 #else
-#  define BOOST_HAS_TR1_COMPLEX_INVERSE_TRIG 
-#  define BOOST_HAS_TR1_COMPLEX_OVERLOADS 
+#  define BOOST_HAS_TR1_COMPLEX_INVERSE_TRIG
+#  define BOOST_HAS_TR1_COMPLEX_OVERLOADS
 #endif
 
 #if (!defined(_GLIBCXX_HAS_GTHREADS) || !defined(_GLIBCXX_USE_C99_STDINT_TR1)) && (!defined(BOOST_NO_CXX11_HDR_CONDITION_VARIABLE) || !defined(BOOST_NO_CXX11_HDR_MUTEX))
@@ -163,3 +163,4 @@
 #  define BOOST_NO_CXX11_ATOMIC_SMART_PTR
 
 //  --- end ---
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

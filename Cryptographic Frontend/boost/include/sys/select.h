@@ -61,8 +61,7 @@ typedef long int __fd_mask;
 #define	__FD_MASK(d)	((__fd_mask) 1 << ((d) % __NFDBITS))
 
 /* fd_set for select and pselect.  */
-typedef struct
-  {
+typedef struct {
     /* XPG4.2 requires this member name.  Otherwise avoid the name
        from the global namespace.  */
 #ifdef __USE_XOPEN
@@ -72,7 +71,7 @@ typedef struct
     __fd_mask __fds_bits[__FD_SETSIZE / __NFDBITS];
 # define __FDS_BITS(set) ((set)->__fds_bits)
 #endif
-  } fd_set;
+} fd_set;
 
 /* Maximum number of file descriptors in `fd_set'.  */
 #define	FD_SETSIZE		__FD_SETSIZE
@@ -103,10 +102,10 @@ __BEGIN_DECLS
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-extern int select (int __nfds, fd_set *__restrict __readfds,
-		   fd_set *__restrict __writefds,
-		   fd_set *__restrict __exceptfds,
-		   struct timeval *__restrict __timeout);
+extern int select(int __nfds, fd_set *__restrict __readfds,
+                  fd_set *__restrict __writefds,
+                  fd_set *__restrict __exceptfds,
+                  struct timeval *__restrict __timeout);
 
 #ifdef __USE_XOPEN2K
 /* Same as above only that the TIMEOUT value is given with higher
@@ -115,11 +114,11 @@ extern int select (int __nfds, fd_set *__restrict __readfds,
 
    This function is a cancellation point and therefore not marked with
    __THROW.  */
-extern int pselect (int __nfds, fd_set *__restrict __readfds,
-		    fd_set *__restrict __writefds,
-		    fd_set *__restrict __exceptfds,
-		    const struct timespec *__restrict __timeout,
-		    const __sigset_t *__restrict __sigmask);
+extern int pselect(int __nfds, fd_set *__restrict __readfds,
+                   fd_set *__restrict __writefds,
+                   fd_set *__restrict __exceptfds,
+                   const struct timespec *__restrict __timeout,
+                   const __sigset_t *__restrict __sigmask);
 #endif
 
 
@@ -131,3 +130,4 @@ extern int pselect (int __nfds, fd_set *__restrict __readfds,
 __END_DECLS
 
 #endif /* sys/select.h */
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

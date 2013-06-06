@@ -70,26 +70,25 @@
 #endif
 
 /* The official definition.  */
-struct sched_param
-  {
+struct sched_param {
     int __sched_priority;
-  };
+};
 
 __BEGIN_DECLS
 
 #ifdef __USE_GNU
 /* Clone current process.  */
-extern int clone (int (*__fn) (void *__arg), void *__child_stack,
-		  int __flags, void *__arg, ...) __THROW;
+extern int clone(int (*__fn)(void *__arg), void *__child_stack,
+                 int __flags, void *__arg, ...) __THROW;
 
 /* Unshare the specified resources.  */
-extern int unshare (int __flags) __THROW;
+extern int unshare(int __flags) __THROW;
 
 /* Get index of currently used CPU.  */
-extern int sched_getcpu (void) __THROW;
+extern int sched_getcpu(void) __THROW;
 
 /* Switch process to namespace of type NSTYPE indicated by FD.  */
-extern int setns (int __fd, int __nstype) __THROW;
+extern int setns(int __fd, int __nstype) __THROW;
 #endif
 
 
@@ -101,10 +100,9 @@ __END_DECLS
     && (defined __need_schedparam || defined _SCHED_H)
 # define __defined_schedparam	1
 /* Data structure to describe a process' schedulability.  */
-struct __sched_param
-  {
+struct __sched_param {
     int __sched_priority;
-  };
+};
 # undef __need_schedparam
 #endif
 
@@ -123,9 +121,8 @@ typedef unsigned long int __cpu_mask;
 # define __CPUMASK(cpu)	((__cpu_mask) 1 << ((cpu) % __NCPUBITS))
 
 /* Data structure to describe CPU mask.  */
-typedef struct
-{
-  __cpu_mask __bits[__CPU_SETSIZE / __NCPUBITS];
+typedef struct {
+    __cpu_mask __bits[__CPU_SETSIZE / __NCPUBITS];
 } cpu_set_t;
 
 /* Access functions for CPU masks.  */
@@ -201,11 +198,12 @@ typedef struct
 
 __BEGIN_DECLS
 
-extern int __sched_cpucount (size_t __setsize, const cpu_set_t *__setp)
-  __THROW;
-extern cpu_set_t *__sched_cpualloc (size_t __count) __THROW __wur;
-extern void __sched_cpufree (cpu_set_t *__set) __THROW;
+extern int __sched_cpucount(size_t __setsize, const cpu_set_t *__setp)
+__THROW;
+extern cpu_set_t *__sched_cpualloc(size_t __count) __THROW __wur;
+extern void __sched_cpufree(cpu_set_t *__set) __THROW;
 
 __END_DECLS
 
 #endif
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

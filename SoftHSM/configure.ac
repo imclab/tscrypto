@@ -69,6 +69,7 @@ ACX_64BIT
 ACX_BOTAN
 ACX_LIBSQLITE3
 ACX_DLOPEN
+ACX_LIBCRYPTOGRAPHIC_FRONTEND
 
 YIELD_LIB=
 dnl Solaris has sched_yield in librt, not in libpthread or libc.

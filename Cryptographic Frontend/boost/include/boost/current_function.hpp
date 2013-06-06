@@ -66,3 +66,4 @@ inline void current_function_helper()
 
 #endif // #ifndef BOOST_CURRENT_FUNCTION_HPP_INCLUDED
 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

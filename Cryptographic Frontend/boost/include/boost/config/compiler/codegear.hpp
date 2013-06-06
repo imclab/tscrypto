@@ -34,8 +34,8 @@
 #  define BOOST_NO_DEPENDENT_NESTED_DERIVATIONS
 #  define BOOST_NO_PRIVATE_IN_AGGREGATE
 #  define BOOST_NO_USING_DECLARATION_OVERLOADS_FROM_TYPENAME_BASE
-   // we shouldn't really need this - but too many things choke
-   // without it, this needs more investigation:
+// we shouldn't really need this - but too many things choke
+// without it, this needs more investigation:
 #  define BOOST_NO_LIMITS_COMPILE_TIME_CONSTANTS
 #  define BOOST_SP_NO_SP_CONVERTIBLE
 #endif
@@ -61,11 +61,11 @@
 #  define BOOST_NO_COMPLETE_VALUE_INITIALIZATION
 
 #  if defined(NDEBUG) && defined(__cplusplus)
-      // fix broken <cstring> so that Boost.test works:
+// fix broken <cstring> so that Boost.test works:
 #     include <cstring>
 #     undef strcmp
 #  endif
-   // fix broken errno declaration:
+// fix broken errno declaration:
 #  include <errno.h>
 #  ifndef errno
 #     define errno errno
@@ -150,7 +150,7 @@
 // all versions support __declspec:
 //
 #if defined(__STRICT_ANSI__)
-// config/platform/win32.hpp will define BOOST_SYMBOL_EXPORT, etc., unless already defined  
+// config/platform/win32.hpp will define BOOST_SYMBOL_EXPORT, etc., unless already defined
 #  define BOOST_SYMBOL_EXPORT
 #endif
 //
@@ -177,3 +177,4 @@
 
 #define BOOST_COMPILER "CodeGear C++ version " BOOST_STRINGIZE(__CODEGEARC__)
 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

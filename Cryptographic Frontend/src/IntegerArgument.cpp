@@ -4,9 +4,10 @@
 using namespace cf;
 using std::string;
 
-IntegerArgument::IntegerArgument(string name, int value) : Argument(name)
+IntegerArgument::IntegerArgument(const string &name, int value)
+    : Argument(name), value_(value)
 {
-    value_ = value;
+
 }
 
 IntegerArgument::~IntegerArgument() {}
@@ -20,3 +21,4 @@ int IntegerArgument::value()
 {
     return value_;
 }
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

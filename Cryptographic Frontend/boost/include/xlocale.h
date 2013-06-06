@@ -24,21 +24,21 @@
    (almost) opaque type for the user level programs.  The file and
    this data structure is not standardized.  Don't rely on it.  It can
    go away without warning.  */
-typedef struct __locale_struct
-{
-  /* Note: LC_ALL is not a valid index into this array.  */
-  struct __locale_data *__locales[13]; /* 13 = __LC_LAST. */
+typedef struct __locale_struct {
+    /* Note: LC_ALL is not a valid index into this array.  */
+    struct __locale_data *__locales[13]; /* 13 = __LC_LAST. */
 
-  /* To increase the speed of this solution we add some special members.  */
-  const unsigned short int *__ctype_b;
-  const int *__ctype_tolower;
-  const int *__ctype_toupper;
+    /* To increase the speed of this solution we add some special members.  */
+    const unsigned short int *__ctype_b;
+    const int *__ctype_tolower;
+    const int *__ctype_toupper;
 
-  /* Note: LC_ALL is not a valid index into this array.  */
-  const char *__names[13];
+    /* Note: LC_ALL is not a valid index into this array.  */
+    const char *__names[13];
 } *__locale_t;
 
 /* POSIX 2008 makes locale_t official.  */
 typedef __locale_t locale_t;
 
 #endif /* xlocale.h */
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

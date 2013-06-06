@@ -61,3 +61,4 @@
   ((void) (__FDS_BITS (set)[__FD_ELT (d)] &= ~__FD_MASK (d)))
 #define __FD_ISSET(d, set) \
   ((__FDS_BITS (set)[__FD_ELT (d)] & __FD_MASK (d)) != 0)
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

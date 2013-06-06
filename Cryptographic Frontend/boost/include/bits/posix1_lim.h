@@ -173,3 +173,4 @@
 #endif
 
 #endif	/* bits/posix1_lim.h  */
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

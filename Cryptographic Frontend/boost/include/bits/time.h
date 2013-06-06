@@ -27,11 +27,10 @@
 
 /* A time value that is accurate to the nearest
    microsecond but also has a range of years.  */
-struct timeval
-  {
+struct timeval {
     __time_t tv_sec;		/* Seconds.  */
     __suseconds_t tv_usec;	/* Microseconds.  */
-  };
+};
 # endif	/* struct timeval */
 #endif
 
@@ -52,7 +51,7 @@ struct timeval
 /* Even though CLOCKS_PER_SEC has such a strange value CLK_TCK
    presents the real value for clock ticks per second for the system.  */
 #   include <bits/types.h>
-extern long int __sysconf (int);
+extern long int __sysconf(int);
 #   define CLK_TCK ((__clock_t) __sysconf (2))	/* 2 is _SC_CLK_TCK */
 #  endif
 
@@ -88,7 +87,7 @@ extern long int __sysconf (int);
 __BEGIN_DECLS
 
 /* Tune a POSIX clock.  */
-extern int clock_adjtime (__clockid_t __clock_id, struct timex *__utx) __THROW;
+extern int clock_adjtime(__clockid_t __clock_id, struct timex *__utx) __THROW;
 
 __END_DECLS
 #  endif /* use GNU */
@@ -97,3 +96,4 @@ __END_DECLS
 #endif
 
 #undef __need_timeval
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

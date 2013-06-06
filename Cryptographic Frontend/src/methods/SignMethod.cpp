@@ -15,17 +15,18 @@ SignMethod::SignMethod(std::string data)
 
 ResponseMessageStrategy SignMethod::getStrategy() const
 {
-      return [](std::string const& message) -> ResponseMessagePtr { 
-      Json::Value json;
-      Json::Reader reader;
-      
-      reader.parse(message, json);
-      ResponseMessagePtr response(new ResponseMessage());
-      response->setValue("signedData", json["signedData"].asString());
-      
-      return std::move(response);
-  };
+    return [](std::string const & message) -> ResponseMessagePtr {
+        Json::Value json;
+        Json::Reader reader;
+
+        reader.parse(message, json);
+        ResponseMessagePtr response(new ResponseMessage());
+        response->setValue("signedData", json["signedData"].asString());
+
+        return std::move(response);
+    };
 }
 
 
 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

@@ -1,6 +1,6 @@
 SoftFind.lo: SoftFind.cpp /usr/include/stdc-predef.h SoftFind.h \
  cryptoki.h cryptoki_compat/pkcs11.h \
- /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/include/stddef.h util.h
+ /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.1/include/stddef.h util.h
 
 /usr/include/stdc-predef.h:
 
@@ -10,6 +10,6 @@ cryptoki.h:
 
 cryptoki_compat/pkcs11.h:
 
-/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/include/stddef.h:
+/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.1/include/stddef.h:
 
 util.h:

@@ -284,3 +284,4 @@
 #                            define BOOST_PP_NODE_255(p) BOOST_PP_IIF(p##(255), 255, 256)
 #
 # endif
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

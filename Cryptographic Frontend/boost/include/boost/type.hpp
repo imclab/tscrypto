@@ -6,13 +6,15 @@
 #ifndef BOOST_TYPE_DWA20010120_HPP
 # define BOOST_TYPE_DWA20010120_HPP
 
-namespace boost {
+namespace boost
+{
 
-  // Just a simple "type envelope". Useful in various contexts, mostly to work
-  // around some MSVC deficiencies.
-  template <class T>
-  struct type {};
+// Just a simple "type envelope". Useful in various contexts, mostly to work
+// around some MSVC deficiencies.
+template <class T>
+struct type {};
 
 }
 
 #endif // BOOST_TYPE_DWA20010120_HPP
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

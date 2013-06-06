@@ -666,6 +666,8 @@ build_vendor
 build_cpu
 build
 YIELD_LIB
+CRYPTOGRAPHIC_FRONTEND_LIBS
+CRYPTOGRAPHIC_FRONTEND_INCLUDES
 SQLITE3_LIBS
 SQLITE3_INCLUDES
 EGREP
@@ -773,6 +775,7 @@ with_loglevel
 enable_64bit
 with_botan
 with_sqlite3
+with_cryptographic_frontend
 enable_shared
 enable_static
 with_pic
@@ -1434,6 +1437,8 @@ Optional Packages:
                           4=Debug (default INT=3)
   --with-botan=PATH       Specify prefix of path of Botan
   --with-sqlite3=PATH     Specify prefix of path of SQLite3
+  --with-cryptographic_frontend=PATH
+                          Specify prefix of path of Cryptographic Frontend
   --with-pic[=PKGS]       try to use only PIC/non-PIC objects [default=use
                           both]
   --with-gnu-ld           assume the C compiler uses GNU ld [default=no]
@@ -2912,7 +2917,12 @@ mkdir_p='$(MKDIR_P)'
 # in the wild :-(  We should find a proper way to deprecate it ...
 AMTAR='$${TAR-tar}'
 
+
+# We'll loop over all known methods to create a tar archive until one works.
+_am_tools='gnutar  pax cpio none'
+
 am__tar='$${TAR-tar} chof - "$$tardir"' am__untar='$${TAR-tar} xf -'
+
 
 
 
@@ -5267,6 +5277,79 @@ $as_echo "$tmp_SUCCESS" >&6; }
 	then
 		as_fn_error $? "No dynamic library loading support" "$LINENO" 5
 	fi
+
+
+
+	tmp_CPPFLAGS=$CPPFLAGS
+	tmp_LIBS=$LIBS
+
+
+# Check whether --with-cryptographic_frontend was given.
+if test "${with_cryptographic_frontend+set}" = set; then :
+  withval=$with_cryptographic_frontend; CRYPTOGRAPHIC_FRONTEND_PATH="$withval"
+fi
+
+
+	CRYPTOGRAPHIC_FRONTEND_INCLUDES="-I$CRYPTOGRAPHIC_FRONTEND_PATH/include"
+        CRYPTOGRAPHIC_FRONTEND_LIBS="-L$CRYPTOGRAPHIC_FRONTEND_PATH/lib -lcryptographic_frontend"
+
+        CPPFLAGS="$CPPFLAGS $CRYPTOGRAPHIC_FRONTEND_INCLUDES"
+        LIBS="$LIBS $CRYPTOGRAPHIC_FRONTEND_LIBS"
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking what are Cryptographic Frontend includes" >&5
+$as_echo_n "checking what are Cryptographic Frontend includes... " >&6; }
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $CRYPTOGRAPHIC_FRONTEND_INCLUDES" >&5
+$as_echo "$CRYPTOGRAPHIC_FRONTEND_INCLUDES" >&6; }
+
+	{ $as_echo "$as_me:${as_lineno-$LINENO}: checking what are Cryptographic Frontend libraries" >&5
+$as_echo_n "checking what are Cryptographic Frontend libraries... " >&6; }
+        { $as_echo "$as_me:${as_lineno-$LINENO}: result: $CRYPTOGRAPHIC_FRONTEND_LIBS" >&5
+$as_echo "$CRYPTOGRAPHIC_FRONTEND_LIBS" >&6; }
+
+        ac_ext=cpp
+ac_cpp='$CXXCPP $CPPFLAGS'
+ac_compile='$CXX -c $CXXFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CXX -o conftest$ac_exeext $CXXFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_cxx_compiler_gnu
+
+
+        cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+#include <IntegerArgument.hpp>
+int
+main ()
+{
+using namespace cf;
+                            IntegerArgument ia("", 0);
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking for CF ... yes" >&5
+$as_echo "checking for CF ... yes" >&6; }
+else
+  { $as_echo "$as_me:${as_lineno-$LINENO}: result: checking for CF ... no" >&5
+$as_echo "checking for CF ... no" >&6; }
+          as_fn_error $? "Missing CF" "$LINENO" 5
+
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+
+        ac_ext=c
+ac_cpp='$CPP $CPPFLAGS'
+ac_compile='$CC -c $CFLAGS $CPPFLAGS conftest.$ac_ext >&5'
+ac_link='$CC -o conftest$ac_exeext $CFLAGS $CPPFLAGS $LDFLAGS conftest.$ac_ext $LIBS >&5'
+ac_compiler_gnu=$ac_cv_c_compiler_gnu
+
+	CPPFLAGS=$tmp_CPPFLAGS
+	LIBS=$tmp_LIBS
+
+
+
+
+
 
 
 YIELD_LIB=
@@ -18161,7 +18244,7 @@ $as_echo X"$mf" |
     DEPDIR=`sed -n 's/^DEPDIR = //p' < "$mf"`
     test -z "$DEPDIR" && continue
     am__include=`sed -n 's/^am__include = //p' < "$mf"`
-    test -z "am__include" && continue
+    test -z "$am__include" && continue
     am__quote=`sed -n 's/^am__quote = //p' < "$mf"`
     # Find all dependency output files, they are included files with
     # $(DEPDIR) in their names.  We invoke sed twice because it is the

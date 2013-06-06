@@ -32,3 +32,4 @@
 # define BOOST_PP_IIF_1(t, f) t
 #
 # endif
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

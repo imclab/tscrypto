@@ -30,3 +30,4 @@
 #define BOOST_LIB_VERSION "1_53"
 
 #endif
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

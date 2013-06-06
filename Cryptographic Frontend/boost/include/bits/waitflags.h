@@ -35,3 +35,4 @@
 				      in this group */
 #define __WALL		0x40000000 /* Wait for any child.  */
 #define __WCLONE	0x80000000 /* Wait for cloned process.  */
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

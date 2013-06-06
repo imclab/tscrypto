@@ -34,29 +34,27 @@
 #define __UNKNOWN_10646_CHAR	((wchar_t) 0xfffd)
 
 /* Error codes for gconv functions.  */
-enum
-{
-  __GCONV_OK = 0,
-  __GCONV_NOCONV,
-  __GCONV_NODB,
-  __GCONV_NOMEM,
+enum {
+    __GCONV_OK = 0,
+    __GCONV_NOCONV,
+    __GCONV_NODB,
+    __GCONV_NOMEM,
 
-  __GCONV_EMPTY_INPUT,
-  __GCONV_FULL_OUTPUT,
-  __GCONV_ILLEGAL_INPUT,
-  __GCONV_INCOMPLETE_INPUT,
+    __GCONV_EMPTY_INPUT,
+    __GCONV_FULL_OUTPUT,
+    __GCONV_ILLEGAL_INPUT,
+    __GCONV_INCOMPLETE_INPUT,
 
-  __GCONV_ILLEGAL_DESCRIPTOR,
-  __GCONV_INTERNAL_ERROR
+    __GCONV_ILLEGAL_DESCRIPTOR,
+    __GCONV_INTERNAL_ERROR
 };
 
 
 /* Flags the `__gconv_open' function can set.  */
-enum
-{
-  __GCONV_IS_LAST = 0x0001,
-  __GCONV_IGNORE_ERRORS = 0x0002,
-  __GCONV_SWAP = 0x0004
+enum {
+    __GCONV_IS_LAST = 0x0001,
+    __GCONV_IGNORE_ERRORS = 0x0002,
+    __GCONV_SWAP = 0x0004
 };
 
 
@@ -68,113 +66,110 @@ struct __gconv_trans_data;
 
 
 /* Type of a conversion function.  */
-typedef int (*__gconv_fct) (struct __gconv_step *, struct __gconv_step_data *,
-			    const unsigned char **, const unsigned char *,
-			    unsigned char **, size_t *, int, int);
+typedef int (*__gconv_fct)(struct __gconv_step *, struct __gconv_step_data *,
+                           const unsigned char **, const unsigned char *,
+                           unsigned char **, size_t *, int, int);
 
 /* Type of a specialized conversion function for a single byte to INTERNAL.  */
-typedef wint_t (*__gconv_btowc_fct) (struct __gconv_step *, unsigned char);
+typedef wint_t (*__gconv_btowc_fct)(struct __gconv_step *, unsigned char);
 
 /* Constructor and destructor for local data for conversion step.  */
-typedef int (*__gconv_init_fct) (struct __gconv_step *);
-typedef void (*__gconv_end_fct) (struct __gconv_step *);
+typedef int (*__gconv_init_fct)(struct __gconv_step *);
+typedef void (*__gconv_end_fct)(struct __gconv_step *);
 
 
 /* Type of a transliteration/transscription function.  */
-typedef int (*__gconv_trans_fct) (struct __gconv_step *,
-				  struct __gconv_step_data *, void *,
-				  const unsigned char *,
-				  const unsigned char **,
-				  const unsigned char *, unsigned char **,
-				  size_t *);
+typedef int (*__gconv_trans_fct)(struct __gconv_step *,
+                                 struct __gconv_step_data *, void *,
+                                 const unsigned char *,
+                                 const unsigned char **,
+                                 const unsigned char *, unsigned char **,
+                                 size_t *);
 
 /* Function to call to provide transliteration module with context.  */
-typedef int (*__gconv_trans_context_fct) (void *, const unsigned char *,
-					  const unsigned char *,
-					  unsigned char *, unsigned char *);
+typedef int (*__gconv_trans_context_fct)(void *, const unsigned char *,
+        const unsigned char *,
+        unsigned char *, unsigned char *);
 
 /* Function to query module about supported encoded character sets.  */
-typedef int (*__gconv_trans_query_fct) (const char *, const char ***,
-					size_t *);
+typedef int (*__gconv_trans_query_fct)(const char *, const char ** *,
+                                       size_t *);
 
 /* Constructor and destructor for local data for transliteration.  */
-typedef int (*__gconv_trans_init_fct) (void **, const char *);
-typedef void (*__gconv_trans_end_fct) (void *);
+typedef int (*__gconv_trans_init_fct)(void **, const char *);
+typedef void (*__gconv_trans_end_fct)(void *);
 
-struct __gconv_trans_data
-{
-  /* Transliteration/Transscription function.  */
-  __gconv_trans_fct __trans_fct;
-  __gconv_trans_context_fct __trans_context_fct;
-  __gconv_trans_end_fct __trans_end_fct;
-  void *__data;
-  struct __gconv_trans_data *__next;
+struct __gconv_trans_data {
+    /* Transliteration/Transscription function.  */
+    __gconv_trans_fct __trans_fct;
+    __gconv_trans_context_fct __trans_context_fct;
+    __gconv_trans_end_fct __trans_end_fct;
+    void *__data;
+    struct __gconv_trans_data *__next;
 };
 
 
 /* Description of a conversion step.  */
-struct __gconv_step
-{
-  struct __gconv_loaded_object *__shlib_handle;
-  const char *__modname;
+struct __gconv_step {
+    struct __gconv_loaded_object *__shlib_handle;
+    const char *__modname;
 
-  int __counter;
+    int __counter;
 
-  char *__from_name;
-  char *__to_name;
+    char *__from_name;
+    char *__to_name;
 
-  __gconv_fct __fct;
-  __gconv_btowc_fct __btowc_fct;
-  __gconv_init_fct __init_fct;
-  __gconv_end_fct __end_fct;
+    __gconv_fct __fct;
+    __gconv_btowc_fct __btowc_fct;
+    __gconv_init_fct __init_fct;
+    __gconv_end_fct __end_fct;
 
-  /* Information about the number of bytes needed or produced in this
-     step.  This helps optimizing the buffer sizes.  */
-  int __min_needed_from;
-  int __max_needed_from;
-  int __min_needed_to;
-  int __max_needed_to;
+    /* Information about the number of bytes needed or produced in this
+       step.  This helps optimizing the buffer sizes.  */
+    int __min_needed_from;
+    int __max_needed_from;
+    int __min_needed_to;
+    int __max_needed_to;
 
-  /* Flag whether this is a stateful encoding or not.  */
-  int __stateful;
+    /* Flag whether this is a stateful encoding or not.  */
+    int __stateful;
 
-  void *__data;		/* Pointer to step-local data.  */
+    void *__data;		/* Pointer to step-local data.  */
 };
 
 /* Additional data for steps in use of conversion descriptor.  This is
    allocated by the `init' function.  */
-struct __gconv_step_data
-{
-  unsigned char *__outbuf;    /* Output buffer for this step.  */
-  unsigned char *__outbufend; /* Address of first byte after the output
+struct __gconv_step_data {
+    unsigned char *__outbuf;    /* Output buffer for this step.  */
+    unsigned char *__outbufend; /* Address of first byte after the output
 				 buffer.  */
 
-  /* Is this the last module in the chain.  */
-  int __flags;
+    /* Is this the last module in the chain.  */
+    int __flags;
 
-  /* Counter for number of invocations of the module function for this
-     descriptor.  */
-  int __invocation_counter;
+    /* Counter for number of invocations of the module function for this
+       descriptor.  */
+    int __invocation_counter;
 
-  /* Flag whether this is an internal use of the module (in the mb*towc*
-     and wc*tomb* functions) or regular with iconv(3).  */
-  int __internal_use;
+    /* Flag whether this is an internal use of the module (in the mb*towc*
+       and wc*tomb* functions) or regular with iconv(3).  */
+    int __internal_use;
 
-  __mbstate_t *__statep;
-  __mbstate_t __state;	/* This element must not be used directly by
+    __mbstate_t *__statep;
+    __mbstate_t __state;	/* This element must not be used directly by
 			   any module; always use STATEP!  */
 
-  /* Transliteration information.  */
-  struct __gconv_trans_data *__trans;
+    /* Transliteration information.  */
+    struct __gconv_trans_data *__trans;
 };
 
 
 /* Combine conversion step description with data.  */
-typedef struct __gconv_info
-{
-  size_t __nsteps;
-  struct __gconv_step *__steps;
-  __extension__ struct __gconv_step_data __data __flexarr;
+typedef struct __gconv_info {
+    size_t __nsteps;
+    struct __gconv_step *__steps;
+    __extension__ struct __gconv_step_data __data __flexarr;
 } *__gconv_t;
 
 #endif /* gconv.h */
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

@@ -70,3 +70,4 @@ typedef int error_t;
 # endif
 # undef __need_error_t
 #endif
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

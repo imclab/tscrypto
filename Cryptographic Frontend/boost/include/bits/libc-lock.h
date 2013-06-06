@@ -27,9 +27,15 @@
 /* Mutex type.  */
 #if defined _LIBC || defined _IO_MTSAFE_IO
 # if (defined NOT_IN_libc && !defined IS_IN_libpthread) || !defined _LIBC
-typedef struct { pthread_mutex_t mutex; } __libc_lock_recursive_t;
+typedef struct {
+    pthread_mutex_t mutex;
+} __libc_lock_recursive_t;
 # else
-typedef struct { int lock; int cnt; void *owner; } __libc_lock_recursive_t;
+typedef struct {
+    int lock;
+    int cnt;
+    void *owner;
+} __libc_lock_recursive_t;
 # endif
 #else
 typedef struct __libc_lock_recursive_opaque__ __libc_lock_recursive_t;
@@ -152,10 +158,10 @@ typedef struct __libc_lock_recursive_opaque__ __libc_lock_recursive_t;
    cancel handling.  It does not have to be integrated with C++ since
    no C++ code is called in the middle.  The old-style handling is
    faster and the support is not going away.  */
-extern void _pthread_cleanup_push_defer (struct _pthread_cleanup_buffer *buffer,
-					 void (*routine) (void *), void *arg);
-extern void _pthread_cleanup_pop_restore (struct _pthread_cleanup_buffer *buffer,
-					  int execute);
+extern void _pthread_cleanup_push_defer(struct _pthread_cleanup_buffer *buffer,
+                                        void (*routine)(void *), void *arg);
+extern void _pthread_cleanup_pop_restore(struct _pthread_cleanup_buffer *buffer,
+        int execute);
 
 /* Start critical region with cleanup.  */
 #define __libc_cleanup_region_start(DOIT, FCT, ARG) \
@@ -190,3 +196,4 @@ extern void _pthread_cleanup_pop_restore (struct _pthread_cleanup_buffer *buffer
 #endif
 
 #endif	/* bits/libc-lock.h */
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

@@ -47,7 +47,7 @@
 
 # ifndef __ASSEMBLER__
 /* Function to get address of global `errno' variable.  */
-extern int *__errno_location (void) __THROW __attribute__ ((__const__));
+extern int *__errno_location(void) __THROW __attribute__((__const__));
 
 #  if !defined _LIBC || defined _LIBC_REENTRANT
 /* When using threads, errno is a per-thread value.  */
@@ -64,3 +64,4 @@ extern int *__errno_location (void) __THROW __attribute__ ((__const__));
 # define EILSEQ	84	/* Illegal byte sequence.  */
 # define ERANGE	34	/* Math result not representable.  */
 #endif /* !_ERRNO_H && __need_Emath */
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

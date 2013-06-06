@@ -4,8 +4,8 @@
 
 // Copyright Aleksey Gurtovoy 2000-2006
 //
-// Distributed under the Boost Software License, Version 1.0. 
-// (See accompanying file LICENSE_1_0.txt or copy at 
+// Distributed under the Boost Software License, Version 1.0.
+// (See accompanying file LICENSE_1_0.txt or copy at
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 // See http://www.boost.org/libs/mpl for documentation.
@@ -37,15 +37,17 @@
 BOOST_MPL_AUX_ADL_BARRIER_NAMESPACE_OPEN
 // 'bool' constant doesn't have 'next'/'prior' members
 template< bool C >
-struct integral_c<bool, C>
-{
+struct integral_c<bool, C> {
     BOOST_STATIC_CONSTANT(bool, value = C);
     typedef integral_c_tag tag;
     typedef integral_c type;
     typedef bool value_type;
-    operator bool() const { return this->value; }
+    operator bool() const {
+        return this->value;
+    }
 };
 BOOST_MPL_AUX_ADL_BARRIER_NAMESPACE_CLOSE
 #endif
 
 #endif // BOOST_MPL_INTEGRAL_C_HPP_INCLUDED
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

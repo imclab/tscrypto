@@ -15,7 +15,7 @@ RabbitConnection::~RabbitConnection()
     amqp_destroy_connection(connection_);
 }
 
-void RabbitConnection::send(std::string message) const
+void RabbitConnection::send(const std::string &message) const
 {
     amqp_basic_properties_t props;
     props._flags =
@@ -91,11 +91,12 @@ std::string RabbitConnection::receive() const
     return ss.str();
 }
 
-RabbitConnection::RabbitConnection(std::string host,
+RabbitConnection::RabbitConnection(const std::string &host,
                                    int port,
-                                   std::string exchange,
-                                   std::string routingKey,
+                                   const std::string &exchange,
+                                   const std::string &routingKey,
                                    amqp_channel_t channel)
+    : channel_(channel), exchange_(exchange), routingKey_(routingKey)
 {
     sockFd_ = amqp_open_socket(host.c_str(), port);
 
@@ -106,7 +107,6 @@ RabbitConnection::RabbitConnection(std::string host,
     amqp_set_sockfd(connection_, sockFd_);
     amqp_login(connection_, "/", 0, 131072, 0, AMQP_SASL_METHOD_PLAIN, "guest", "guest");
 
-    channel_ = channel;
     amqp_channel_open(connection_, channel_);
 
     amqp_queue_declare_ok_t *r =
@@ -116,9 +116,6 @@ RabbitConnection::RabbitConnection(std::string host,
     if (replyToQueue_.bytes == nullptr)
         throw std::bad_alloc();
 
-
-    exchange_ = exchange;
-    routingKey_ = routingKey;
-
 }
 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

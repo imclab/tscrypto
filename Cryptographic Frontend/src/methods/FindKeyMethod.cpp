@@ -7,7 +7,7 @@
 #include <json/json.h>
 
 cf::FindKeyMethod::FindKeyMethod(std::string keyType, std::string id)
-: Method("FindKey")
+    : Method("FindKey")
 {
     if (keyType == "privateKey")
         privateKey_ = true;
@@ -15,25 +15,27 @@ cf::FindKeyMethod::FindKeyMethod(std::string keyType, std::string id)
         privateKey_ = false;
     else
         throw std::runtime_error("Tipo de llave desconocido");
-    
+
     addArgument(ArgumentPtr(new StringArgument("keyType", keyType)));
     addArgument(ArgumentPtr(new StringArgument("id", id)));
 }
 
 cf::ResponseMessageStrategy cf::FindKeyMethod::getStrategy() const
-{ // Una verdadera clausura, captura todo el objeto =)...
-    return [this](std::string const& message) -> ResponseMessagePtr {
+{
+    // Una verdadera clausura, captura todo el objeto =)...
+    return [this](std::string const & message) -> ResponseMessagePtr {
         Json::Value json;
         Json::Reader reader;
-        
+
         reader.parse(message, json);
         ResponseMessagePtr response(new ResponseMessage());
-        
+
         if (privateKey_)
             response->setValue("handler", json["handler"].asInt());
         else
             response->setValue("key", json["key"].asString());
-        
+
         return std::move(response);
     };
 }
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

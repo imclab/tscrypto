@@ -15,3 +15,4 @@
 # include <boost/preprocessor/punctuation/comma_if.hpp>
 #
 # endif
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

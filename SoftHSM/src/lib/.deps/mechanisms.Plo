@@ -1,6 +1,6 @@
 mechanisms.lo: mechanisms.cpp /usr/include/stdc-predef.h mechanisms.h \
  cryptoki.h cryptoki_compat/pkcs11.h \
- /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/include/stddef.h log.h \
+ /usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.1/include/stddef.h log.h \
  ../../config.h
 
 /usr/include/stdc-predef.h:
@@ -11,7 +11,7 @@ cryptoki.h:
 
 cryptoki_compat/pkcs11.h:
 
-/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.0/include/stddef.h:
+/usr/lib/gcc/x86_64-unknown-linux-gnu/4.8.1/include/stddef.h:
 
 log.h:
 

@@ -3,7 +3,7 @@
 #include <ResponseMessage.hpp>
 #include <Argument.hpp>
 
-cf::Method::Method(std::string name)
+cf::Method::Method(const std::string &name)
     : message_(name)
 {
 }
@@ -22,3 +22,4 @@ cf::ResponseMessagePtr cf::Method::getResponse()
 {
     return cf::ResponseMessage::responseMessageFactory(response_, getStrategy());
 }
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

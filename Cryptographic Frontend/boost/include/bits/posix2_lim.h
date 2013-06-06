@@ -88,3 +88,4 @@
 #define	RE_DUP_MAX (0x7fff)
 
 #endif	/* bits/posix2_lim.h */
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

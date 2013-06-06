@@ -55,13 +55,11 @@ typedef unsigned long int __u_quad_t;
 __extension__ typedef long long int __quad_t;
 __extension__ typedef unsigned long long int __u_quad_t;
 #else
-typedef struct
-{
-  long __val[2];
+typedef struct {
+    long __val[2];
 } __quad_t;
-typedef struct
-{
-  __u_long __val[2];
+typedef struct {
+    __u_long __val[2];
 } __u_quad_t;
 #endif
 
@@ -201,3 +199,4 @@ __STD_TYPE __U32_TYPE __socklen_t;
 #undef __STD_TYPE
 
 #endif /* bits/types.h */
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

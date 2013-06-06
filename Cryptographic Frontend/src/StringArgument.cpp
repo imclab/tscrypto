@@ -3,7 +3,7 @@
 
 using namespace cf;
 
-StringArgument::StringArgument(std::string name, std::string value)
+StringArgument::StringArgument(const std::string &name, const std::string &value)
     : Argument(name), value_(value)
 {
 }
@@ -19,3 +19,4 @@ std::string StringArgument::value()
 {
     return value_;
 }
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

@@ -3,7 +3,7 @@
 
 using namespace cf;
 
-Argument::Argument(std::string name)
+Argument::Argument(const std::string &name)
     : name_(name)
 {
 }
@@ -14,3 +14,5 @@ std::string Argument::getName()
 {
     return name_;
 }
+
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

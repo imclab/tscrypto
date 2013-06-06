@@ -38,3 +38,4 @@ typedef int __jmp_buf[6];
 #endif
 
 #endif  /* bits/setjmp.h */
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

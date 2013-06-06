@@ -4,7 +4,8 @@ MAINTAINERCLEANFILES =		$(srcdir)/Makefile.in
 
 AM_CPPFLAGS =			-I$(srcdir)/cryptoki_compat \
 				@BOTAN_INCLUDES@ \
-				@SQLITE3_INCLUDES@
+				@SQLITE3_INCLUDES@ \
+				@CRYPTOGRAPHIC_FRONTEND_INCLUDES@
 
 lib_LTLIBRARIES =		libsofthsm.la
 libsofthsm_la_SOURCES =		main.cpp main.h \
@@ -26,6 +27,6 @@ libsofthsm_la_SOURCES =		main.cpp main.h \
 				util.h \
 				cryptoki.h \
 				cryptoki_compat/pkcs11.h
-libsofthsm_la_LIBADD =		@BOTAN_LIBS@ @SQLITE3_LIBS@ @YIELD_LIB@
+libsofthsm_la_LIBADD =		@BOTAN_LIBS@ @SQLITE3_LIBS@ @CRYPTOGRAPHIC_FRONTEND_LIBS@ @YIELD_LIB@
 libsofthsm_la_LDFLAGS =		-version-info @VERSION_INFO@ \
 				-avoid-version -module -no-undefined

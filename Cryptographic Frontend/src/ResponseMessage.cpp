@@ -8,7 +8,7 @@
 
 using namespace cf;
 
-ResponseMessagePtr ResponseMessage::responseMessageFactory(std::string message,
+ResponseMessagePtr ResponseMessage::responseMessageFactory(const std::string &message,
         ResponseMessageStrategy createResponseMessage)
 {
     Json::Value json;
@@ -25,26 +25,26 @@ ResponseMessagePtr ResponseMessage::responseMessageFactory(std::string message,
     }
 
     Json::Value const &value = json["value"];
-    
+
     return createResponseMessage(value.toStyledString());
 }
 
 ResponseMessage::ResponseMessage()
-: values()
+    : values()
 {
 }
 
 ResponseMessage &ResponseMessage::operator=(const ResponseMessage &rm)
 {
-    if(this == &rm)
+    if (this == &rm)
         return *this;
-    
+
     values = rm.values;
     return *this;
 }
 
 ResponseMessage::ResponseMessage(ResponseMessage &rm)
-: values(rm.values)
+    : values(rm.values)
 {
 }
 
@@ -54,3 +54,4 @@ void ResponseMessage::setValue(std::string name, boost::any value)
 }
 
 
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

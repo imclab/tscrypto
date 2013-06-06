@@ -35,3 +35,4 @@
 #define BOOST_NO_STD_MESSAGES
 
 //  --- end ---
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

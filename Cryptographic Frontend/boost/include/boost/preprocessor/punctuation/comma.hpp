@@ -19,3 +19,4 @@
 # define BOOST_PP_COMMA() ,
 #
 # endif
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
