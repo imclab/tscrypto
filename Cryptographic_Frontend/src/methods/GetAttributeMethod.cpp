@@ -9,16 +9,11 @@
 
 #include <json/json.h>
 
-cf::GetAttributeMethod::GetAttributeMethod(std::string label,
-        std::string id,
-        std::string keyType,
-        int keySize)
+cf::GetAttributeMethod::GetAttributeMethod(std::string attribute, int handler)
     : Method("GetAttribute")
 {
-    addArgument(ArgumentPtr(new StringArgument("label", label)));
-    addArgument(ArgumentPtr(new StringArgument("id", id)));
-    addArgument(ArgumentPtr(new StringArgument("keyType", keyType)));
-    addArgument(ArgumentPtr(new IntegerArgument("keySize", keySize)));
+    addArgument(ArgumentPtr(new StringArgument("attribute", attribute)));
+    addArgument(ArgumentPtr(new IntegerArgument("handler", handler)));
 }
 
 cf::ResponseMessageStrategy cf::GetAttributeMethod::getStrategy() const

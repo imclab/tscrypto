@@ -181,6 +181,9 @@ extern "C" {
 #define unlock_mutex UnlockMutex
 #define reserved pReserved
 
+/* Added by Francisco Cifuentes */
+/* TODO: Agregar todos los parametros necesarios para initializar el sistema */
+
 #endif	/* CRYPTOKI_COMPAT */
 
 typedef unsigned long ck_flags_t;
@@ -1103,6 +1106,8 @@ struct ck_c_initialize_args
   ck_unlockmutex_t unlock_mutex;
   ck_flags_t flags;
   void *reserved;
+  
+  /* TODO: Agregar todos los parametros para inicializar el sistema remoto */
 };
 
 

@@ -11,7 +11,7 @@ private:
 protected:
     virtual ResponseMessageStrategy getStrategy() const override;
 public:
-    FindKeyMethod(std::string keyType, std::string id);
+    FindKeyMethod(int handler);
 };
 
 }

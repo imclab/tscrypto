@@ -14,8 +14,7 @@ class GetAttributeMethod : public Method
 protected:
     virtual ResponseMessageStrategy getStrategy() const override;
 public:
-    GetAttributeMethod(std::string label, std::string id, std::string keyType,
-                       int keySize);
+    GetAttributeMethod(std::string attribute, int handler);
 
 };
 

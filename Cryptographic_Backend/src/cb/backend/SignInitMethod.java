@@ -9,7 +9,7 @@ import com.google.gson.Gson;
 public class SignInitMethod implements Method {
 	public static class Args {
 		public String mechanism;
-		public int privateKeyHandler;
+		public int handler;
 	}
 	private String mechanism;
 	private int privateKeyHandler;
@@ -21,7 +21,7 @@ public class SignInitMethod implements Method {
 	
 	public SignInitMethod(Args args) {
 		this.mechanism = args.mechanism;
-		this.privateKeyHandler = args.privateKeyHandler;
+		this.privateKeyHandler = args.handler;
 	}
 	
 	@Override
@@ -35,10 +35,7 @@ public class SignInitMethod implements Method {
 				signer.init(mechanism, pk);
 				return ResponseMessage.OKMessage(null);
 			} 
-			catch (InvalidKeyException e) {
-				return ResponseMessage.ErrorMessage(e.getLocalizedMessage());
-			}
-			catch (NoSuchAlgorithmException e) {
+			catch (InvalidKeyException | NoSuchAlgorithmException e) {
 				return ResponseMessage.ErrorMessage(e.getLocalizedMessage());
 			}
 
@@ -52,8 +49,7 @@ public class SignInitMethod implements Method {
 		ResponseMessage rm;
 		GenerateKeyPairMethod.ReturnValue rv;
 		Gson gson = new Gson();
-		GenerateKeyPairMethod gkpm = 
-				new GenerateKeyPairMethod("hola", "mundo", "RSA", 1024);
+		GenerateKeyPairMethod gkpm = new GenerateKeyPairMethod("RSA", 1024);
 		SignInitMethod sim;
 		
 		rm = gkpm.execute();
@@ -61,7 +57,7 @@ public class SignInitMethod implements Method {
 		if (rm.getReturnCode().equals("OK")) {
 			rv = gson.fromJson (rm.getValue(), GenerateKeyPairMethod.ReturnValue.class);
 			
-			sim = new SignInitMethod("SHA1withRSA", rv.privateKeyHandler);
+			sim = new SignInitMethod("SHA1withRSA", rv.handler);
 			rm = sim.execute();
 			System.out.println(rm);
 			

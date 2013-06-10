@@ -15,16 +15,14 @@ int main()
 {
     try {
         RabbitConnection connection("localhost", 5672, "", "rpc_queue", 1);
-        std::unique_ptr<Method> method(new GenerateKeyPairMethod("label", "id", "RSA", 1024, "65537"));
+        std::unique_ptr<Method> method(new GenerateKeyPairMethod("RSA", 1024, "65537"));
         method->execute(connection);
         ResponseMessagePtr response(method->getResponse());
 
-        // Esta interfaz probablemente cambiará a algo mejor, pero por mientras sirve...
-        int pkHandler = response->getValue<int>("publicKeyHandler");
-        std::cout << pkHandler << std::endl;
+        int handler = response->getValue<int>("handler");
+        std::cout << handler << std::endl;
 
-
-        method.reset(new SignInitMethod("SHA1withRSA", response->getValue<int>("privateKeyHandler")));
+        method.reset(new SignInitMethod("SHA1withRSA", handler));
         method->execute(connection);
         response.reset(method->getResponse().release());
         std::cout << "OK!" << std::endl;
@@ -34,7 +32,7 @@ int main()
         response.reset(method->getResponse().release());
         std::cout << response->getValue<std::string>("signedData") << std::endl;
 
-        method.reset(new FindKeyMethod("publicKey", "id"));
+        method.reset(new FindKeyMethod(handler));
         method->execute(connection);
         response.reset(method->getResponse().release());
         std::cout << response->getValue<std::string>("key") << std::endl;

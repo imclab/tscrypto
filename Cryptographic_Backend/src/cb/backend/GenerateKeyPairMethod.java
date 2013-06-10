@@ -14,24 +14,20 @@ import java.security.spec.RSAKeyGenParameterSpec;
 public class GenerateKeyPairMethod implements Method {
 
   public static class ReturnValue {
-
-    public int publicKeyHandler;
-    public int privateKeyHandler;
+    public int handler;
   }
 
   public static class Args {
-    public String label, id, keyType;
+    public String keyType;
     public int keySize;
     public String publicExponent;
   }
-  private String label, id, keyType;
+  private String keyType;
   private int keySize;
   private String publicExponent;
   private KeyStorage ks;
 
-  public GenerateKeyPairMethod(String label, String id, String keyType, int keySize) {
-    this.label = label;
-    this.id = id;
+  public GenerateKeyPairMethod(String keyType, int keySize) {
     this.keyType = keyType;
     this.keySize = keySize;
     this.publicExponent = "65537";
@@ -40,8 +36,6 @@ public class GenerateKeyPairMethod implements Method {
   }
 
   public GenerateKeyPairMethod(Args args) {
-    this.label = args.label;
-    this.id = args.id;
     this.keyType = args.keyType;
     this.keySize = args.keySize;
     this.publicExponent = args.publicExponent;
@@ -65,10 +59,10 @@ public class GenerateKeyPairMethod implements Method {
       kpg.initialize(rsaParams, random);
 
       KeyPair pair = kpg.generateKeyPair();
-      int handler = ks.storeKeyPair(id, label, keyType, keySize, pair);
+      int handler = ks.storeKeyPair(keyType, keySize, pair);
 
       // Defino el return value, para ser luego serializado en json.
-      rv.privateKeyHandler = rv.publicKeyHandler = handler;
+      rv.handler = handler;
 
       ResponseMessage rm = ResponseMessage.OKMessage(gson.toJson(rv));
       return rm;
@@ -79,8 +73,7 @@ public class GenerateKeyPairMethod implements Method {
   }
 
   public static void main(String[] args) {
-    GenerateKeyPairMethod gkpm =
-            new GenerateKeyPairMethod("hola", "mundo", "RSA", 1024);
+    GenerateKeyPairMethod gkpm = new GenerateKeyPairMethod("RSA", 1024);
     ResponseMessage rm = gkpm.execute();
     System.out.println(rm);
   }

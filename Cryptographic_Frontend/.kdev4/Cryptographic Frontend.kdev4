@@ -8,7 +8,7 @@ Current Build Directory Index=0
 ProjectRootRelative=./
 
 [CMake][CMake Build Directory 0]
-Build Directory Path=file:///home/franchoco/git/tcb-pkcs11/Cryptographic%20Frontend/build
+Build Directory Path=file:///home/franchoco/git/tcb-pkcs11/Cryptographic_Frontend/build
 Build Type=Debug
 CMake Binary=file:///usr/bin/cmake
 Environment Profile=

@@ -39,7 +39,7 @@ public class SignMethod implements Method {
 		GenerateKeyPairMethod.ReturnValue rv;
 		Gson gson = new Gson();
 		GenerateKeyPairMethod gkpm = 
-				new GenerateKeyPairMethod("hola", "mundo", "RSA", 1024);
+				new GenerateKeyPairMethod("RSA", 1024);
 		SignInitMethod sim;
 		SignMethod sm;
 		
@@ -48,7 +48,7 @@ public class SignMethod implements Method {
 		if (rm.getReturnCode().equals("OK")) {
 			rv = gson.fromJson (rm.getValue(), GenerateKeyPairMethod.ReturnValue.class);
 			
-			sim = new SignInitMethod("SHA1withRSA", rv.privateKeyHandler);
+			sim = new SignInitMethod("SHA1withRSA", rv.handler);
 			rm = sim.execute();
 			System.out.println(rm);
 			

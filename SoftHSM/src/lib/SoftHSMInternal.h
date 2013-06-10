@@ -90,6 +90,8 @@ class SoftHSMInternal {
     int openSessions;
     SoftSession *sessions[MAX_SESSION_COUNT];
     Mutex* sessionsMutex;
+    
+    /* TODO: Agregar los parametros de conexión */
 
     char appID[32];
 };

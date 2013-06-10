@@ -8,7 +8,7 @@ cf::SignInitMethod::SignInitMethod(std::string mechanism, int privateKeyHandler)
     : Method("SignInit")
 {
     addArgument(ArgumentPtr(new StringArgument("mechanism", mechanism)));
-    addArgument(ArgumentPtr(new IntegerArgument("privateKeyHandler", privateKeyHandler)));
+    addArgument(ArgumentPtr(new IntegerArgument("handler", privateKeyHandler)));
 }
 
 
