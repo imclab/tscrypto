@@ -6,7 +6,7 @@
 #ifndef GenerateKeyPairMethod_HPP
 #define GenerateKeyPairMethod_HPP
 
-#include <Method.hpp>
+#include "Method.hpp"
 
 #include <string>
 #include <memory>

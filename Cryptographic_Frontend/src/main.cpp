@@ -27,7 +27,7 @@ int main()
         response.reset(method->getResponse().release());
         std::cout << "OK!" << std::endl;
 
-        method.reset(new SignMethod("FFAACCDDBB009966"));
+        method.reset(new SignMethod("SG9sYSBNdW5kbyE="));
         method->execute(connection);
         response.reset(method->getResponse().release());
         std::cout << response->getValue<std::string>("signedData") << std::endl;

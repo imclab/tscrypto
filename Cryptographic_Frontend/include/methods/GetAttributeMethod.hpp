@@ -5,7 +5,7 @@
 #ifndef GETATTRIBUTEMETHOD_H
 #define GETATTRIBUTEMETHOD_H
 
-#include <Method.hpp>
+#include "Method.hpp"
 namespace cf
 {
 

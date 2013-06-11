@@ -1,8 +1,8 @@
-#include <methods/SignInitMethod.hpp>
-#include <ResponseMessage.hpp>
+#include "methods/SignInitMethod.hpp"
+#include "ResponseMessage.hpp"
 
-#include <StringArgument.hpp>
-#include <IntegerArgument.hpp>
+#include "StringArgument.hpp"
+#include "IntegerArgument.hpp"
 
 cf::SignInitMethod::SignInitMethod(std::string mechanism, int privateKeyHandler)
     : Method("SignInit")

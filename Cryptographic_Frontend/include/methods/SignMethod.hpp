@@ -1,6 +1,6 @@
 #ifndef SIGNMETHOD_H
 #define SIGNMETHOD_H
-#include <Method.hpp>
+#include "Method.hpp"
 
 namespace cf
 {

@@ -1,7 +1,7 @@
 #ifndef SIGNINITMETHOD_H
 #define SIGNINITMETHOD_H
 
-#include <Method.hpp>
+#include "Method.hpp"
 
 namespace cf
 {

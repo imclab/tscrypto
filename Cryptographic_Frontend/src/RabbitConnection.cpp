@@ -2,7 +2,7 @@
 #include <amqp_framing.h>
 #include <exception>
 #include <sstream>
-#include <RabbitConnection.hpp>
+#include "RabbitConnection.hpp"
 
 using namespace cf;
 

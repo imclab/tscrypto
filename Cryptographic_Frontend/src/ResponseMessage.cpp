@@ -2,7 +2,7 @@
  * @author Francisco Cifuentes [francisco@niclabs.cl]
  */
 
-#include <ResponseMessage.hpp>
+#include "ResponseMessage.hpp"
 #include <json/json.h>
 #include <stdexcept>
 

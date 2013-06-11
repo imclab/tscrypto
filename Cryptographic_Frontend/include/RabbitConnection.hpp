@@ -5,7 +5,7 @@
 
 #ifndef RabbitConnection_H_
 #define RabbitConnection_H_
-#include <Connection.hpp>
+#include "Connection.hpp"
 #include <amqp.h>
 
 namespace cf

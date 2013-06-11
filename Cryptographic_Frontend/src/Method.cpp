@@ -1,7 +1,7 @@
-#include <Method.hpp>
-#include <Connection.hpp>
-#include <ResponseMessage.hpp>
-#include <Argument.hpp>
+#include "Method.hpp"
+#include "Connection.hpp"
+#include "ResponseMessage.hpp"
+#include "Argument.hpp"
 
 cf::Method::Method(const std::string &name)
     : message_(name)

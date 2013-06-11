@@ -1,8 +1,8 @@
-#include <methods/GenerateKeyPairMethod.hpp>
+#include "methods/GenerateKeyPairMethod.hpp"
 
-#include <StringArgument.hpp>
-#include <IntegerArgument.hpp>
-#include <ResponseMessage.hpp>
+#include "StringArgument.hpp"
+#include "IntegerArgument.hpp"
+#include "ResponseMessage.hpp"
 #include <json/json.h>
 
 using namespace cf;

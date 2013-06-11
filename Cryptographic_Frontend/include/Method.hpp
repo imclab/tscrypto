@@ -9,7 +9,7 @@
 #include <string>
 #include <stdexcept>
 
-#include <MethodMessage.hpp>
+#include "MethodMessage.hpp"
 
 
 namespace cf

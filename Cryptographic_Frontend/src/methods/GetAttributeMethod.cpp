@@ -2,10 +2,10 @@
  * @author Francisco Cifuentes [francisco@niclabs.cl]
  */
 
-#include <methods/GetAttributeMethod.hpp>
-#include <StringArgument.hpp>
-#include <IntegerArgument.hpp>
-#include <ResponseMessage.hpp>
+#include "methods/GetAttributeMethod.hpp"
+#include "StringArgument.hpp"
+#include "IntegerArgument.hpp"
+#include "ResponseMessage.hpp"
 
 #include <json/json.h>
 
