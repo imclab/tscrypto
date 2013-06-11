@@ -10,6 +10,7 @@ import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Random;
+import javax.xml.bind.DatatypeConverter;
 
 public class MapKeyStorage implements KeyStorage {
 
@@ -35,8 +36,8 @@ public class MapKeyStorage implements KeyStorage {
     String[] vals = {
       keyType,
       Integer.toString(keySize),
-      Signer.bytesToHex(publicSpec.getEncoded()),
-      Signer.bytesToHex(privateSpec.getEncoded())
+      DatatypeConverter.printBase64Binary(publicSpec.getEncoded()),
+      DatatypeConverter.printBase64Binary(privateSpec.getEncoded())
     };
 
     Random random = new Random();
@@ -53,7 +54,7 @@ public class MapKeyStorage implements KeyStorage {
   @Override
   public PrivateKey getPrivateKey(int _handler) {
     Integer handler = _handler;
-    byte[] byteKey = Signer.hexToBytes(store.get(handler)[3]);
+    byte[] byteKey = DatatypeConverter.parseBase64Binary(store.get(handler)[3]);
     PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(byteKey);
 
     try {
@@ -68,7 +69,7 @@ public class MapKeyStorage implements KeyStorage {
   @Override
   public PublicKey getPublicKey(int _handler) {
     Integer handler = _handler;
-    byte[] byteKey = Signer.hexToBytes(store.get(new Integer(handler))[2]);
+    byte[] byteKey = DatatypeConverter.parseBase64Binary(store.get(handler)[2]);
     X509EncodedKeySpec spec = new X509EncodedKeySpec(byteKey);
 
     try {
