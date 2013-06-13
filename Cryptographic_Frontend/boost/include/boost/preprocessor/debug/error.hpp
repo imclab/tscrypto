@@ -31,4 +31,3 @@
 # define BOOST_PP_ERROR_0x0007 BOOST_PP_ERROR(0x0007, BOOST_PP_DIVISION_BY_ZERO)
 #
 # endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

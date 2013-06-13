@@ -114,11 +114,11 @@
 
 #endif	/* !_LIBC_LIMITS_H_ */
 
-/* Get the compiler's limits.h, which defines almost all the ISO constants.
+ /* Get the compiler's limits.h, which defines almost all the ISO constants.
 
-   We put this #include_next outside the double inclusion check because
-   it should be possible to include this file more than once and still get
-   the definitions from gcc's header.  */
+    We put this #include_next outside the double inclusion check because
+    it should be possible to include this file more than once and still get
+    the definitions from gcc's header.  */
 #if defined __GNUC__ && !defined _GCC_LIMITS_H_
 /* `_GCC_LIMITS_H_' is what GCC's file defines.  */
 # include_next <limits.h>
@@ -151,4 +151,3 @@
 #ifdef	__USE_XOPEN
 # include <bits/xopen_lim.h>
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

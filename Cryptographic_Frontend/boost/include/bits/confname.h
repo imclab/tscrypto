@@ -22,7 +22,8 @@
 #endif
 
 /* Values for the NAME argument to `pathconf' and `fpathconf'.  */
-enum {
+enum
+  {
     _PC_LINK_MAX,
 #define	_PC_LINK_MAX			_PC_LINK_MAX
     _PC_MAX_CANON,
@@ -65,10 +66,11 @@ enum {
 #define _PC_SYMLINK_MAX			_PC_SYMLINK_MAX
     _PC_2_SYMLINKS
 #define _PC_2_SYMLINKS			_PC_2_SYMLINKS
-};
+  };
 
 /* Values for the argument to `sysconf'.  */
-enum {
+enum
+  {
     _SC_ARG_MAX,
 #define	_SC_ARG_MAX			_SC_ARG_MAX
     _SC_CHILD_MAX,
@@ -526,10 +528,11 @@ enum {
 #define _SC_THREAD_ROBUST_PRIO_INHERIT	_SC_THREAD_ROBUST_PRIO_INHERIT
     _SC_THREAD_ROBUST_PRIO_PROTECT
 #define _SC_THREAD_ROBUST_PRIO_PROTECT	_SC_THREAD_ROBUST_PRIO_PROTECT
-};
+  };
 
 /* Values for the NAME argument to `confstr'.  */
-enum {
+enum
+  {
     _CS_PATH,			/* The default search path.  */
 #define _CS_PATH		_CS_PATH
 
@@ -670,5 +673,4 @@ enum {
 #define _CS_V6_ENV			_CS_V6_ENV
     _CS_V7_ENV
 #define _CS_V7_ENV			_CS_V7_ENV
-};
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+  };

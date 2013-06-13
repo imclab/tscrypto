@@ -304,4 +304,3 @@
 # define BOOST_PP_FOR_CHECK_BOOST_PP_FOR_256(s, p, o, m) 0
 #
 # endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

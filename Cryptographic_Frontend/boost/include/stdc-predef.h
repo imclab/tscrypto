@@ -38,4 +38,3 @@
 #define __STDC_NO_THREADS__		1
 
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

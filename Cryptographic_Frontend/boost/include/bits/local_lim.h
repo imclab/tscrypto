@@ -97,4 +97,3 @@
 
 /* Maximum value the semaphore can have.  */
 #define SEM_VALUE_MAX   (2147483647)
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

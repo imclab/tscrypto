@@ -1,6 +1,6 @@
 //  Boost compiler configuration selection header file
 
-//  (C) Copyright John Maddock 2001 - 2003.
+//  (C) Copyright John Maddock 2001 - 2003. 
 //  (C) Copyright Martin Wille 2003.
 //  (C) Copyright Guillaume Melquiond 2003.
 //
@@ -11,7 +11,7 @@
 //  See http://www.boost.org/ for most recent version.
 
 // locate which compiler we are using and define
-// BOOST_COMPILER_CONFIG as needed:
+// BOOST_COMPILER_CONFIG as needed: 
 
 #if defined(__GCCXML__)
 // GCC-XML emulates other compilers, it has to appear first here!
@@ -110,4 +110,3 @@
 #  error "Unknown compiler - please configure (http://www.boost.org/libs/config/config.htm#configuring) and report the results to the main boost mailing list (http://www.boost.org/more/mailing_lists.htm#main)"
 
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

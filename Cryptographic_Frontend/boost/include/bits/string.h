@@ -72,15 +72,15 @@
 	 ? __memcpy_by2 (dest, src, n)					      \
 	 : __memcpy_g (dest, src, n))))
 
-__STRING_INLINE void *__memcpy_by4(void *__dest, const void *__src,
-                                   size_t __n);
+__STRING_INLINE void *__memcpy_by4 (void *__dest, const void *__src,
+				    size_t __n);
 
 __STRING_INLINE void *
-__memcpy_by4(void *__dest, const void *__src, size_t __n)
+__memcpy_by4 (void *__dest, const void *__src, size_t __n)
 {
-    register unsigned long int __d0, __d1;
-    register void *__tmp = __dest;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1;
+  register void *__tmp = __dest;
+  __asm__ __volatile__
     ("1:\n\t"
      "movl	(%2),%0\n\t"
      "leal	4(%2),%2\n\t"
@@ -88,21 +88,21 @@ __memcpy_by4(void *__dest, const void *__src, size_t __n)
      "leal	4(%1),%1\n\t"
      "decl	%3\n\t"
      "jnz	1b"
-     : "=&r"(__d0), "=&r"(__tmp), "=&r"(__src), "=&r"(__d1)
-     : "1"(__tmp), "2"(__src), "3"(__n / 4)
+     : "=&r" (__d0), "=&r" (__tmp), "=&r" (__src), "=&r" (__d1)
+     : "1" (__tmp), "2" (__src), "3" (__n / 4)
      : "memory", "cc");
-    return __dest;
+  return __dest;
 }
 
-__STRING_INLINE void *__memcpy_by2(void *__dest, const void *__src,
-                                   size_t __n);
+__STRING_INLINE void *__memcpy_by2 (void *__dest, const void *__src,
+				    size_t __n);
 
 __STRING_INLINE void *
-__memcpy_by2(void *__dest, const void *__src, size_t __n)
+__memcpy_by2 (void *__dest, const void *__src, size_t __n)
 {
-    register unsigned long int __d0, __d1;
-    register void *__tmp = __dest;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1;
+  register void *__tmp = __dest;
+  __asm__ __volatile__
     ("shrl	$1,%3\n\t"
      "jz	2f\n"                 /* only a word */
      "1:\n\t"
@@ -115,20 +115,20 @@ __memcpy_by2(void *__dest, const void *__src, size_t __n)
      "2:\n\t"
      "movw	(%2),%w0\n\t"
      "movw	%w0,(%1)"
-     : "=&q"(__d0), "=&r"(__tmp), "=&r"(__src), "=&r"(__d1)
-     : "1"(__tmp), "2"(__src), "3"(__n / 2)
+     : "=&q" (__d0), "=&r" (__tmp), "=&r" (__src), "=&r" (__d1)
+     : "1" (__tmp), "2" (__src), "3" (__n / 2)
      : "memory", "cc");
-    return __dest;
+  return __dest;
 }
 
-__STRING_INLINE void *__memcpy_g(void *__dest, const void *__src, size_t __n);
+__STRING_INLINE void *__memcpy_g (void *__dest, const void *__src, size_t __n);
 
 __STRING_INLINE void *
-__memcpy_g(void *__dest, const void *__src, size_t __n)
+__memcpy_g (void *__dest, const void *__src, size_t __n)
 {
-    register unsigned long int __d0, __d1, __d2;
-    register void *__tmp = __dest;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2;
+  register void *__tmp = __dest;
+  __asm__ __volatile__
     ("cld\n\t"
      "shrl	$1,%%ecx\n\t"
      "jnc	1f\n\t"
@@ -139,12 +139,12 @@ __memcpy_g(void *__dest, const void *__src, size_t __n)
      "movsw\n"
      "2:\n\t"
      "rep; movsl"
-     : "=&c"(__d0), "=&D"(__d1), "=&S"(__d2),
-     "=m"(*(struct { __extension__ char __x[__n]; } *)__dest)
-     : "0"(__n), "1"(__tmp), "2"(__src),
-     "m"(*(struct { __extension__ char __x[__n]; } *)__src)
+     : "=&c" (__d0), "=&D" (__d1), "=&S" (__d2),
+       "=m" ( *(struct { __extension__ char __x[__n]; } *)__dest)
+     : "0" (__n), "1" (__tmp), "2" (__src),
+       "m" ( *(struct { __extension__ char __x[__n]; } *)__src)
      : "cc");
-    return __dest;
+  return __dest;
 }
 
 # define _HAVE_STRING_ARCH_memmove 1
@@ -153,33 +153,33 @@ __memcpy_g(void *__dest, const void *__src, size_t __n)
    correct behavior for overlapping strings.  */
 #  define memmove(dest, src, n) __memmove_g (dest, src, n)
 
-__STRING_INLINE void *__memmove_g(void *, const void *, size_t)
-__asm__("memmove");
+__STRING_INLINE void *__memmove_g (void *, const void *, size_t)
+     __asm__ ("memmove");
 
 __STRING_INLINE void *
-__memmove_g(void *__dest, const void *__src, size_t __n)
+__memmove_g (void *__dest, const void *__src, size_t __n)
 {
-    register unsigned long int __d0, __d1, __d2;
-    register void *__tmp = __dest;
-    if (__dest < __src)
-        __asm__ __volatile__
-        ("cld\n\t"
-         "rep; movsb"
-         : "=&c"(__d0), "=&S"(__d1), "=&D"(__d2),
-         "=m"(*(struct { __extension__ char __x[__n]; } *)__dest)
-         : "0"(__n), "1"(__src), "2"(__tmp),
-         "m"(*(struct { __extension__ char __x[__n]; } *)__src));
-    else
-        __asm__ __volatile__
-        ("std\n\t"
-         "rep; movsb\n\t"
-         "cld"
-         : "=&c"(__d0), "=&S"(__d1), "=&D"(__d2),
-         "=m"(*(struct { __extension__ char __x[__n]; } *)__dest)
-         : "0"(__n), "1"(__n - 1 + (const char *) __src),
-         "2"(__n - 1 + (char *) __tmp),
-         "m"(*(struct { __extension__ char __x[__n]; } *)__src));
-    return __dest;
+  register unsigned long int __d0, __d1, __d2;
+  register void *__tmp = __dest;
+  if (__dest < __src)
+    __asm__ __volatile__
+      ("cld\n\t"
+       "rep; movsb"
+       : "=&c" (__d0), "=&S" (__d1), "=&D" (__d2),
+	 "=m" ( *(struct { __extension__ char __x[__n]; } *)__dest)
+       : "0" (__n), "1" (__src), "2" (__tmp),
+	 "m" ( *(struct { __extension__ char __x[__n]; } *)__src));
+  else
+    __asm__ __volatile__
+      ("std\n\t"
+       "rep; movsb\n\t"
+       "cld"
+       : "=&c" (__d0), "=&S" (__d1), "=&D" (__d2),
+	 "=m" ( *(struct { __extension__ char __x[__n]; } *)__dest)
+       : "0" (__n), "1" (__n - 1 + (const char *) __src),
+	 "2" (__n - 1 + (char *) __tmp),
+	 "m" ( *(struct { __extension__ char __x[__n]; } *)__src));
+  return __dest;
 }
 # endif
 
@@ -189,11 +189,11 @@ __memmove_g(void *__dest, const void *__src, size_t __n)
 #  ifndef __PIC__
 /* gcc has problems to spill registers when using PIC.  */
 __STRING_INLINE int
-memcmp(const void *__s1, const void *__s2, size_t __n)
+memcmp (const void *__s1, const void *__s2, size_t __n)
 {
-    register unsigned long int __d0, __d1, __d2;
-    register int __res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2;
+  register int __res;
+  __asm__ __volatile__
     ("cld\n\t"
      "testl %3,%3\n\t"
      "repe; cmpsb\n\t"
@@ -201,12 +201,12 @@ memcmp(const void *__s1, const void *__s2, size_t __n)
      "sbbl	%0,%0\n\t"
      "orl	$1,%0\n"
      "1:"
-     : "=&a"(__res), "=&S"(__d0), "=&D"(__d1), "=&c"(__d2)
-     : "0"(0), "1"(__s1), "2"(__s2), "3"(__n),
-     "m"(*(struct { __extension__ char __x[__n]; } *)__s1),
-     "m"(*(struct { __extension__ char __x[__n]; } *)__s2)
+     : "=&a" (__res), "=&S" (__d0), "=&D" (__d1), "=&c" (__d2)
+     : "0" (0), "1" (__s1), "2" (__s2), "3" (__n),
+       "m" ( *(struct { __extension__ char __x[__n]; } *)__s1),
+       "m" ( *(struct { __extension__ char __x[__n]; } *)__s2)
      : "cc");
-    return __res;
+  return __res;
 }
 #  endif
 # endif
@@ -318,67 +318,67 @@ memcmp(const void *__s1, const void *__s2, size_t __n)
 			   n)						      \
       : memset (s, c, n)))
 
-__STRING_INLINE void *__memset_ccn_by4(void *__s, unsigned int __c,
-                                       size_t __n);
+__STRING_INLINE void *__memset_ccn_by4 (void *__s, unsigned int __c,
+					size_t __n);
 
 __STRING_INLINE void *
-__memset_ccn_by4(void *__s, unsigned int __c, size_t __n)
+__memset_ccn_by4 (void *__s, unsigned int __c, size_t __n)
 {
-    register void *__tmp = __s;
-    register unsigned long int __d0;
+  register void *__tmp = __s;
+  register unsigned long int __d0;
 # ifdef __i686__
-    __asm__ __volatile__
+  __asm__ __volatile__
     ("cld\n\t"
      "rep; stosl"
-     : "=&a"(__c), "=&D"(__tmp), "=&c"(__d0),
-     "=m"(*(struct { __extension__ char __x[__n]; } *)__s)
-     : "0"((unsigned int) __c), "1"(__tmp), "2"(__n / 4)
+     : "=&a" (__c), "=&D" (__tmp), "=&c" (__d0),
+       "=m" ( *(struct { __extension__ char __x[__n]; } *)__s)
+     : "0" ((unsigned int) __c), "1" (__tmp), "2" (__n / 4)
      : "cc");
 # else
-    __asm__ __volatile__
+  __asm__ __volatile__
     ("1:\n\t"
      "movl	%0,(%1)\n\t"
      "addl	$4,%1\n\t"
      "decl	%2\n\t"
      "jnz	1b\n"
-     : "=&r"(__c), "=&r"(__tmp), "=&r"(__d0),
-     "=m"(*(struct { __extension__ char __x[__n]; } *)__s)
-     : "0"((unsigned int) __c), "1"(__tmp), "2"(__n / 4)
+     : "=&r" (__c), "=&r" (__tmp), "=&r" (__d0),
+       "=m" ( *(struct { __extension__ char __x[__n]; } *)__s)
+     : "0" ((unsigned int) __c), "1" (__tmp), "2" (__n / 4)
      : "cc");
 # endif
-    return __s;
+  return __s;
 }
 
-__STRING_INLINE void *__memset_ccn_by2(void *__s, unsigned int __c,
-                                       size_t __n);
+__STRING_INLINE void *__memset_ccn_by2 (void *__s, unsigned int __c,
+					size_t __n);
 
 __STRING_INLINE void *
-__memset_ccn_by2(void *__s, unsigned int __c, size_t __n)
+__memset_ccn_by2 (void *__s, unsigned int __c, size_t __n)
 {
-    register unsigned long int __d0, __d1;
-    register void *__tmp = __s;
+  register unsigned long int __d0, __d1;
+  register void *__tmp = __s;
 # ifdef __i686__
-    __asm__ __volatile__
+  __asm__ __volatile__
     ("cld\n\t"
      "rep; stosl\n"
      "stosw"
-     : "=&a"(__d0), "=&D"(__tmp), "=&c"(__d1),
-     "=m"(*(struct { __extension__ char __x[__n]; } *)__s)
-     : "0"((unsigned int) __c), "1"(__tmp), "2"(__n / 4)
+     : "=&a" (__d0), "=&D" (__tmp), "=&c" (__d1),
+       "=m" ( *(struct { __extension__ char __x[__n]; } *)__s)
+     : "0" ((unsigned int) __c), "1" (__tmp), "2" (__n / 4)
      : "cc");
 # else
-    __asm__ __volatile__
+  __asm__ __volatile__
     ("1:\tmovl	%0,(%1)\n\t"
      "leal	4(%1),%1\n\t"
      "decl	%2\n\t"
      "jnz	1b\n"
      "movw	%w0,(%1)"
-     : "=&q"(__d0), "=&r"(__tmp), "=&r"(__d1),
-     "=m"(*(struct { __extension__ char __x[__n]; } *)__s)
-     : "0"((unsigned int) __c), "1"(__tmp), "2"(__n / 4)
+     : "=&q" (__d0), "=&r" (__tmp), "=&r" (__d1),
+       "=m" ( *(struct { __extension__ char __x[__n]; } *)__s)
+     : "0" ((unsigned int) __c), "1" (__tmp), "2" (__n / 4)
      : "cc");
 #endif
-    return __s;
+  return __s;
 }
 
 # define __memset_gcn(s, c, n) \
@@ -388,14 +388,14 @@ __memset_ccn_by2(void *__s, unsigned int __c, size_t __n)
       ? __memset_gcn_by2 (s, c, n)					      \
       : memset (s, c, n)))
 
-__STRING_INLINE void *__memset_gcn_by4(void *__s, int __c, size_t __n);
+__STRING_INLINE void *__memset_gcn_by4 (void *__s, int __c, size_t __n);
 
 __STRING_INLINE void *
-__memset_gcn_by4(void *__s, int __c, size_t __n)
+__memset_gcn_by4 (void *__s, int __c, size_t __n)
 {
-    register void *__tmp = __s;
-    register unsigned long int __d0;
-    __asm__ __volatile__
+  register void *__tmp = __s;
+  register unsigned long int __d0;
+  __asm__ __volatile__
     ("movb	%b0,%h0\n"
      "pushw	%w0\n\t"
      "shll	$16,%0\n\t"
@@ -405,21 +405,21 @@ __memset_gcn_by4(void *__s, int __c, size_t __n)
      "addl	$4,%1\n\t"
      "decl	%2\n\t"
      "jnz	1b\n"
-     : "=&q"(__c), "=&r"(__tmp), "=&r"(__d0),
-     "=m"(*(struct { __extension__ char __x[__n]; } *)__s)
-     : "0"((unsigned int) __c), "1"(__tmp), "2"(__n / 4)
+     : "=&q" (__c), "=&r" (__tmp), "=&r" (__d0),
+       "=m" ( *(struct { __extension__ char __x[__n]; } *)__s)
+     : "0" ((unsigned int) __c), "1" (__tmp), "2" (__n / 4)
      : "cc");
-    return __s;
+  return __s;
 }
 
-__STRING_INLINE void *__memset_gcn_by2(void *__s, int __c, size_t __n);
+__STRING_INLINE void *__memset_gcn_by2 (void *__s, int __c, size_t __n);
 
 __STRING_INLINE void *
-__memset_gcn_by2(void *__s, int __c, size_t __n)
+__memset_gcn_by2 (void *__s, int __c, size_t __n)
 {
-    register unsigned long int __d0, __d1;
-    register void *__tmp = __s;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1;
+  register void *__tmp = __s;
+  __asm__ __volatile__
     ("movb	%b0,%h0\n\t"
      "pushw	%w0\n\t"
      "shll	$16,%0\n\t"
@@ -430,11 +430,11 @@ __memset_gcn_by2(void *__s, int __c, size_t __n)
      "decl	%2\n\t"
      "jnz	1b\n"
      "movw	%w0,(%1)"
-     : "=&q"(__d0), "=&r"(__tmp), "=&r"(__d1),
-     "=m"(*(struct { __extension__ char __x[__n]; } *)__s)
-     : "0"((unsigned int) __c), "1"(__tmp), "2"(__n / 4)
+     : "=&q" (__d0), "=&r" (__tmp), "=&r" (__d1),
+       "=m" ( *(struct { __extension__ char __x[__n]; } *)__s)
+     : "0" ((unsigned int) __c), "1" (__tmp), "2" (__n / 4)
      : "cc");
-    return __s;
+  return __s;
 }
 
 
@@ -442,79 +442,79 @@ __memset_gcn_by2(void *__s, int __c, size_t __n)
 # define _HAVE_STRING_ARCH_memchr 1
 # ifndef _FORCE_INLINES
 __STRING_INLINE void *
-memchr(const void *__s, int __c, size_t __n)
+memchr (const void *__s, int __c, size_t __n)
 {
-    register unsigned long int __d0;
+  register unsigned long int __d0;
 #  ifdef __i686__
-    register unsigned long int __d1;
+  register unsigned long int __d1;
 #  endif
-    register unsigned char *__res;
-    if (__n == 0)
-        return NULL;
+  register unsigned char *__res;
+  if (__n == 0)
+    return NULL;
 #  ifdef __i686__
-    __asm__ __volatile__
+  __asm__ __volatile__
     ("cld\n\t"
      "repne; scasb\n\t"
      "cmovne %2,%0"
-     : "=D"(__res), "=&c"(__d0), "=&r"(__d1)
-     : "a"(__c), "0"(__s), "1"(__n), "2"(1),
-     "m"(*(struct { __extension__ char __x[__n]; } *)__s)
+     : "=D" (__res), "=&c" (__d0), "=&r" (__d1)
+     : "a" (__c), "0" (__s), "1" (__n), "2" (1),
+       "m" ( *(struct { __extension__ char __x[__n]; } *)__s)
      : "cc");
 #  else
-    __asm__ __volatile__
+  __asm__ __volatile__
     ("cld\n\t"
      "repne; scasb\n\t"
      "je	1f\n\t"
      "movl	$1,%0\n"
      "1:"
-     : "=D"(__res), "=&c"(__d0)
-     : "a"(__c), "0"(__s), "1"(__n),
-     "m"(*(struct { __extension__ char __x[__n]; } *)__s)
+     : "=D" (__res), "=&c" (__d0)
+     : "a" (__c), "0" (__s), "1" (__n),
+       "m" ( *(struct { __extension__ char __x[__n]; } *)__s)
      : "cc");
 #  endif
-    return __res - 1;
+  return __res - 1;
 }
 # endif
 
 # define _HAVE_STRING_ARCH_memrchr 1
 # ifndef _FORCE_INLINES
-__STRING_INLINE void *__memrchr(const void *__s, int __c, size_t __n);
+__STRING_INLINE void *__memrchr (const void *__s, int __c, size_t __n);
 
 __STRING_INLINE void *
-__memrchr(const void *__s, int __c, size_t __n)
+__memrchr (const void *__s, int __c, size_t __n)
 {
-    register unsigned long int __d0;
+  register unsigned long int __d0;
 #  ifdef __i686__
-    register unsigned long int __d1;
+  register unsigned long int __d1;
 #  endif
-    register void *__res;
-    if (__n == 0)
-        return NULL;
+  register void *__res;
+  if (__n == 0)
+    return NULL;
 #  ifdef __i686__
-    __asm__ __volatile__
+  __asm__ __volatile__
     ("std\n\t"
      "repne; scasb\n\t"
      "cmovne %2,%0\n\t"
      "cld\n\t"
      "incl %0"
-     : "=D"(__res), "=&c"(__d0), "=&r"(__d1)
-     : "a"(__c), "0"(__s + __n - 1), "1"(__n), "2"(-1),
-     "m"(*(struct { __extension__ char __x[__n]; } *)__s)
+     : "=D" (__res), "=&c" (__d0), "=&r" (__d1)
+     : "a" (__c), "0" (__s + __n - 1), "1" (__n), "2" (-1),
+       "m" ( *(struct { __extension__ char __x[__n]; } *)__s)
      : "cc");
 #  else
-    __asm__ __volatile__
+  __asm__ __volatile__
     ("std\n\t"
      "repne; scasb\n\t"
      "je 1f\n\t"
      "orl $-1,%0\n"
      "1:\tcld\n\t"
      "incl %0"
-     : "=D"(__res), "=&c"(__d0)
-     : "a"(__c), "0"(__s + __n - 1), "1"(__n),
-     "m"(*(struct { __extension__ char __x[__n]; } *)__s)
+     : "=D" (__res), "=&c" (__d0)
+     : "a" (__c), "0" (__s + __n - 1), "1" (__n),
+       "m" ( *(struct { __extension__ char __x[__n]; } *)__s)
      : "cc");
 #  endif
-    return __res;
+  return __res;
 }
 #  ifdef __USE_GNU
 #   define memrchr(s, c, n) __memrchr ((s), (c), (n))
@@ -523,28 +523,28 @@ __memrchr(const void *__s, int __c, size_t __n)
 
 /* Return pointer to C in S.  */
 # define _HAVE_STRING_ARCH_rawmemchr 1
-__STRING_INLINE void *__rawmemchr(const void *__s, int __c);
+__STRING_INLINE void *__rawmemchr (const void *__s, int __c);
 
 # ifndef _FORCE_INLINES
 __STRING_INLINE void *
-__rawmemchr(const void *__s, int __c)
+__rawmemchr (const void *__s, int __c)
 {
-    register unsigned long int __d0;
-    register unsigned char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0;
+  register unsigned char *__res;
+  __asm__ __volatile__
     ("cld\n\t"
      "repne; scasb\n\t"
-     : "=D"(__res), "=&c"(__d0)
-     : "a"(__c), "0"(__s), "1"(0xffffffff),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s)
+     : "=D" (__res), "=&c" (__d0)
+     : "a" (__c), "0" (__s), "1" (0xffffffff),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s)
      : "cc");
-    return __res - 1;
+  return __res - 1;
 }
 #  ifdef __USE_GNU
 __STRING_INLINE void *
-rawmemchr(const void *__s, int __c)
+rawmemchr (const void *__s, int __c)
 {
-    return __rawmemchr(__s, __c);
+  return __rawmemchr (__s, __c);
 }
 #  endif /* use GNU */
 # endif
@@ -556,24 +556,24 @@ rawmemchr(const void *__s, int __c)
   (__extension__ (__builtin_constant_p (str)				      \
 		  ? __builtin_strlen (str)				      \
 		  : __strlen_g (str)))
-__STRING_INLINE size_t __strlen_g(const char *__str);
+__STRING_INLINE size_t __strlen_g (const char *__str);
 
 __STRING_INLINE size_t
-__strlen_g(const char *__str)
+__strlen_g (const char *__str)
 {
-    register char __dummy;
-    register const char *__tmp = __str;
-    __asm__ __volatile__
+  register char __dummy;
+  register const char *__tmp = __str;
+  __asm__ __volatile__
     ("1:\n\t"
      "movb	(%0),%b1\n\t"
      "leal	1(%0),%0\n\t"
      "testb	%b1,%b1\n\t"
      "jne	1b"
-     : "=r"(__tmp), "=&q"(__dummy)
-     : "0"(__str),
-     "m"(*(struct { char __x[0xfffffff]; } *)__str)
-     : "cc");
-    return __tmp - __str - 1;
+     : "=r" (__tmp), "=&q" (__dummy)
+     : "0" (__str),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__str)
+     : "cc" );
+  return __tmp - __str - 1;
 }
 
 
@@ -637,28 +637,28 @@ __strlen_g(const char *__str)
 		      }							      \
 		    (char *) __dest; }))
 
-__STRING_INLINE char *__strcpy_g(char *__dest, const char *__src);
+__STRING_INLINE char *__strcpy_g (char *__dest, const char *__src);
 
 __STRING_INLINE char *
-__strcpy_g(char *__dest, const char *__src)
+__strcpy_g (char *__dest, const char *__src)
 {
-    register char *__tmp = __dest;
-    register char __dummy;
-    __asm__ __volatile__
+  register char *__tmp = __dest;
+  register char __dummy;
+  __asm__ __volatile__
     (
-        "1:\n\t"
-        "movb	(%0),%b2\n\t"
-        "leal	1(%0),%0\n\t"
-        "movb	%b2,(%1)\n\t"
-        "leal	1(%1),%1\n\t"
-        "testb	%b2,%b2\n\t"
-        "jne	1b"
-        : "=&r"(__src), "=&r"(__tmp), "=&q"(__dummy),
-        "=m"(*(struct { char __x[0xfffffff]; } *)__dest)
-        : "0"(__src), "1"(__tmp),
-        "m"(*(struct { char __x[0xfffffff]; } *)__src)
-        : "cc");
-    return __dest;
+     "1:\n\t"
+     "movb	(%0),%b2\n\t"
+     "leal	1(%0),%0\n\t"
+     "movb	%b2,(%1)\n\t"
+     "leal	1(%1),%1\n\t"
+     "testb	%b2,%b2\n\t"
+     "jne	1b"
+     : "=&r" (__src), "=&r" (__tmp), "=&q" (__dummy),
+       "=m" ( *(struct { char __x[0xfffffff]; } *)__dest)
+     : "0" (__src), "1" (__tmp),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__src)
+     : "cc");
+  return __dest;
 }
 
 
@@ -733,15 +733,15 @@ __strcpy_g(char *__dest, const char *__src)
 		      }							      \
 		    (char *) __u; }))
 
-__STRING_INLINE char *__mempcpy_by4(char *__dest, const char *__src,
-                                    size_t __srclen);
+__STRING_INLINE char *__mempcpy_by4 (char *__dest, const char *__src,
+				     size_t __srclen);
 
 __STRING_INLINE char *
-__mempcpy_by4(char *__dest, const char *__src, size_t __srclen)
+__mempcpy_by4 (char *__dest, const char *__src, size_t __srclen)
 {
-    register char *__tmp = __dest;
-    register unsigned long int __d0, __d1;
-    __asm__ __volatile__
+  register char *__tmp = __dest;
+  register unsigned long int __d0, __d1;
+  __asm__ __volatile__
     ("1:\n\t"
      "movl	(%2),%0\n\t"
      "leal	4(%2),%2\n\t"
@@ -749,21 +749,21 @@ __mempcpy_by4(char *__dest, const char *__src, size_t __srclen)
      "leal	4(%1),%1\n\t"
      "decl	%3\n\t"
      "jnz	1b"
-     : "=&r"(__d0), "=r"(__tmp), "=&r"(__src), "=&r"(__d1)
-     : "1"(__tmp), "2"(__src), "3"(__srclen / 4)
+     : "=&r" (__d0), "=r" (__tmp), "=&r" (__src), "=&r" (__d1)
+     : "1" (__tmp), "2" (__src), "3" (__srclen / 4)
      : "memory", "cc");
-    return __tmp;
+  return __tmp;
 }
 
-__STRING_INLINE char *__mempcpy_by2(char *__dest, const char *__src,
-                                    size_t __srclen);
+__STRING_INLINE char *__mempcpy_by2 (char *__dest, const char *__src,
+				     size_t __srclen);
 
 __STRING_INLINE char *
-__mempcpy_by2(char *__dest, const char *__src, size_t __srclen)
+__mempcpy_by2 (char *__dest, const char *__src, size_t __srclen)
 {
-    register char *__tmp = __dest;
-    register unsigned long int __d0, __d1;
-    __asm__ __volatile__
+  register char *__tmp = __dest;
+  register unsigned long int __d0, __d1;
+  __asm__ __volatile__
     ("shrl	$1,%3\n\t"
      "jz	2f\n"                 /* only a word */
      "1:\n\t"
@@ -776,23 +776,23 @@ __mempcpy_by2(char *__dest, const char *__src, size_t __srclen)
      "2:\n\t"
      "movw	(%2),%w0\n\t"
      "movw	%w0,(%1)"
-     : "=&q"(__d0), "=r"(__tmp), "=&r"(__src), "=&r"(__d1),
-     "=m"(*(struct { __extension__ char __x[__srclen]; } *)__dest)
-     : "1"(__tmp), "2"(__src), "3"(__srclen / 2),
-     "m"(*(struct { __extension__ char __x[__srclen]; } *)__src)
+     : "=&q" (__d0), "=r" (__tmp), "=&r" (__src), "=&r" (__d1),
+       "=m" ( *(struct { __extension__ char __x[__srclen]; } *)__dest)
+     : "1" (__tmp), "2" (__src), "3" (__srclen / 2),
+       "m" ( *(struct { __extension__ char __x[__srclen]; } *)__src)
      : "cc");
-    return __tmp + 2;
+  return __tmp + 2;
 }
 
-__STRING_INLINE char *__mempcpy_byn(char *__dest, const char *__src,
-                                    size_t __srclen);
+__STRING_INLINE char *__mempcpy_byn (char *__dest, const char *__src,
+				     size_t __srclen);
 
 __STRING_INLINE char *
-__mempcpy_byn(char *__dest, const char *__src, size_t __srclen)
+__mempcpy_byn (char *__dest, const char *__src, size_t __srclen)
 {
-    register unsigned long __d0, __d1;
-    register char *__tmp = __dest;
-    __asm__ __volatile__
+  register unsigned long __d0, __d1;
+  register char *__tmp = __dest;
+  __asm__ __volatile__
     ("cld\n\t"
      "shrl	$1,%%ecx\n\t"
      "jnc	1f\n\t"
@@ -803,36 +803,36 @@ __mempcpy_byn(char *__dest, const char *__src, size_t __srclen)
      "movsw\n"
      "2:\n\t"
      "rep; movsl"
-     : "=D"(__tmp), "=&c"(__d0), "=&S"(__d1),
-     "=m"(*(struct { __extension__ char __x[__srclen]; } *)__dest)
-     : "0"(__tmp), "1"(__srclen), "2"(__src),
-     "m"(*(struct { __extension__ char __x[__srclen]; } *)__src)
+     : "=D" (__tmp), "=&c" (__d0), "=&S" (__d1),
+       "=m" ( *(struct { __extension__ char __x[__srclen]; } *)__dest)
+     : "0" (__tmp), "1" (__srclen), "2" (__src),
+       "m" ( *(struct { __extension__ char __x[__srclen]; } *)__src)
      : "cc");
-    return __tmp;
+  return __tmp;
 }
 
-__STRING_INLINE char *__stpcpy_g(char *__dest, const char *__src);
+__STRING_INLINE char *__stpcpy_g (char *__dest, const char *__src);
 
 __STRING_INLINE char *
-__stpcpy_g(char *__dest, const char *__src)
+__stpcpy_g (char *__dest, const char *__src)
 {
-    register char *__tmp = __dest;
-    register char __dummy;
-    __asm__ __volatile__
+  register char *__tmp = __dest;
+  register char __dummy;
+  __asm__ __volatile__
     (
-        "1:\n\t"
-        "movb	(%0),%b2\n\t"
-        "leal	1(%0),%0\n\t"
-        "movb	%b2,(%1)\n\t"
-        "leal	1(%1),%1\n\t"
-        "testb	%b2,%b2\n\t"
-        "jne	1b"
-        : "=&r"(__src), "=r"(__tmp), "=&q"(__dummy),
-        "=m"(*(struct { char __x[0xfffffff]; } *)__dest)
-        : "0"(__src), "1"(__tmp),
-        "m"(*(struct { char __x[0xfffffff]; } *)__src)
-        : "cc");
-    return __tmp - 1;
+     "1:\n\t"
+     "movb	(%0),%b2\n\t"
+     "leal	1(%0),%0\n\t"
+     "movb	%b2,(%1)\n\t"
+     "leal	1(%1),%1\n\t"
+     "testb	%b2,%b2\n\t"
+     "jne	1b"
+     : "=&r" (__src), "=r" (__tmp), "=&q" (__dummy),
+       "=m" ( *(struct { char __x[0xfffffff]; } *)__dest)
+     : "0" (__src), "1" (__tmp),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__src)
+     : "cc");
+  return __tmp - 1;
 }
 # endif
 
@@ -853,15 +853,15 @@ __stpcpy_g(char *__dest, const char *__src)
       ? __strncpy_by2 (dest, src, srclen, n)				      \
       : __strncpy_byn (dest, src, srclen, n)))
 
-__STRING_INLINE char *__strncpy_by4(char *__dest, const char __src[],
-                                    size_t __srclen, size_t __n);
+__STRING_INLINE char *__strncpy_by4 (char *__dest, const char __src[],
+				     size_t __srclen, size_t __n);
 
 __STRING_INLINE char *
-__strncpy_by4(char *__dest, const char __src[], size_t __srclen, size_t __n)
+__strncpy_by4 (char *__dest, const char __src[], size_t __srclen, size_t __n)
 {
-    register char *__tmp = __dest;
-    register int __dummy1, __dummy2;
-    __asm__ __volatile__
+  register char *__tmp = __dest;
+  register int __dummy1, __dummy2;
+  __asm__ __volatile__
     ("1:\n\t"
      "movl	(%2),%0\n\t"
      "leal	4(%2),%2\n\t"
@@ -869,24 +869,24 @@ __strncpy_by4(char *__dest, const char __src[], size_t __srclen, size_t __n)
      "leal	4(%1),%1\n\t"
      "decl	%3\n\t"
      "jnz	1b"
-     : "=&r"(__dummy1), "=r"(__tmp), "=&r"(__src), "=&r"(__dummy2),
-     "=m"(*(struct { __extension__ char __x[__srclen]; } *)__dest)
-     : "1"(__tmp), "2"(__src), "3"(__srclen / 4),
-     "m"(*(struct { __extension__ char __x[__srclen]; } *)__src)
+     : "=&r" (__dummy1), "=r" (__tmp), "=&r" (__src), "=&r" (__dummy2),
+       "=m" ( *(struct { __extension__ char __x[__srclen]; } *)__dest)
+     : "1" (__tmp), "2" (__src), "3" (__srclen / 4),
+       "m" ( *(struct { __extension__ char __x[__srclen]; } *)__src)
      : "cc");
-    (void) memset(__tmp, '\0', __n - __srclen);
-    return __dest;
+  (void) memset (__tmp, '\0', __n - __srclen);
+  return __dest;
 }
 
-__STRING_INLINE char *__strncpy_by2(char *__dest, const char __src[],
-                                    size_t __srclen, size_t __n);
+__STRING_INLINE char *__strncpy_by2 (char *__dest, const char __src[],
+				     size_t __srclen, size_t __n);
 
 __STRING_INLINE char *
-__strncpy_by2(char *__dest, const char __src[], size_t __srclen, size_t __n)
+__strncpy_by2 (char *__dest, const char __src[], size_t __srclen, size_t __n)
 {
-    register char *__tmp = __dest;
-    register int __dummy1, __dummy2;
-    __asm__ __volatile__
+  register char *__tmp = __dest;
+  register int __dummy1, __dummy2;
+  __asm__ __volatile__
     ("shrl	$1,%3\n\t"
      "jz	2f\n"                 /* only a word */
      "1:\n\t"
@@ -899,24 +899,24 @@ __strncpy_by2(char *__dest, const char __src[], size_t __srclen, size_t __n)
      "2:\n\t"
      "movw	(%2),%w0\n\t"
      "movw	%w0,(%1)\n\t"
-     : "=&q"(__dummy1), "=r"(__tmp), "=&r"(__src), "=&r"(__dummy2),
-     "=m"(*(struct { __extension__ char __x[__srclen]; } *)__dest)
-     : "1"(__tmp), "2"(__src), "3"(__srclen / 2),
-     "m"(*(struct { __extension__ char __x[__srclen]; } *)__src)
+     : "=&q" (__dummy1), "=r" (__tmp), "=&r" (__src), "=&r" (__dummy2),
+       "=m" ( *(struct { __extension__ char __x[__srclen]; } *)__dest)
+     : "1" (__tmp), "2" (__src), "3" (__srclen / 2),
+       "m" ( *(struct { __extension__ char __x[__srclen]; } *)__src)
      : "cc");
-    (void) memset(__tmp + 2, '\0', __n - __srclen);
-    return __dest;
+  (void) memset (__tmp + 2, '\0', __n - __srclen);
+  return __dest;
 }
 
-__STRING_INLINE char *__strncpy_byn(char *__dest, const char __src[],
-                                    size_t __srclen, size_t __n);
+__STRING_INLINE char *__strncpy_byn (char *__dest, const char __src[],
+				     size_t __srclen, size_t __n);
 
 __STRING_INLINE char *
-__strncpy_byn(char *__dest, const char __src[], size_t __srclen, size_t __n)
+__strncpy_byn (char *__dest, const char __src[], size_t __srclen, size_t __n)
 {
-    register unsigned long int __d0, __d1;
-    register char *__tmp = __dest;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1;
+  register char *__tmp = __dest;
+  __asm__ __volatile__
     ("cld\n\t"
      "shrl	$1,%1\n\t"
      "jnc	1f\n\t"
@@ -927,45 +927,45 @@ __strncpy_byn(char *__dest, const char __src[], size_t __srclen, size_t __n)
      "movsw\n"
      "2:\n\t"
      "rep; movsl"
-     : "=D"(__tmp), "=&c"(__d0), "=&S"(__d1),
-     "=m"(*(struct { __extension__ char __x[__srclen]; } *)__dest)
-     : "1"(__srclen), "0"(__tmp), "2"(__src),
-     "m"(*(struct { __extension__ char __x[__srclen]; } *)__src)
+     : "=D" (__tmp), "=&c" (__d0), "=&S" (__d1),
+       "=m" ( *(struct { __extension__ char __x[__srclen]; } *)__dest)
+     : "1" (__srclen), "0" (__tmp),"2" (__src),
+       "m" ( *(struct { __extension__ char __x[__srclen]; } *)__src)
      : "cc");
-    (void) memset(__tmp, '\0', __n - __srclen);
-    return __dest;
+  (void) memset (__tmp, '\0', __n - __srclen);
+  return __dest;
 }
 
-__STRING_INLINE char *__strncpy_gg(char *__dest, const char *__src,
-                                   size_t __n);
+__STRING_INLINE char *__strncpy_gg (char *__dest, const char *__src,
+				    size_t __n);
 
 __STRING_INLINE char *
-__strncpy_gg(char *__dest, const char *__src, size_t __n)
+__strncpy_gg (char *__dest, const char *__src, size_t __n)
 {
-    register char *__tmp = __dest;
-    register char __dummy;
-    if (__n > 0)
-        __asm__ __volatile__
-        ("1:\n\t"
-         "movb	(%0),%2\n\t"
-         "incl	%0\n\t"
-         "movb	%2,(%1)\n\t"
-         "incl	%1\n\t"
-         "decl	%3\n\t"
-         "je	3f\n\t"
-         "testb	%2,%2\n\t"
-         "jne	1b\n\t"
-         "2:\n\t"
-         "movb	%2,(%1)\n\t"
-         "incl	%1\n\t"
-         "decl	%3\n\t"
-         "jne	2b\n\t"
-         "3:"
-         : "=&r"(__src), "=&r"(__tmp), "=&q"(__dummy), "=&r"(__n)
-         : "0"(__src), "1"(__tmp), "3"(__n)
-         : "memory", "cc");
+  register char *__tmp = __dest;
+  register char __dummy;
+  if (__n > 0)
+    __asm__ __volatile__
+      ("1:\n\t"
+       "movb	(%0),%2\n\t"
+       "incl	%0\n\t"
+       "movb	%2,(%1)\n\t"
+       "incl	%1\n\t"
+       "decl	%3\n\t"
+       "je	3f\n\t"
+       "testb	%2,%2\n\t"
+       "jne	1b\n\t"
+       "2:\n\t"
+       "movb	%2,(%1)\n\t"
+       "incl	%1\n\t"
+       "decl	%3\n\t"
+       "jne	2b\n\t"
+       "3:"
+       : "=&r" (__src), "=&r" (__tmp), "=&q" (__dummy), "=&r" (__n)
+       : "0" (__src), "1" (__tmp), "3" (__n)
+       : "memory", "cc");
 
-    return __dest;
+  return __dest;
 }
 
 
@@ -976,48 +976,48 @@ __strncpy_gg(char *__dest, const char *__src, size_t __n)
 		  ? __strcat_c ((dest), (src), strlen (src) + 1)	      \
 		  : __strcat_g ((dest), (src))))
 
-__STRING_INLINE char *__strcat_c(char *__dest, const char __src[],
-                                 size_t __srclen);
+__STRING_INLINE char *__strcat_c (char *__dest, const char __src[],
+				  size_t __srclen);
 
 __STRING_INLINE char *
-__strcat_c(char *__dest, const char __src[], size_t __srclen)
+__strcat_c (char *__dest, const char __src[], size_t __srclen)
 {
 # ifdef __i686__
-    register unsigned long int __d0;
-    register char *__tmp;
-    __asm__ __volatile__
+  register unsigned long int __d0;
+  register char *__tmp;
+  __asm__ __volatile__
     ("repne; scasb"
-     : "=D"(__tmp), "=&c"(__d0),
-     "=m"(*(struct { char __x[0xfffffff]; } *)__dest)
-     : "0"(__dest), "1"(0xffffffff), "a"(0),
-     "m"(*(struct { __extension__ char __x[__srclen]; } *)__src)
+     : "=D" (__tmp), "=&c" (__d0),
+       "=m" ( *(struct { char __x[0xfffffff]; } *)__dest)
+     : "0" (__dest), "1" (0xffffffff), "a" (0),
+       "m" ( *(struct { __extension__ char __x[__srclen]; } *)__src)
      : "cc");
-    --__tmp;
+  --__tmp;
 # else
-    register char *__tmp = __dest - 1;
-    __asm__ __volatile__
+  register char *__tmp = __dest - 1;
+  __asm__ __volatile__
     ("1:\n\t"
      "incl	%0\n\t"
      "cmpb	$0,(%0)\n\t"
      "jne	1b\n"
-     : "=r"(__tmp),
-     "=m"(*(struct { char __x[0xfffffff]; } *)__dest)
-     : "0"(__tmp),
-     "m"(*(struct { __extension__ char __x[__srclen]; } *)__src)
+     : "=r" (__tmp),
+       "=m" ( *(struct { char __x[0xfffffff]; } *)__dest)
+     : "0" (__tmp),
+       "m" ( *(struct { __extension__ char __x[__srclen]; } *)__src)
      : "cc");
 # endif
-    (void) memcpy(__tmp, __src, __srclen);
-    return __dest;
+  (void) memcpy (__tmp, __src, __srclen);
+  return __dest;
 }
 
-__STRING_INLINE char *__strcat_g(char *__dest, const char *__src);
+__STRING_INLINE char *__strcat_g (char *__dest, const char *__src);
 
 __STRING_INLINE char *
-__strcat_g(char *__dest, const char *__src)
+__strcat_g (char *__dest, const char *__src)
 {
-    register char *__tmp = __dest - 1;
-    register char __dummy;
-    __asm__ __volatile__
+  register char *__tmp = __dest - 1;
+  register char __dummy;
+  __asm__ __volatile__
     ("1:\n\t"
      "incl	%1\n\t"
      "cmpb	$0,(%1)\n\t"
@@ -1029,12 +1029,12 @@ __strcat_g(char *__dest, const char *__src)
      "incl	%1\n\t"
      "testb	%b0,%b0\n\t"
      "jne	2b\n"
-     : "=&q"(__dummy), "=&r"(__tmp), "=&r"(__src),
-     "=m"(*(struct { char __x[0xfffffff]; } *)__dest)
-     : "1"(__tmp), "2"(__src),
-     "m"(*(struct { char __x[0xfffffff]; } *)__src)
+     : "=&q" (__dummy), "=&r" (__tmp), "=&r" (__src),
+       "=m" ( *(struct { char __x[0xfffffff]; } *)__dest)
+     : "1"  (__tmp), "2"  (__src),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__src)
      : "memory", "cc");
-    return __dest;
+  return __dest;
 }
 
 
@@ -1050,16 +1050,16 @@ __strcat_g(char *__dest, const char *__src)
 					      (n)) = 0, __dest))	      \
 		    : __strncat_g (__dest, (src), (n)); }))
 
-__STRING_INLINE char *__strncat_g(char *__dest, const char __src[],
-                                  size_t __n);
+__STRING_INLINE char *__strncat_g (char *__dest, const char __src[],
+				   size_t __n);
 
 __STRING_INLINE char *
-__strncat_g(char *__dest, const char __src[], size_t __n)
+__strncat_g (char *__dest, const char __src[], size_t __n)
 {
-    register char *__tmp = __dest;
-    register char __dummy;
+  register char *__tmp = __dest;
+  register char __dummy;
 # ifdef __i686__
-    __asm__ __volatile__
+  __asm__ __volatile__
     ("repne; scasb\n"
      "movl %4, %3\n\t"
      "decl %1\n\t"
@@ -1073,12 +1073,12 @@ __strncat_g(char *__dest, const char __src[], size_t __n)
      "decl	%1\n"
      "2:\n\t"
      "movb	$0,(%1)"
-     : "=&a"(__dummy), "=&D"(__tmp), "=&S"(__src), "=&c"(__n)
-     :  "g"(__n), "0"(0), "1"(__tmp), "2"(__src), "3"(0xffffffff)
+     : "=&a" (__dummy), "=&D" (__tmp), "=&S" (__src), "=&c" (__n)
+     :  "g" (__n), "0" (0), "1" (__tmp), "2" (__src), "3" (0xffffffff)
      : "memory", "cc");
 # else
-    --__tmp;
-    __asm__ __volatile__
+  --__tmp;
+  __asm__ __volatile__
     ("1:\n\t"
      "cmpb	$0,1(%1)\n\t"
      "leal	1(%1),%1\n\t"
@@ -1095,11 +1095,11 @@ __strncat_g(char *__dest, const char __src[], size_t __n)
      "decl	%1\n"
      "3:\n\t"
      "movb	$0,(%1)"
-     : "=&q"(__dummy), "=&r"(__tmp), "=&r"(__src), "=&r"(__n)
-     : "1"(__tmp), "2"(__src), "3"(__n)
+     : "=&q" (__dummy), "=&r" (__tmp), "=&r" (__src), "=&r" (__n)
+     : "1" (__tmp), "2" (__src), "3" (__n)
      : "memory", "cc");
 #endif
-    return __dest;
+  return __dest;
 }
 
 
@@ -1176,13 +1176,13 @@ __strncat_g(char *__dest, const char __src[], size_t __n)
 		      }							      \
 		    __result; }))
 
-__STRING_INLINE int __strcmp_gg(const char *__s1, const char *__s2);
+__STRING_INLINE int __strcmp_gg (const char *__s1, const char *__s2);
 
 __STRING_INLINE int
-__strcmp_gg(const char *__s1, const char *__s2)
+__strcmp_gg (const char *__s1, const char *__s2)
 {
-    register int __res;
-    __asm__ __volatile__
+  register int __res;
+  __asm__ __volatile__
     ("1:\n\t"
      "movb	(%1),%b0\n\t"
      "leal	1(%1),%1\n\t"
@@ -1198,12 +1198,12 @@ __strcmp_gg(const char *__s1, const char *__s2)
      "jb	3f\n\t"
      "negl	%0\n"
      "3:"
-     : "=q"(__res), "=&r"(__s1), "=&r"(__s2)
-     : "1"(__s1), "2"(__s2),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s1),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s2)
+     : "=q" (__res), "=&r" (__s1), "=&r" (__s2)
+     : "1" (__s1), "2" (__s2),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s1),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s2)
      : "cc");
-    return __res;
+  return __res;
 }
 
 
@@ -1216,14 +1216,14 @@ __strcmp_gg(const char *__s1, const char *__s2)
 		     ? strcmp ((s1), (s2))				      \
 		     : __strncmp_g ((s1), (s2), (n)))))
 
-__STRING_INLINE int __strncmp_g(const char *__s1, const char *__s2,
-                                size_t __n);
+__STRING_INLINE int __strncmp_g (const char *__s1, const char *__s2,
+				 size_t __n);
 
 __STRING_INLINE int
-__strncmp_g(const char *__s1, const char *__s2, size_t __n)
+__strncmp_g (const char *__s1, const char *__s2, size_t __n)
 {
-    register int __res;
-    __asm__ __volatile__
+  register int __res;
+  __asm__ __volatile__
     ("1:\n\t"
      "subl	$1,%3\n\t"
      "jc	2f\n\t"
@@ -1242,12 +1242,12 @@ __strncmp_g(const char *__s1, const char *__s2, size_t __n)
      "jb	4f\n\t"
      "negl	%0\n"
      "4:"
-     : "=q"(__res), "=&r"(__s1), "=&r"(__s2), "=&r"(__n)
-     : "1"(__s1), "2"(__s2),  "3"(__n),
-     "m"(*(struct { __extension__ char __x[__n]; } *)__s1),
-     "m"(*(struct { __extension__ char __x[__n]; } *)__s2)
+     : "=q" (__res), "=&r" (__s1), "=&r" (__s2), "=&r" (__n)
+     : "1"  (__s1), "2"  (__s2),  "3" (__n),
+       "m" ( *(struct { __extension__ char __x[__n]; } *)__s1),
+       "m" ( *(struct { __extension__ char __x[__n]; } *)__s2)
      : "cc");
-    return __res;
+  return __res;
 }
 
 
@@ -1261,14 +1261,14 @@ __strncmp_g(const char *__s1, const char *__s2, size_t __n)
 		     : __strchr_c ((s), ((c) & 0xff) << 8))		      \
 		  : __strchr_g ((s), (c))))
 
-__STRING_INLINE char *__strchr_c(const char *__s, int __c);
+__STRING_INLINE char *__strchr_c (const char *__s, int __c);
 
 __STRING_INLINE char *
-__strchr_c(const char *__s, int __c)
+__strchr_c (const char *__s, int __c)
 {
-    register unsigned long int __d0;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0;
+  register char *__res;
+  __asm__ __volatile__
     ("1:\n\t"
      "movb	(%0),%%al\n\t"
      "cmpb	%%ah,%%al\n\t"
@@ -1278,21 +1278,21 @@ __strchr_c(const char *__s, int __c)
      "jne	1b\n\t"
      "xorl	%0,%0\n"
      "2:"
-     : "=r"(__res), "=&a"(__d0)
-     : "0"(__s), "1"(__c),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s)
+     : "=r" (__res), "=&a" (__d0)
+     : "0" (__s), "1" (__c),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s)
      : "cc");
-    return __res;
+  return __res;
 }
 
-__STRING_INLINE char *__strchr_g(const char *__s, int __c);
+__STRING_INLINE char *__strchr_g (const char *__s, int __c);
 
 __STRING_INLINE char *
-__strchr_g(const char *__s, int __c)
+__strchr_g (const char *__s, int __c)
 {
-    register unsigned long int __d0;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0;
+  register char *__res;
+  __asm__ __volatile__
     ("movb	%%al,%%ah\n"
      "1:\n\t"
      "movb	(%0),%%al\n\t"
@@ -1303,11 +1303,11 @@ __strchr_g(const char *__s, int __c)
      "jne	1b\n\t"
      "xorl	%0,%0\n"
      "2:"
-     : "=r"(__res), "=&a"(__d0)
-     : "0"(__s), "1"(__c),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s)
+     : "=r" (__res), "=&a" (__d0)
+     : "0" (__s), "1" (__c),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s)
      : "cc");
-    return __res;
+  return __res;
 }
 
 
@@ -1320,14 +1320,14 @@ __strchr_g(const char *__s, int __c)
 		     : __strchrnul_c ((s), ((c) & 0xff) << 8))		      \
 		  : __strchrnul_g ((s), c)))
 
-__STRING_INLINE char *__strchrnul_c(const char *__s, int __c);
+__STRING_INLINE char *__strchrnul_c (const char *__s, int __c);
 
 __STRING_INLINE char *
-__strchrnul_c(const char *__s, int __c)
+__strchrnul_c (const char *__s, int __c)
 {
-    register unsigned long int __d0;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0;
+  register char *__res;
+  __asm__ __volatile__
     ("1:\n\t"
      "movb	(%0),%%al\n\t"
      "cmpb	%%ah,%%al\n\t"
@@ -1337,21 +1337,21 @@ __strchrnul_c(const char *__s, int __c)
      "jne	1b\n\t"
      "decl	%0\n"
      "2:"
-     : "=r"(__res), "=&a"(__d0)
-     : "0"(__s), "1"(__c),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s)
+     : "=r" (__res), "=&a" (__d0)
+     : "0" (__s), "1" (__c),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s)
      : "cc");
-    return __res;
+  return __res;
 }
 
-__STRING_INLINE char *__strchrnul_g(const char *__s, int __c);
+__STRING_INLINE char *__strchrnul_g (const char *__s, int __c);
 
 __STRING_INLINE char *
-__strchrnul_g(const char *__s, int __c)
+__strchrnul_g (const char *__s, int __c)
 {
-    register unsigned long int __d0;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0;
+  register char *__res;
+  __asm__ __volatile__
     ("movb	%%al,%%ah\n"
      "1:\n\t"
      "movb	(%0),%%al\n\t"
@@ -1362,11 +1362,11 @@ __strchrnul_g(const char *__s, int __c)
      "jne	1b\n\t"
      "decl	%0\n"
      "2:"
-     : "=r"(__res), "=&a"(__d0)
-     : "0"(__s), "1"(__c),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s)
+     : "=r" (__res), "=&a" (__d0)
+     : "0" (__s), "1" (__c),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s)
      : "cc");
-    return __res;
+  return __res;
 }
 # ifdef __USE_GNU
 #  define strchrnul(s, c) __strchrnul ((s), (c))
@@ -1391,14 +1391,14 @@ __strchrnul_g(const char *__s, int __c)
 		  : __strrchr_g ((s), (c))))
 
 # ifdef __i686__
-__STRING_INLINE char *__strrchr_c(const char *__s, int __c);
+__STRING_INLINE char *__strrchr_c (const char *__s, int __c);
 
 __STRING_INLINE char *
-__strrchr_c(const char *__s, int __c)
+__strrchr_c (const char *__s, int __c)
 {
-    register unsigned long int __d0, __d1;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1;
+  register char *__res;
+  __asm__ __volatile__
     ("cld\n"
      "1:\n\t"
      "lodsb\n\t"
@@ -1406,21 +1406,21 @@ __strrchr_c(const char *__s, int __c)
      "cmove	%1,%0\n\t"
      "testb	%b2,%b2\n\t"
      "jne 1b"
-     : "=d"(__res), "=&S"(__d0), "=&a"(__d1)
-     : "0"(1), "1"(__s), "2"(__c),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s)
+     : "=d" (__res), "=&S" (__d0), "=&a" (__d1)
+     : "0" (1), "1" (__s), "2" (__c),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s)
      : "cc");
-    return __res - 1;
+  return __res - 1;
 }
 
-__STRING_INLINE char *__strrchr_g(const char *__s, int __c);
+__STRING_INLINE char *__strrchr_g (const char *__s, int __c);
 
 __STRING_INLINE char *
-__strrchr_g(const char *__s, int __c)
+__strrchr_g (const char *__s, int __c)
 {
-    register unsigned long int __d0, __d1;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1;
+  register char *__res;
+  __asm__ __volatile__
     ("movb	%b2,%h2\n"
      "cld\n\t"
      "1:\n\t"
@@ -1429,21 +1429,21 @@ __strrchr_g(const char *__s, int __c)
      "cmove	%1,%0\n\t"
      "testb	%b2,%b2\n\t"
      "jne 1b"
-     : "=d"(__res), "=&S"(__d0), "=&a"(__d1)
-     : "0"(1), "1"(__s), "2"(__c),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s)
+     : "=d" (__res), "=&S" (__d0), "=&a" (__d1)
+     : "0" (1), "1" (__s), "2" (__c),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s)
      : "cc");
-    return __res - 1;
+  return __res - 1;
 }
 # else
-__STRING_INLINE char *__strrchr_c(const char *__s, int __c);
+__STRING_INLINE char *__strrchr_c (const char *__s, int __c);
 
 __STRING_INLINE char *
-__strrchr_c(const char *__s, int __c)
+__strrchr_c (const char *__s, int __c)
 {
-    register unsigned long int __d0, __d1;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1;
+  register char *__res;
+  __asm__ __volatile__
     ("cld\n"
      "1:\n\t"
      "lodsb\n\t"
@@ -1453,21 +1453,21 @@ __strrchr_c(const char *__s, int __c)
      "2:\n\t"
      "testb	%%al,%%al\n\t"
      "jne 1b"
-     : "=d"(__res), "=&S"(__d0), "=&a"(__d1)
-     : "0"(0), "1"(__s), "2"(__c),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s)
+     : "=d" (__res), "=&S" (__d0), "=&a" (__d1)
+     : "0" (0), "1" (__s), "2" (__c),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s)
      : "cc");
-    return __res;
+  return __res;
 }
 
-__STRING_INLINE char *__strrchr_g(const char *__s, int __c);
+__STRING_INLINE char *__strrchr_g (const char *__s, int __c);
 
 __STRING_INLINE char *
-__strrchr_g(const char *__s, int __c)
+__strrchr_g (const char *__s, int __c)
 {
-    register unsigned long int __d0, __d1;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1;
+  register char *__res;
+  __asm__ __volatile__
     ("movb	%%al,%%ah\n"
      "cld\n\t"
      "1:\n\t"
@@ -1478,11 +1478,11 @@ __strrchr_g(const char *__s, int __c)
      "2:\n\t"
      "testb	%%al,%%al\n\t"
      "jne 1b"
-     : "=r"(__res), "=&S"(__d0), "=&a"(__d1)
-     : "0"(0), "1"(__s), "2"(__c),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s)
+     : "=r" (__res), "=&S" (__d0), "=&a" (__d1)
+     : "0" (0), "1" (__s), "2" (__c),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s)
      : "cc");
-    return __res;
+  return __res;
 }
 # endif
 
@@ -1509,15 +1509,15 @@ __strrchr_g(const char *__s, int __c)
 			: __strcspn_cg ((s), (reject), strlen (reject))))     \
 		  : __strcspn_g ((s), (reject))))
 
-__STRING_INLINE size_t __strcspn_c1(const char *__s, int __reject);
+__STRING_INLINE size_t __strcspn_c1 (const char *__s, int __reject);
 
 # ifndef _FORCE_INLINES
 __STRING_INLINE size_t
-__strcspn_c1(const char *__s, int __reject)
+__strcspn_c1 (const char *__s, int __reject)
 {
-    register unsigned long int __d0;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0;
+  register char *__res;
+  __asm__ __volatile__
     ("1:\n\t"
      "movb	(%0),%%al\n\t"
      "leal	1(%0),%0\n\t"
@@ -1526,23 +1526,23 @@ __strcspn_c1(const char *__s, int __reject)
      "testb	%%al,%%al\n\t"
      "jne	1b\n"
      "2:"
-     : "=r"(__res), "=&a"(__d0)
-     : "0"(__s), "1"(__reject),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s)
+     : "=r" (__res), "=&a" (__d0)
+     : "0" (__s), "1" (__reject),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s)
      : "cc");
-    return (__res - 1) - __s;
+  return (__res - 1) - __s;
 }
 # endif
 
-__STRING_INLINE size_t __strcspn_cg(const char *__s, const char __reject[],
-                                    size_t __reject_len);
+__STRING_INLINE size_t __strcspn_cg (const char *__s, const char __reject[],
+				     size_t __reject_len);
 
 __STRING_INLINE size_t
-__strcspn_cg(const char *__s, const char __reject[], size_t __reject_len)
+__strcspn_cg (const char *__s, const char __reject[], size_t __reject_len)
 {
-    register unsigned long int __d0, __d1, __d2;
-    register const char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2;
+  register const char *__res;
+  __asm__ __volatile__
     ("cld\n"
      "1:\n\t"
      "lodsb\n\t"
@@ -1553,21 +1553,21 @@ __strcspn_cg(const char *__s, const char __reject[], size_t __reject_len)
      "repne; scasb\n\t"
      "jne	1b\n"
      "2:"
-     : "=S"(__res), "=&a"(__d0), "=&c"(__d1), "=&D"(__d2)
-     : "0"(__s), "d"(__reject), "g"(__reject_len)
+     : "=S" (__res), "=&a" (__d0), "=&c" (__d1), "=&D" (__d2)
+     : "0" (__s), "d" (__reject), "g" (__reject_len)
      : "memory", "cc");
-    return (__res - 1) - __s;
+  return (__res - 1) - __s;
 }
 
-__STRING_INLINE size_t __strcspn_g(const char *__s, const char *__reject);
+__STRING_INLINE size_t __strcspn_g (const char *__s, const char *__reject);
 # ifdef __PIC__
 
 __STRING_INLINE size_t
-__strcspn_g(const char *__s, const char *__reject)
+__strcspn_g (const char *__s, const char *__reject)
 {
-    register unsigned long int __d0, __d1, __d2;
-    register const char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2;
+  register const char *__res;
+  __asm__ __volatile__
     ("pushl	%%ebx\n\t"
      "movl	%4,%%edi\n\t"
      "cld\n\t"
@@ -1584,18 +1584,18 @@ __strcspn_g(const char *__s, const char *__reject)
      "jne	1b\n"
      "2:\n\t"
      "popl	%%ebx"
-     : "=S"(__res), "=&a"(__d0), "=&c"(__d1), "=&D"(__d2)
-     : "r"(__reject), "0"(__s), "1"(0), "2"(0xffffffff)
+     : "=S" (__res), "=&a" (__d0), "=&c" (__d1), "=&D" (__d2)
+     : "r" (__reject), "0" (__s), "1" (0), "2" (0xffffffff)
      : "memory", "cc");
-    return (__res - 1) - __s;
+  return (__res - 1) - __s;
 }
 # else
 __STRING_INLINE size_t
-__strcspn_g(const char *__s, const char *__reject)
+__strcspn_g (const char *__s, const char *__reject)
 {
-    register unsigned long int __d0, __d1, __d2, __d3;
-    register const char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2, __d3;
+  register const char *__res;
+  __asm__ __volatile__
     ("cld\n\t"
      "repne; scasb\n\t"
      "notl	%%ecx\n\t"
@@ -1609,11 +1609,11 @@ __strcspn_g(const char *__s, const char *__reject)
      "repne; scasb\n\t"
      "jne	1b\n"
      "2:"
-     : "=S"(__res), "=&a"(__d0), "=&c"(__d1), "=&D"(__d2), "=&d"(__d3)
-     : "0"(__s), "1"(0), "2"(0xffffffff), "3"(__reject), "b"(__reject)
+     : "=S" (__res), "=&a" (__d0), "=&c" (__d1), "=&D" (__d2), "=&d" (__d3)
+     : "0" (__s), "1" (0), "2" (0xffffffff), "3" (__reject), "b" (__reject)
      /* Clobber memory, otherwise GCC cannot handle this.  */
      : "memory", "cc");
-    return (__res - 1) - __s;
+  return (__res - 1) - __s;
 }
 # endif
 
@@ -1631,37 +1631,37 @@ __strcspn_g(const char *__s, const char *__reject)
 		  : __strspn_g ((s), (accept))))
 
 # ifndef _FORCE_INLINES
-__STRING_INLINE size_t __strspn_c1(const char *__s, int __accept);
+__STRING_INLINE size_t __strspn_c1 (const char *__s, int __accept);
 
 __STRING_INLINE size_t
-__strspn_c1(const char *__s, int __accept)
+__strspn_c1 (const char *__s, int __accept)
 {
-    register unsigned long int __d0;
-    register char *__res;
-    /* Please note that __accept never can be '\0'.  */
-    __asm__ __volatile__
+  register unsigned long int __d0;
+  register char *__res;
+  /* Please note that __accept never can be '\0'.  */
+  __asm__ __volatile__
     ("1:\n\t"
      "movb	(%0),%b1\n\t"
      "leal	1(%0),%0\n\t"
      "cmpb	%h1,%b1\n\t"
      "je	1b"
-     : "=r"(__res), "=&q"(__d0)
-     : "0"(__s), "1"(__accept),
-     "m"(*(struct { char __x[0xfffffff]; } *)__s)
+     : "=r" (__res), "=&q" (__d0)
+     : "0" (__s), "1" (__accept),
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s)
      : "cc");
-    return (__res - 1) - __s;
+  return (__res - 1) - __s;
 }
 # endif
 
-__STRING_INLINE size_t __strspn_cg(const char *__s, const char __accept[],
-                                   size_t __accept_len);
+__STRING_INLINE size_t __strspn_cg (const char *__s, const char __accept[],
+				    size_t __accept_len);
 
 __STRING_INLINE size_t
-__strspn_cg(const char *__s, const char __accept[], size_t __accept_len)
+__strspn_cg (const char *__s, const char __accept[], size_t __accept_len)
 {
-    register unsigned long int __d0, __d1, __d2;
-    register const char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2;
+  register const char *__res;
+  __asm__ __volatile__
     ("cld\n"
      "1:\n\t"
      "lodsb\n\t"
@@ -1672,25 +1672,25 @@ __strspn_cg(const char *__s, const char __accept[], size_t __accept_len)
      "repne; scasb\n\t"
      "je	1b\n"
      "2:"
-     : "=S"(__res), "=&a"(__d0), "=&c"(__d1), "=&D"(__d2)
-     : "0"(__s), "g"(__accept), "g"(__accept_len),
-     /* Since we do not know how large the memory we access it, use a
-     really large amount.  */
-     "m"(*(struct { char __x[0xfffffff]; } *)__s),
-     "m"(*(struct { __extension__ char __x[__accept_len]; } *)__accept)
+     : "=S" (__res), "=&a" (__d0), "=&c" (__d1), "=&D" (__d2)
+     : "0" (__s), "g" (__accept), "g" (__accept_len),
+       /* Since we do not know how large the memory we access it, use a
+	  really large amount.  */
+       "m" ( *(struct { char __x[0xfffffff]; } *)__s),
+       "m" ( *(struct { __extension__ char __x[__accept_len]; } *)__accept)
      : "cc");
-    return (__res - 1) - __s;
+  return (__res - 1) - __s;
 }
 
-__STRING_INLINE size_t __strspn_g(const char *__s, const char *__accept);
+__STRING_INLINE size_t __strspn_g (const char *__s, const char *__accept);
 # ifdef __PIC__
 
 __STRING_INLINE size_t
-__strspn_g(const char *__s, const char *__accept)
+__strspn_g (const char *__s, const char *__accept)
 {
-    register unsigned long int __d0, __d1, __d2;
-    register const char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2;
+  register const char *__res;
+  __asm__ __volatile__
     ("pushl	%%ebx\n\t"
      "cld\n\t"
      "repne; scasb\n\t"
@@ -1706,18 +1706,18 @@ __strspn_g(const char *__s, const char *__accept)
      "je	1b\n"
      "2:\n\t"
      "popl	%%ebx"
-     : "=S"(__res), "=&a"(__d0), "=&c"(__d1), "=&D"(__d2)
-     : "d"(__accept), "0"(__s), "1"(0), "2"(0xffffffff), "3"(__accept)
+     : "=S" (__res), "=&a" (__d0), "=&c" (__d1), "=&D" (__d2)
+     : "d" (__accept), "0" (__s), "1" (0), "2" (0xffffffff), "3" (__accept)
      : "memory", "cc");
-    return (__res - 1) - __s;
+  return (__res - 1) - __s;
 }
 # else
 __STRING_INLINE size_t
-__strspn_g(const char *__s, const char *__accept)
+__strspn_g (const char *__s, const char *__accept)
 {
-    register unsigned long int __d0, __d1, __d2, __d3;
-    register const char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2, __d3;
+  register const char *__res;
+  __asm__ __volatile__
     ("cld\n\t"
      "repne; scasb\n\t"
      "notl	%%ecx\n\t"
@@ -1731,10 +1731,10 @@ __strspn_g(const char *__s, const char *__accept)
      "repne; scasb\n\t"
      "je	1b\n"
      "2:"
-     : "=S"(__res), "=&a"(__d0), "=&c"(__d1), "=&D"(__d2), "=&d"(__d3)
-     : "0"(__s), "1"(0), "2"(0xffffffff), "3"(__accept), "b"(__accept)
+     : "=S" (__res), "=&a" (__d0), "=&c" (__d1), "=&D" (__d2), "=&d" (__d3)
+     : "0" (__s), "1" (0), "2" (0xffffffff), "3" (__accept), "b" (__accept)
      : "memory", "cc");
-    return (__res - 1) - __s;
+  return (__res - 1) - __s;
 }
 # endif
 
@@ -1750,15 +1750,15 @@ __strspn_g(const char *__s, const char *__accept)
 			: __strpbrk_cg ((s), (accept), strlen (accept))))     \
 		  : __strpbrk_g ((s), (accept))))
 
-__STRING_INLINE char *__strpbrk_cg(const char *__s, const char __accept[],
-                                   size_t __accept_len);
+__STRING_INLINE char *__strpbrk_cg (const char *__s, const char __accept[],
+				    size_t __accept_len);
 
 __STRING_INLINE char *
-__strpbrk_cg(const char *__s, const char __accept[], size_t __accept_len)
+__strpbrk_cg (const char *__s, const char __accept[], size_t __accept_len)
 {
-    register unsigned long int __d0, __d1, __d2;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2;
+  register char *__res;
+  __asm__ __volatile__
     ("cld\n"
      "1:\n\t"
      "lodsb\n\t"
@@ -1773,21 +1773,21 @@ __strpbrk_cg(const char *__s, const char __accept[], size_t __accept_len)
      "2:\n\t"
      "xorl	%0,%0\n"
      "3:"
-     : "=S"(__res), "=&a"(__d0), "=&c"(__d1), "=&D"(__d2)
-     : "0"(__s), "d"(__accept), "g"(__accept_len)
+     : "=S" (__res), "=&a" (__d0), "=&c" (__d1), "=&D" (__d2)
+     : "0" (__s), "d" (__accept), "g" (__accept_len)
      : "memory", "cc");
-    return __res;
+  return __res;
 }
 
-__STRING_INLINE char *__strpbrk_g(const char *__s, const char *__accept);
+__STRING_INLINE char *__strpbrk_g (const char *__s, const char *__accept);
 # ifdef __PIC__
 
 __STRING_INLINE char *
-__strpbrk_g(const char *__s, const char *__accept)
+__strpbrk_g (const char *__s, const char *__accept)
 {
-    register unsigned long int __d0, __d1, __d2;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2;
+  register char *__res;
+  __asm__ __volatile__
     ("pushl	%%ebx\n\t"
      "movl	%%edx,%%edi\n\t"
      "cld\n\t"
@@ -1808,18 +1808,18 @@ __strpbrk_g(const char *__s, const char *__accept)
      "xorl	%0,%0\n"
      "3:\n\t"
      "popl	%%ebx"
-     : "=S"(__res), "=&a"(__d0), "=&c"(__d1), "=&D"(__d2)
-     : "d"(__accept), "0"(__s), "1"(0), "2"(0xffffffff)
+     : "=S" (__res), "=&a" (__d0), "=&c" (__d1), "=&D" (__d2)
+     : "d" (__accept), "0" (__s), "1" (0), "2" (0xffffffff)
      : "memory", "cc");
-    return __res;
+  return __res;
 }
 # else
 __STRING_INLINE char *
-__strpbrk_g(const char *__s, const char *__accept)
+__strpbrk_g (const char *__s, const char *__accept)
 {
-    register unsigned long int __d0, __d1, __d2, __d3;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2, __d3;
+  register char *__res;
+  __asm__ __volatile__
     ("movl	%%ebx,%%edi\n\t"
      "cld\n\t"
      "repne; scasb\n\t"
@@ -1838,10 +1838,10 @@ __strpbrk_g(const char *__s, const char *__accept)
      "2:\n\t"
      "xorl	%0,%0\n"
      "3:"
-     : "=S"(__res), "=&a"(__d0), "=&c"(__d1), "=&d"(__d2), "=&D"(__d3)
-     : "0"(__s), "1"(0), "2"(0xffffffff), "b"(__accept)
+     : "=S" (__res), "=&a" (__d0), "=&c" (__d1), "=&d" (__d2), "=&D" (__d3)
+     : "0" (__s), "1" (0), "2" (0xffffffff), "b" (__accept)
      : "memory", "cc");
-    return __res;
+  return __res;
 }
 # endif
 
@@ -1860,17 +1860,17 @@ __strpbrk_g(const char *__s, const char *__accept)
 
 /* Please note that this function need not handle NEEDLEs with a
    length shorter than two.  */
-__STRING_INLINE char *__strstr_cg(const char *__haystack,
-                                  const char __needle[],
-                                  size_t __needle_len);
+__STRING_INLINE char *__strstr_cg (const char *__haystack,
+				   const char __needle[],
+				   size_t __needle_len);
 
 __STRING_INLINE char *
-__strstr_cg(const char *__haystack, const char __needle[],
-            size_t __needle_len)
+__strstr_cg (const char *__haystack, const char __needle[],
+	     size_t __needle_len)
 {
-    register unsigned long int __d0, __d1, __d2;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2;
+  register char *__res;
+  __asm__ __volatile__
     ("cld\n" \
      "1:\n\t"
      "movl	%6,%%edi\n\t"
@@ -1883,22 +1883,22 @@ __strstr_cg(const char *__haystack, const char __needle[],
      "jne	1b\n\t"
      "xorl	%%eax,%%eax\n"
      "2:"
-     : "=&a"(__res), "=&S"(__d0), "=&D"(__d1), "=&c"(__d2)
-     : "g"(__needle_len), "1"(__haystack), "d"(__needle)
+     : "=&a" (__res), "=&S" (__d0), "=&D" (__d1), "=&c" (__d2)
+     : "g" (__needle_len), "1" (__haystack), "d" (__needle)
      : "memory", "cc");
-    return __res;
+  return __res;
 }
 
-__STRING_INLINE char *__strstr_g(const char *__haystack,
-                                 const char *__needle);
+__STRING_INLINE char *__strstr_g (const char *__haystack,
+				  const char *__needle);
 # ifdef __PIC__
 
 __STRING_INLINE char *
-__strstr_g(const char *__haystack, const char *__needle)
+__strstr_g (const char *__haystack, const char *__needle)
 {
-    register unsigned long int __d0, __d1, __d2;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2;
+  register char *__res;
+  __asm__ __volatile__
     ("cld\n\t"
      "repne; scasb\n\t"
      "notl	%%ecx\n\t"
@@ -1917,19 +1917,19 @@ __strstr_g(const char *__haystack, const char *__needle)
      "xorl	%%eax,%%eax\n"
      "2:\n\t"
      "popl	%%ebx"
-     : "=&a"(__res), "=&c"(__d0), "=&S"(__d1), "=&D"(__d2)
-     : "0"(0), "1"(0xffffffff), "2"(__haystack), "3"(__needle),
-     "d"(__needle)
+     : "=&a" (__res), "=&c" (__d0), "=&S" (__d1), "=&D" (__d2)
+     : "0" (0), "1" (0xffffffff), "2" (__haystack), "3" (__needle),
+       "d" (__needle)
      : "memory", "cc");
-    return __res;
+  return __res;
 }
 # else
 __STRING_INLINE char *
-__strstr_g(const char *__haystack, const char *__needle)
+__strstr_g (const char *__haystack, const char *__needle)
 {
-    register unsigned long int __d0, __d1, __d2, __d3;
-    register char *__res;
-    __asm__ __volatile__
+  register unsigned long int __d0, __d1, __d2, __d3;
+  register char *__res;
+  __asm__ __volatile__
     ("cld\n\t"
      "repne; scasb\n\t"
      "notl	%%ecx\n\t"
@@ -1946,11 +1946,11 @@ __strstr_g(const char *__haystack, const char *__needle)
      "jne	1b\n\t"
      "xorl	%%eax,%%eax\n"
      "2:"
-     : "=&a"(__res), "=&c"(__d0), "=&S"(__d1), "=&D"(__d2), "=&d"(__d3)
-     : "0"(0), "1"(0xffffffff), "2"(__haystack), "3"(__needle),
-     "b"(__needle)
+     : "=&a" (__res), "=&c" (__d0), "=&S" (__d1), "=&D" (__d2), "=&d" (__d3)
+     : "0" (0), "1" (0xffffffff), "2" (__haystack), "3" (__needle),
+       "b" (__needle)
      : "memory", "cc");
-    return __res;
+  return __res;
 }
 # endif
 
@@ -1983,4 +1983,3 @@ __strstr_g(const char *__haystack, const char *__needle)
 # endif	/* use string inlines && GNU CC */
 
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

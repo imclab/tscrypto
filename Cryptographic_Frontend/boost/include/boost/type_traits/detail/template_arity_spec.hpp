@@ -3,8 +3,8 @@
 
 // Copyright Aleksey Gurtovoy 2002-2004
 //
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
 // http://www.boost.org/LICENSE_1_0.txt)
 
 #include <boost/mpl/int.hpp>
@@ -29,4 +29,3 @@ struct template_arity< \
 #else
 #   define BOOST_TT_AUX_TEMPLATE_ARITY_SPEC(i, name) /**/
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

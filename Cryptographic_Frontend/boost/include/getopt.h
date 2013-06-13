@@ -102,13 +102,14 @@ extern int optopt;
    one).  For long options that have a zero `flag' field, `getopt'
    returns the contents of the `val' field.  */
 
-struct option {
-    const char *name;
-    /* has_arg can't be an enum because some compilers complain about
-       type mismatches in all the code that assumes it is an int.  */
-    int has_arg;
-    int *flag;
-    int val;
+struct option
+{
+  const char *name;
+  /* has_arg can't be an enum because some compilers complain about
+     type mismatches in all the code that assumes it is an int.  */
+  int has_arg;
+  int *flag;
+  int val;
 };
 
 /* Names for the values of the `has_arg' field of `struct option'.  */
@@ -147,8 +148,8 @@ struct option {
 /* Many other libraries have conflicting prototypes for getopt, with
    differences in the consts, in stdlib.h.  To avoid compilation
    errors, only prototype getopt for the GNU C library.  */
-extern int getopt(int ___argc, char *const *___argv, const char *__shortopts)
-__THROW;
+extern int getopt (int ___argc, char *const *___argv, const char *__shortopts)
+       __THROW;
 
 # if defined __need_getopt && defined __USE_POSIX2 \
   && !defined __USE_POSIX_IMPLICITLY && !defined __USE_GNU
@@ -156,28 +157,28 @@ __THROW;
    additional functionality can be disable at runtime.  This redirection
    helps to also do this at runtime.  */
 #  ifdef __REDIRECT
-extern int __REDIRECT_NTH(getopt, (int ___argc, char *const *___argv,
-                                   const char *__shortopts),
-                          __posix_getopt);
+  extern int __REDIRECT_NTH (getopt, (int ___argc, char *const *___argv,
+				      const char *__shortopts),
+			     __posix_getopt);
 #  else
-extern int __posix_getopt(int ___argc, char *const *___argv,
-                          const char *__shortopts) __THROW;
+extern int __posix_getopt (int ___argc, char *const *___argv,
+			   const char *__shortopts) __THROW;
 #   define getopt __posix_getopt
 #  endif
 # endif
 #else /* not __GNU_LIBRARY__ */
-extern int getopt();
+extern int getopt ();
 #endif /* __GNU_LIBRARY__ */
 
 #ifndef __need_getopt
-extern int getopt_long(int ___argc, char *const *___argv,
-                       const char *__shortopts,
-                       const struct option *__longopts, int *__longind)
-__THROW;
-extern int getopt_long_only(int ___argc, char *const *___argv,
-                            const char *__shortopts,
-                            const struct option *__longopts, int *__longind)
-__THROW;
+extern int getopt_long (int ___argc, char *const *___argv,
+			const char *__shortopts,
+		        const struct option *__longopts, int *__longind)
+       __THROW;
+extern int getopt_long_only (int ___argc, char *const *___argv,
+			     const char *__shortopts,
+		             const struct option *__longopts, int *__longind)
+       __THROW;
 
 #endif
 
@@ -189,4 +190,3 @@ __THROW;
 #undef __need_getopt
 
 #endif /* getopt.h */
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

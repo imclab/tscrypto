@@ -30,4 +30,3 @@
 #endif
 
 #endif	/* bits/wchar.h */
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

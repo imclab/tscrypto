@@ -4,7 +4,7 @@
    every time called, usually setting errno to ENOSYS.  */
 
 #ifdef _LIBC
-#error Applications may not define the macro _LIBC
+ #error Applications may not define the macro _LIBC
 #endif
 
 #define __stub_chflags
@@ -18,4 +18,3 @@
 #define __stub_sigreturn
 #define __stub_sstk
 #define __stub_stty
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

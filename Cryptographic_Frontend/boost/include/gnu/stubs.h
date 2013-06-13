@@ -12,4 +12,3 @@
 #if defined __x86_64__ && defined __ILP32__
 # include <gnu/stubs-x32.h>
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

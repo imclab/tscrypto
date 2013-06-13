@@ -25,9 +25,10 @@ typedef int __sig_atomic_t;
 /* A `sigset_t' has a bit for each signal.  */
 
 # define _SIGSET_NWORDS	(1024 / (8 * sizeof (unsigned long int)))
-typedef struct {
+typedef struct
+  {
     unsigned long int __val[_SIGSET_NWORDS];
-} __sigset_t;
+  } __sigset_t;
 
 #endif
 
@@ -99,9 +100,9 @@ typedef struct {
 /* These functions needn't check for a bogus signal number -- error
    checking is done in the non __ versions.  */
 
-extern int __sigismember(const __sigset_t *, int);
-extern int __sigaddset(__sigset_t *, int);
-extern int __sigdelset(__sigset_t *, int);
+extern int __sigismember (const __sigset_t *, int);
+extern int __sigaddset (__sigset_t *, int);
+extern int __sigdelset (__sigset_t *, int);
 
 # ifdef __USE_EXTERN_INLINES
 #  define __SIGSETFN(NAME, BODY, CONST)					      \
@@ -113,13 +114,12 @@ extern int __sigdelset(__sigset_t *, int);
     return BODY;							      \
   }
 
-__SIGSETFN(__sigismember, (__set->__val[__word] & __mask) ? 1 : 0, const)
-__SIGSETFN(__sigaddset, ((__set->__val[__word] |= __mask), 0),)
-__SIGSETFN(__sigdelset, ((__set->__val[__word] &= ~__mask), 0),)
+__SIGSETFN (__sigismember, (__set->__val[__word] & __mask) ? 1 : 0, const)
+__SIGSETFN (__sigaddset, ((__set->__val[__word] |= __mask), 0), )
+__SIGSETFN (__sigdelset, ((__set->__val[__word] &= ~__mask), 0), )
 
 #  undef __SIGSETFN
 # endif
 
 
 #endif /* ! _SIGSET_H_fns.  */
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

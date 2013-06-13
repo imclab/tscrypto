@@ -1,7 +1,7 @@
 // (C) Copyright Douglas Gregor 2010
 //
-//  Use, modification and distribution are subject to the
-//  Boost Software License, Version 1.0. (See accompanying file
+//  Use, modification and distribution are subject to the 
+//  Boost Software License, Version 1.0. (See accompanying file 
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org for most recent version.
@@ -142,4 +142,3 @@
 // Macro used to identify the Clang compiler.
 #define BOOST_CLANG 1
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

@@ -189,4 +189,3 @@
 #define _POSIX_TYPED_MEMORY_OBJECTS	-1
 
 #endif /* bits/posix_opt.h */
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

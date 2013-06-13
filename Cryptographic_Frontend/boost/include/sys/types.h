@@ -202,7 +202,7 @@ __u_intN_t (16, __HI__);
 __u_intN_t (32, __SI__);
 __u_intN_t (64, __DI__);
 
-typedef int register_t __attribute__((__mode__(__word__)));
+typedef int register_t __attribute__ ((__mode__ (__word__)));
 
 
 /* Some code from BIND tests this macro to see if the types above are
@@ -273,4 +273,3 @@ typedef __fsfilcnt64_t fsfilcnt64_t; /* Type to count file system inodes.  */
 __END_DECLS
 
 #endif /* sys/types.h */
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

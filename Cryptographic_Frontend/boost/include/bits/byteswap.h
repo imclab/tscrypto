@@ -42,9 +42,9 @@
 #ifdef __GNUC__
 # if __GNUC_PREREQ (4, 3)
 static __inline unsigned int
-__bswap_32(unsigned int __bsx)
+__bswap_32 (unsigned int __bsx)
 {
-    return __builtin_bswap32(__bsx);
+  return __builtin_bswap32 (__bsx);
 }
 # elif __GNUC__ >= 2
 #  if __WORDSIZE == 64 || (defined __i486__ || defined __pentium__	      \
@@ -85,9 +85,9 @@ __bswap_32(unsigned int __bsx)
 # endif
 #else
 static __inline unsigned int
-__bswap_32(unsigned int __bsx)
+__bswap_32 (unsigned int __bsx)
 {
-    return __bswap_constant_32(__bsx);
+  return __bswap_constant_32 (__bsx);
 }
 #endif
 
@@ -106,9 +106,9 @@ __bswap_32(unsigned int __bsx)
 
 # if __GNUC_PREREQ (4, 3)
 static __inline __uint64_t
-__bswap_64(__uint64_t __bsx)
+__bswap_64 (__uint64_t __bsx)
 {
-    return __builtin_bswap64(__bsx);
+  return __builtin_bswap64 (__bsx);
 }
 # elif __WORDSIZE == 64
 #  define __bswap_64(x) \
@@ -146,11 +146,10 @@ __bswap_64(__uint64_t __bsx)
       | (((x) & 0x00000000000000ffull) << 56))
 
 static __inline __uint64_t
-__bswap_64(__uint64_t __bsx)
+__bswap_64 (__uint64_t __bsx)
 {
-    return __bswap_constant_64(__bsx);
+  return __bswap_constant_64 (__bsx);
 }
 #endif
 
 #endif /* _BITS_BYTESWAP_H */
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

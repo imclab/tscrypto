@@ -111,4 +111,3 @@
 #define EHWPOISON	133	/* Memory page has hardware error */
 
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

@@ -20,6 +20,5 @@
 # error "Never include <bits/libio-ldbl.h> directly; use <libio.h> instead."
 #endif
 
-__LDBL_REDIR_DECL(_IO_vfscanf)
-__LDBL_REDIR_DECL(_IO_vfprintf)
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+__LDBL_REDIR_DECL (_IO_vfscanf)
+__LDBL_REDIR_DECL (_IO_vfprintf)

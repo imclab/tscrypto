@@ -51,13 +51,13 @@ namespace boost
 {
 #ifdef BOOST_NO_EXCEPTIONS
 
-void throw_exception(std::exception const &e);    // user defined
+void throw_exception( std::exception const & e ); // user defined
 
 #else
 
-inline void throw_exception_assert_compatibility(std::exception const &) { }
+inline void throw_exception_assert_compatibility( std::exception const & ) { }
 
-template<class E> BOOST_ATTRIBUTE_NORETURN inline void throw_exception(E const &e)
+template<class E> BOOST_ATTRIBUTE_NORETURN inline void throw_exception( E const & e )
 {
     //All boost exceptions are required to derive from std::exception,
     //to ensure compatibility with BOOST_NO_EXCEPTIONS.
@@ -73,24 +73,24 @@ template<class E> BOOST_ATTRIBUTE_NORETURN inline void throw_exception(E const &
 #endif
 
 #if !defined( BOOST_EXCEPTION_DISABLE )
-namespace
-        exception_detail
-{
-template <class E>
-BOOST_ATTRIBUTE_NORETURN
-void
-throw_exception_(E const &x, char const *current_function, char const *file, int line)
-{
-    boost::throw_exception(
-        set_info(
-            set_info(
+    namespace
+    exception_detail
+    {
+        template <class E>
+        BOOST_ATTRIBUTE_NORETURN
+        void
+        throw_exception_( E const & x, char const * current_function, char const * file, int line )
+        {
+            boost::throw_exception(
                 set_info(
-                    enable_error_info(x),
-                    throw_function(current_function)),
-                throw_file(file)),
-            throw_line(line)));
-}
-}
+                    set_info(
+                        set_info(
+                            enable_error_info(x),
+                            throw_function(current_function)),
+                        throw_file(file)),
+                    throw_line(line)));
+        }
+    }
 #endif
 } // namespace boost
 
@@ -98,4 +98,3 @@ throw_exception_(E const &x, char const *current_function, char const *file, int
 #pragma warning(pop)
 #endif
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

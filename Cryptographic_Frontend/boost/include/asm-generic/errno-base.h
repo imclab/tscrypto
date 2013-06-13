@@ -37,4 +37,3 @@
 #define	ERANGE		34	/* Math result not representable */
 
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

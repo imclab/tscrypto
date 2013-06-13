@@ -33,26 +33,26 @@
 # if !(__USE_FORTIFY_LEVEL > 0 && defined __fortify_function)
 /* Write formatted output to stdout from argument list ARG.  */
 __STDIO_INLINE int
-vprintf(const char *__restrict __fmt, _G_va_list __arg)
+vprintf (const char *__restrict __fmt, _G_va_list __arg)
 {
-    return vfprintf(stdout, __fmt, __arg);
+  return vfprintf (stdout, __fmt, __arg);
 }
 # endif
 
 /* Read a character from stdin.  */
 __STDIO_INLINE int
-getchar(void)
+getchar (void)
 {
-    return _IO_getc(stdin);
+  return _IO_getc (stdin);
 }
 
 
 # ifdef __USE_MISC
 /* Faster version when locking is not necessary.  */
 __STDIO_INLINE int
-fgetc_unlocked(FILE *__fp)
+fgetc_unlocked (FILE *__fp)
 {
-    return _IO_getc_unlocked(__fp);
+  return _IO_getc_unlocked (__fp);
 }
 # endif /* misc */
 
@@ -60,34 +60,34 @@ fgetc_unlocked(FILE *__fp)
 # if defined __USE_POSIX || defined __USE_MISC
 /* This is defined in POSIX.1:1996.  */
 __STDIO_INLINE int
-getc_unlocked(FILE *__fp)
+getc_unlocked (FILE *__fp)
 {
-    return _IO_getc_unlocked(__fp);
+  return _IO_getc_unlocked (__fp);
 }
 
 /* This is defined in POSIX.1:1996.  */
 __STDIO_INLINE int
-getchar_unlocked(void)
+getchar_unlocked (void)
 {
-    return _IO_getc_unlocked(stdin);
+  return _IO_getc_unlocked (stdin);
 }
 # endif	/* POSIX || misc */
 
 
 /* Write a character to stdout.  */
 __STDIO_INLINE int
-putchar(int __c)
+putchar (int __c)
 {
-    return _IO_putc(__c, stdout);
+  return _IO_putc (__c, stdout);
 }
 
 
 # ifdef __USE_MISC
 /* Faster version when locking is not necessary.  */
 __STDIO_INLINE int
-fputc_unlocked(int __c, FILE *__stream)
+fputc_unlocked (int __c, FILE *__stream)
 {
-    return _IO_putc_unlocked(__c, __stream);
+  return _IO_putc_unlocked (__c, __stream);
 }
 # endif /* misc */
 
@@ -95,16 +95,16 @@ fputc_unlocked(int __c, FILE *__stream)
 # if defined __USE_POSIX || defined __USE_MISC
 /* This is defined in POSIX.1:1996.  */
 __STDIO_INLINE int
-putc_unlocked(int __c, FILE *__stream)
+putc_unlocked (int __c, FILE *__stream)
 {
-    return _IO_putc_unlocked(__c, __stream);
+  return _IO_putc_unlocked (__c, __stream);
 }
 
 /* This is defined in POSIX.1:1996.  */
 __STDIO_INLINE int
-putchar_unlocked(int __c)
+putchar_unlocked (int __c)
 {
-    return _IO_putc_unlocked(__c, stdout);
+  return _IO_putc_unlocked (__c, stdout);
 }
 # endif	/* POSIX || misc */
 
@@ -112,9 +112,9 @@ putchar_unlocked(int __c)
 # ifdef	__USE_GNU
 /* Like `getdelim', but reads up to a newline.  */
 __STDIO_INLINE _IO_ssize_t
-getline(char **__lineptr, size_t *__n, FILE *__stream)
+getline (char **__lineptr, size_t *__n, FILE *__stream)
 {
-    return __getdelim(__lineptr, __n, '\n', __stream);
+  return __getdelim (__lineptr, __n, '\n', __stream);
 }
 # endif /* GNU */
 
@@ -122,16 +122,16 @@ getline(char **__lineptr, size_t *__n, FILE *__stream)
 # ifdef __USE_MISC
 /* Faster versions when locking is not required.  */
 __STDIO_INLINE int
-__NTH(feof_unlocked(FILE *__stream))
+__NTH (feof_unlocked (FILE *__stream))
 {
-    return _IO_feof_unlocked(__stream);
+  return _IO_feof_unlocked (__stream);
 }
 
 /* Faster versions when locking is not required.  */
 __STDIO_INLINE int
-__NTH(ferror_unlocked(FILE *__stream))
+__NTH (ferror_unlocked (FILE *__stream))
 {
-    return _IO_ferror_unlocked(__stream);
+  return _IO_ferror_unlocked (__stream);
 }
 # endif /* misc */
 
@@ -188,4 +188,3 @@ __NTH(ferror_unlocked(FILE *__stream))
 
 /* Define helper macro.  */
 #undef __STDIO_INLINE
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

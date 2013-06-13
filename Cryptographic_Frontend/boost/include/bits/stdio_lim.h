@@ -40,4 +40,3 @@
 #if defined __need_IOV_MAX && !defined IOV_MAX
 # define IOV_MAX 1024
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

@@ -4,8 +4,8 @@
 
 // Copyright Aleksey Gurtovoy 2000-2004
 //
-// Distributed under the Boost Software License, Version 1.0.
-// (See accompanying file LICENSE_1_0.txt or copy at
+// Distributed under the Boost Software License, Version 1.0. 
+// (See accompanying file LICENSE_1_0.txt or copy at 
 // http://www.boost.org/LICENSE_1_0.txt)
 //
 // See http://www.boost.org/libs/mpl for documentation.
@@ -20,28 +20,26 @@
 #include <boost/mpl/aux_/config/workaround.hpp>
 
 
-namespace boost
-{
-namespace mpl
-{
-namespace aux
-{
+namespace boost { namespace mpl { namespace aux {
 
-typedef char(&no_tag)[1];
-typedef char(&yes_tag)[2];
+typedef char (&no_tag)[1];
+typedef char (&yes_tag)[2];
 
-template< bool C_ > struct yes_no_tag {
+template< bool C_ > struct yes_no_tag
+{
     typedef no_tag type;
 };
 
-template<> struct yes_no_tag<true> {
+template<> struct yes_no_tag<true>
+{
     typedef yes_tag type;
 };
 
 
-template< BOOST_MPL_AUX_NTTP_DECL(long, n) > struct weighted_tag {
+template< BOOST_MPL_AUX_NTTP_DECL(long, n) > struct weighted_tag
+{
 #if !BOOST_WORKAROUND(BOOST_MSVC, < 1300)
-    typedef char(&type)[n];
+    typedef char (&type)[n];
 #else
     char buf[n];
     typedef weighted_tag type;
@@ -49,14 +47,12 @@ template< BOOST_MPL_AUX_NTTP_DECL(long, n) > struct weighted_tag {
 };
 
 #if defined(BOOST_MPL_CFG_NO_DEPENDENT_ARRAY_TYPES)
-template<> struct weighted_tag<0> {
-    typedef char(&type)[1];
+template<> struct weighted_tag<0>
+{
+    typedef char (&type)[1];
 };
 #endif
 
-}
-}
-}
+}}}
 
 #endif // BOOST_MPL_AUX_YES_NO_HPP_INCLUDED
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

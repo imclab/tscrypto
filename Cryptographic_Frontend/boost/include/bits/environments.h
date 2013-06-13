@@ -94,4 +94,3 @@
 #define __ILP32_OFFBIG_LDFLAGS	"-m32"
 #define __LP64_OFF64_CFLAGS	"-m64"
 #define __LP64_OFF64_LDFLAGS	"-m64"
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

@@ -823,4 +823,3 @@
 # define BOOST_PP_REPEAT_3_256(m, d) BOOST_PP_REPEAT_3_255(m, d) m(4, 255, d)
 #
 # endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

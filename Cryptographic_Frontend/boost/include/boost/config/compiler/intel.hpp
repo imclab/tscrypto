@@ -125,9 +125,7 @@
 #if defined(BOOST_NO_INTRINSIC_WCHAR_T)
 #include <cwchar>
 template< typename T > struct assert_no_intrinsic_wchar_t;
-template<> struct assert_no_intrinsic_wchar_t<wchar_t> {
-    typedef void type;
-};
+template<> struct assert_no_intrinsic_wchar_t<wchar_t> { typedef void type; };
 // if you see an error here then you need to unset BOOST_NO_INTRINSIC_WCHAR_T
 // where it is defined above:
 typedef assert_no_intrinsic_wchar_t<unsigned short>::type assert_no_intrinsic_wchar_t_;
@@ -175,10 +173,10 @@ template<> struct assert_intrinsic_wchar_t<unsigned short> {};
 
 //
 // An attempt to value-initialize a pointer-to-member may trigger an
-// internal error on Intel <= 11.1 (last checked version), as was
+// internal error on Intel <= 11.1 (last checked version), as was 
 // reported by John Maddock, Intel support issue 589832, May 2010.
 // Moreover, according to test results from Huang-Vista-x86_32_intel,
-// intel-vc9-win-11.1 may leave a non-POD array uninitialized, in some
+// intel-vc9-win-11.1 may leave a non-POD array uninitialized, in some 
 // cases when it should be value-initialized.
 // (Niels Dekker, LKEB, May 2010)
 // Apparently Intel 12.1 (compiler version number 9999 !!) has the same issue (compiler regression).
@@ -226,7 +224,7 @@ template<> struct assert_intrinsic_wchar_t<unsigned short> {};
 #endif
 
 // icl Version 12.1.0.233 Build 20110811 and possibly some other builds
-// had an incorrect __INTEL_COMPILER value of 9999. Intel say this has been fixed.
+// had an incorrect __INTEL_COMPILER value of 9999. Intel say this has been fixed. 
 #if defined(BOOST_INTEL_STDCXX0X) && (BOOST_INTEL_CXX_VERSION > 1200)
 #  undef  BOOST_NO_CXX11_FUNCTION_TEMPLATE_DEFAULT_ARGS
 #  undef  BOOST_NO_CXX11_NULLPTR
@@ -236,8 +234,8 @@ template<> struct assert_intrinsic_wchar_t<unsigned short> {};
 #  undef  BOOST_NO_CXX11_VARIADIC_TEMPLATES
 
 // http://software.intel.com/en-us/articles/c0x-features-supported-by-intel-c-compiler/
-// continues to list scoped enum support as "Partial"
-//#  undef  BOOST_NO_CXX11_SCOPED_ENUMS
+// continues to list scoped enum support as "Partial" 
+//#  undef  BOOST_NO_CXX11_SCOPED_ENUMS 
 #endif
 
 #if defined(_MSC_VER) && (_MSC_VER <= 1700)
@@ -272,4 +270,3 @@ template<> struct assert_intrinsic_wchar_t<unsigned short> {};
 #  endif
 #endif
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

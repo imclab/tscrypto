@@ -1,11 +1,11 @@
-//  (C) Copyright John Maddock 2001 - 2003.
-//  (C) Copyright Darin Adler 2001 - 2002.
-//  (C) Copyright Peter Dimov 2001.
-//  (C) Copyright Aleksey Gurtovoy 2002.
-//  (C) Copyright David Abrahams 2002 - 2003.
-//  (C) Copyright Beman Dawes 2002 - 2003.
-//  Use, modification and distribution are subject to the
-//  Boost Software License, Version 1.0. (See accompanying file
+//  (C) Copyright John Maddock 2001 - 2003. 
+//  (C) Copyright Darin Adler 2001 - 2002. 
+//  (C) Copyright Peter Dimov 2001. 
+//  (C) Copyright Aleksey Gurtovoy 2002. 
+//  (C) Copyright David Abrahams 2002 - 2003. 
+//  (C) Copyright Beman Dawes 2002 - 2003. 
+//  Use, modification and distribution are subject to the 
+//  Boost Software License, Version 1.0. (See accompanying file 
 //  LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 
 //  See http://www.boost.org for most recent version.
@@ -94,7 +94,7 @@
 
 #endif
 
-#if _MSC_VER < 1400
+#if _MSC_VER < 1400 
 // although a conforming signature for swprint exists in VC7.1
 // it appears not to actually work:
 #  define BOOST_NO_SWPRINTF
@@ -114,14 +114,14 @@
 #endif
 
 #if _MSC_VER < 1600  // 150X == VC++ 9.0
-// A bug in VC9:
+   // A bug in VC9:
 #  define BOOST_NO_ADL_BARRIER
 #endif
 
 
-// MSVC (including the latest checked version) has not yet completely
+// MSVC (including the latest checked version) has not yet completely 
 // implemented value-initialization, as is reported:
-// "VC++ does not value-initialize members of derived classes without
+// "VC++ does not value-initialize members of derived classes without 
 // user-declared constructor", reported in 2009 by Sylvester Hesp:
 // https://connect.microsoft.com/VisualStudio/feedback/details/484295
 // "Presence of copy constructor breaks member class initialization",
@@ -152,11 +152,11 @@
 #  define BOOST_HAS_GETSYSTEMTIMEASFILETIME
 #endif
 
-//
-// check for exception handling support:
+//   
+// check for exception handling support:   
 #if !defined(_CPPUNWIND) && !defined(BOOST_NO_EXCEPTIONS)
-#  define BOOST_NO_EXCEPTIONS
-#endif
+#  define BOOST_NO_EXCEPTIONS   
+#endif 
 
 //
 // __int64 support:
@@ -251,18 +251,18 @@
 
 #ifndef BOOST_COMPILER
 // TODO:
-// these things are mostly bogus. 1200 means version 12.0 of the compiler. The
+// these things are mostly bogus. 1200 means version 12.0 of the compiler. The 
 // artificial versions assigned to them only refer to the versions of some IDE
 // these compilers have been shipped with, and even that is not all of it. Some
 // were shipped with freely downloadable SDKs, others as crosscompilers in eVC.
 // IOW, you can't use these 'versions' in any sensible way. Sorry.
 # if defined(UNDER_CE)
 #   if _MSC_VER < 1200
-// Note: these are so far off, they are not really supported
+      // Note: these are so far off, they are not really supported
 #   elif _MSC_VER < 1300 // eVC++ 4 comes with 1200-1202
 #     define BOOST_COMPILER_VERSION evc4.0
 #   elif _MSC_VER < 1400
-// Note: I'm not aware of any CE compiler with version 13xx
+      // Note: I'm not aware of any CE compiler with version 13xx
 #      if defined(BOOST_ASSERT_CONFIG)
 #         error "Unknown EVC++ compiler version - please run the configure tests and report the results"
 #      else
@@ -274,8 +274,8 @@
 #     define BOOST_COMPILER_VERSION evc9
 #   elif _MSC_VER < 1700
 #     define BOOST_COMPILER_VERSION evc10
-#   elif _MSC_VER < 1800
-#     define BOOST_COMPILER_VERSION evc11
+#   elif _MSC_VER < 1800 
+#     define BOOST_COMPILER_VERSION evc11 
 #   else
 #      if defined(BOOST_ASSERT_CONFIG)
 #         error "Unknown EVC++ compiler version - please run the configure tests and report the results"
@@ -285,7 +285,7 @@
 #   endif
 # else
 #   if _MSC_VER < 1200
-// Note: these are so far off, they are not really supported
+      // Note: these are so far off, they are not really supported
 #     define BOOST_COMPILER_VERSION 5.0
 #   elif _MSC_VER < 1300
 #       define BOOST_COMPILER_VERSION 6.0
@@ -299,8 +299,8 @@
 #     define BOOST_COMPILER_VERSION 9.0
 #   elif _MSC_VER < 1700
 #     define BOOST_COMPILER_VERSION 10.0
-#   elif _MSC_VER < 1800
-#     define BOOST_COMPILER_VERSION 11.0
+#   elif _MSC_VER < 1800 
+#     define BOOST_COMPILER_VERSION 11.0 
 #   else
 #     define BOOST_COMPILER_VERSION _MSC_VER
 #   endif
@@ -318,4 +318,3 @@
 #     pragma message("Unknown compiler version - please run the configure tests and report the results")
 #  endif
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

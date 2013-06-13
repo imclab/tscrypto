@@ -29,7 +29,7 @@ __BEGIN_DECLS
 #undef	alloca
 
 /* Allocate a block that will be freed when the calling function exits.  */
-extern void *alloca(size_t __size) __THROW;
+extern void *alloca (size_t __size) __THROW;
 
 #ifdef	__GNUC__
 # define alloca(size)	__builtin_alloca (size)
@@ -38,4 +38,3 @@ extern void *alloca(size_t __size) __THROW;
 __END_DECLS
 
 #endif /* alloca.h */
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

@@ -4,7 +4,7 @@
 //  Copyright (c) 2001-2003 John Maddock
 //  Copyright (c) 2001 Darin Adler
 //  Copyright (c) 2001 Peter Dimov
-//  Copyright (c) 2002 Bill Kempf
+//  Copyright (c) 2002 Bill Kempf 
 //  Copyright (c) 2002 Jens Maurer
 //  Copyright (c) 2002-2003 David Abrahams
 //  Copyright (c) 2003 Gennaro Prota
@@ -146,7 +146,7 @@
 #  endif
 
 //
-// Without partial specialization, partial
+// Without partial specialization, partial 
 // specialization with default args won't work either:
 //
 #  if defined(BOOST_NO_TEMPLATE_PARTIAL_SPECIALIZATION) \
@@ -350,11 +350,7 @@
 
 # if defined(BOOST_NO_STDC_NAMESPACE) && defined(__cplusplus)
 #   include <cstddef>
-namespace std
-{
-using ::ptrdiff_t;
-using ::size_t;
-}
+    namespace std { using ::ptrdiff_t; using ::size_t; }
 # endif
 
 //  Workaround for the unfortunate min/max macros defined by some platform headers
@@ -373,18 +369,15 @@ using ::size_t;
 
 #  if defined(BOOST_NO_STD_MIN_MAX) && defined(__cplusplus)
 
-namespace std
-{
-template <class _Tp>
-inline const _Tp &min BOOST_PREVENT_MACRO_SUBSTITUTION(const _Tp &__a, const _Tp &__b)
-{
+namespace std {
+  template <class _Tp>
+  inline const _Tp& min BOOST_PREVENT_MACRO_SUBSTITUTION (const _Tp& __a, const _Tp& __b) {
     return __b < __a ? __b : __a;
-}
-template <class _Tp>
-inline const _Tp &max BOOST_PREVENT_MACRO_SUBSTITUTION(const _Tp &__a, const _Tp &__b)
-{
+  }
+  template <class _Tp>
+  inline const _Tp& max BOOST_PREVENT_MACRO_SUBSTITUTION (const _Tp& __a, const _Tp& __b) {
     return  __a < __b ? __b : __a;
-}
+  }
 }
 
 #  endif
@@ -486,27 +479,25 @@ inline const _Tp &max BOOST_PREVENT_MACRO_SUBSTITUTION(const _Tp &__a, const _Tp
 // (with -pedantic -ansi) unless it's use is prefixed by __extension__
 //
 #if defined(BOOST_HAS_LONG_LONG) && defined(__cplusplus)
-namespace boost
-{
+namespace boost{
 #  ifdef __GNUC__
-__extension__ typedef long long long_long_type;
-__extension__ typedef unsigned long long ulong_long_type;
+   __extension__ typedef long long long_long_type;
+   __extension__ typedef unsigned long long ulong_long_type;
 #  else
-typedef long long long_long_type;
-typedef unsigned long long ulong_long_type;
+   typedef long long long_long_type;
+   typedef unsigned long long ulong_long_type;
 #  endif
 }
 #endif
 // same again for __int128:
 #if defined(BOOST_HAS_INT128) && defined(__cplusplus)
-namespace boost
-{
+namespace boost{
 #  ifdef __GNUC__
-__extension__ typedef __int128 int128_type;
-__extension__ typedef unsigned __int128 uint128_type;
+   __extension__ typedef __int128 int128_type;
+   __extension__ typedef unsigned __int128 uint128_type;
 #  else
-typedef __int128 int128_type;
-typedef unsigned __int128 uint128_type;
+   typedef __int128 int128_type;
+   typedef unsigned __int128 uint128_type;
 #  endif
 }
 #endif
@@ -593,10 +584,7 @@ typedef unsigned __int128 uint128_type;
 // the global definition into std namespace:
 #if defined(BOOST_NO_STD_TYPEINFO) && defined(__cplusplus)
 #include <typeinfo>
-namespace std
-{
-using ::type_info;
-}
+namespace std{ using ::type_info; }
 #endif
 
 // ---------------------------------------------------------------------------//
@@ -644,7 +632,7 @@ using ::type_info;
 // Set some default values GPU support
 //
 #  ifndef BOOST_GPU_ENABLED
-#  define BOOST_GPU_ENABLED
+#  define BOOST_GPU_ENABLED 
 #  endif
 
 // BOOST_FORCEINLINE ---------------------------------------------//
@@ -707,7 +695,7 @@ using ::type_info;
 #  define BOOST_NO_0X_HDR_FUTURE
 #endif
 
-//  Use BOOST_NO_CXX11_HDR_INITIALIZER_LIST
+//  Use BOOST_NO_CXX11_HDR_INITIALIZER_LIST 
 //  instead of BOOST_NO_0X_HDR_INITIALIZER_LIST or BOOST_NO_INITIALIZER_LISTS
 #ifdef BOOST_NO_CXX11_HDR_INITIALIZER_LIST
 # ifndef BOOST_NO_0X_HDR_INITIALIZER_LIST
@@ -896,7 +884,7 @@ using ::type_info;
 
 //
 // constexpr workarounds
-//
+// 
 #if defined(BOOST_NO_CXX11_CONSTEXPR)
 #define BOOST_CONSTEXPR
 #define BOOST_CONSTEXPR_OR_CONST const
@@ -930,4 +918,3 @@ using ::type_info;
 
 
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

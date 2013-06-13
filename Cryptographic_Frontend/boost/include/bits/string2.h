@@ -76,13 +76,13 @@
 # define __STRING2_COPY_TYPE(N) \
   typedef struct { unsigned char __arr[N]; }				      \
     __attribute__ ((__packed__)) __STRING2_COPY_ARR##N
-__STRING2_COPY_TYPE(2);
-__STRING2_COPY_TYPE(3);
-__STRING2_COPY_TYPE(4);
-__STRING2_COPY_TYPE(5);
-__STRING2_COPY_TYPE(6);
-__STRING2_COPY_TYPE(7);
-__STRING2_COPY_TYPE(8);
+__STRING2_COPY_TYPE (2);
+__STRING2_COPY_TYPE (3);
+__STRING2_COPY_TYPE (4);
+__STRING2_COPY_TYPE (5);
+__STRING2_COPY_TYPE (6);
+__STRING2_COPY_TYPE (7);
+__STRING2_COPY_TYPE (8);
 # undef __STRING2_COPY_TYPE
 #endif
 
@@ -233,69 +233,70 @@ __STRING2_COPY_TYPE(8);
      __extension__ __STRING2_SMALL_GET32 (src, 0),			      \
      __extension__ __STRING2_SMALL_GET32 (src, 4)
 #    endif
-__STRING_INLINE void *__mempcpy_small(void *, char, char, char, char,
-                                      __uint16_t, __uint16_t, __uint32_t,
-                                      __uint32_t, size_t);
+__STRING_INLINE void *__mempcpy_small (void *, char, char, char, char,
+				       __uint16_t, __uint16_t, __uint32_t,
+				       __uint32_t, size_t);
 __STRING_INLINE void *
-__mempcpy_small(void *__dest1,
-                char __src0_1, char __src2_1, char __src4_1, char __src6_1,
-                __uint16_t __src0_2, __uint16_t __src4_2,
-                __uint32_t __src0_4, __uint32_t __src4_4,
-                size_t __srclen)
+__mempcpy_small (void *__dest1,
+		 char __src0_1, char __src2_1, char __src4_1, char __src6_1,
+		 __uint16_t __src0_2, __uint16_t __src4_2,
+		 __uint32_t __src0_4, __uint32_t __src4_4,
+		 size_t __srclen)
 {
-    union {
-        __uint32_t __ui;
-        __uint16_t __usi;
-        unsigned char __uc;
-        unsigned char __c;
-    } *__u = __dest1;
-    switch ((unsigned int) __srclen) {
+  union {
+    __uint32_t __ui;
+    __uint16_t __usi;
+    unsigned char __uc;
+    unsigned char __c;
+  } *__u = __dest1;
+  switch ((unsigned int) __srclen)
+    {
     case 1:
-        __u->__c = __src0_1;
-        __u = __extension__((void *) __u + 1);
-        break;
+      __u->__c = __src0_1;
+      __u = __extension__ ((void *) __u + 1);
+      break;
     case 2:
-        __u->__usi = __src0_2;
-        __u = __extension__((void *) __u + 2);
-        break;
+      __u->__usi = __src0_2;
+      __u = __extension__ ((void *) __u + 2);
+      break;
     case 3:
-        __u->__usi = __src0_2;
-        __u = __extension__((void *) __u + 2);
-        __u->__c = __src2_1;
-        __u = __extension__((void *) __u + 1);
-        break;
+      __u->__usi = __src0_2;
+      __u = __extension__ ((void *) __u + 2);
+      __u->__c = __src2_1;
+      __u = __extension__ ((void *) __u + 1);
+      break;
     case 4:
-        __u->__ui = __src0_4;
-        __u = __extension__((void *) __u + 4);
-        break;
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      break;
     case 5:
-        __u->__ui = __src0_4;
-        __u = __extension__((void *) __u + 4);
-        __u->__c = __src4_1;
-        __u = __extension__((void *) __u + 1);
-        break;
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      __u->__c = __src4_1;
+      __u = __extension__ ((void *) __u + 1);
+      break;
     case 6:
-        __u->__ui = __src0_4;
-        __u = __extension__((void *) __u + 4);
-        __u->__usi = __src4_2;
-        __u = __extension__((void *) __u + 2);
-        break;
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      __u->__usi = __src4_2;
+      __u = __extension__ ((void *) __u + 2);
+      break;
     case 7:
-        __u->__ui = __src0_4;
-        __u = __extension__((void *) __u + 4);
-        __u->__usi = __src4_2;
-        __u = __extension__((void *) __u + 2);
-        __u->__c = __src6_1;
-        __u = __extension__((void *) __u + 1);
-        break;
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      __u->__usi = __src4_2;
+      __u = __extension__ ((void *) __u + 2);
+      __u->__c = __src6_1;
+      __u = __extension__ ((void *) __u + 1);
+      break;
     case 8:
-        __u->__ui = __src0_4;
-        __u = __extension__((void *) __u + 4);
-        __u->__ui = __src4_4;
-        __u = __extension__((void *) __u + 4);
-        break;
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      __u->__ui = __src4_4;
+      __u = __extension__ ((void *) __u + 4);
+      break;
     }
-    return (void *) __u;
+  return (void *) __u;
 }
 #   else
 #    ifndef _FORCE_INLINES
@@ -328,57 +329,58 @@ __mempcpy_small(void *__dest1,
 	  ((const char *) (src))[4], ((const char *) (src))[5],		      \
 	  ((const char *) (src))[6], ((const char *) (src))[7] } })
 #    endif
-__STRING_INLINE void *__mempcpy_small(void *, char, __STRING2_COPY_ARR2,
-                                      __STRING2_COPY_ARR3,
-                                      __STRING2_COPY_ARR4,
-                                      __STRING2_COPY_ARR5,
-                                      __STRING2_COPY_ARR6,
-                                      __STRING2_COPY_ARR7,
-                                      __STRING2_COPY_ARR8, size_t);
+__STRING_INLINE void *__mempcpy_small (void *, char, __STRING2_COPY_ARR2,
+				       __STRING2_COPY_ARR3,
+				       __STRING2_COPY_ARR4,
+				       __STRING2_COPY_ARR5,
+				       __STRING2_COPY_ARR6,
+				       __STRING2_COPY_ARR7,
+				       __STRING2_COPY_ARR8, size_t);
 __STRING_INLINE void *
-__mempcpy_small(void *__dest, char __src1,
-                __STRING2_COPY_ARR2 __src2, __STRING2_COPY_ARR3 __src3,
-                __STRING2_COPY_ARR4 __src4, __STRING2_COPY_ARR5 __src5,
-                __STRING2_COPY_ARR6 __src6, __STRING2_COPY_ARR7 __src7,
-                __STRING2_COPY_ARR8 __src8, size_t __srclen)
+__mempcpy_small (void *__dest, char __src1,
+		 __STRING2_COPY_ARR2 __src2, __STRING2_COPY_ARR3 __src3,
+		 __STRING2_COPY_ARR4 __src4, __STRING2_COPY_ARR5 __src5,
+		 __STRING2_COPY_ARR6 __src6, __STRING2_COPY_ARR7 __src7,
+		 __STRING2_COPY_ARR8 __src8, size_t __srclen)
 {
-    union {
-        char __c;
-        __STRING2_COPY_ARR2 __sca2;
-        __STRING2_COPY_ARR3 __sca3;
-        __STRING2_COPY_ARR4 __sca4;
-        __STRING2_COPY_ARR5 __sca5;
-        __STRING2_COPY_ARR6 __sca6;
-        __STRING2_COPY_ARR7 __sca7;
-        __STRING2_COPY_ARR8 __sca8;
-    } *__u = __dest;
-    switch ((unsigned int) __srclen) {
+  union {
+    char __c;
+    __STRING2_COPY_ARR2 __sca2;
+    __STRING2_COPY_ARR3 __sca3;
+    __STRING2_COPY_ARR4 __sca4;
+    __STRING2_COPY_ARR5 __sca5;
+    __STRING2_COPY_ARR6 __sca6;
+    __STRING2_COPY_ARR7 __sca7;
+    __STRING2_COPY_ARR8 __sca8;
+  } *__u = __dest;
+  switch ((unsigned int) __srclen)
+    {
     case 1:
-        __u->__c = __src1;
-        break;
+      __u->__c = __src1;
+      break;
     case 2:
-        __extension__ __u->__sca2 = __src2;
-        break;
+      __extension__ __u->__sca2 = __src2;
+      break;
     case 3:
-        __extension__ __u->__sca3 = __src3;
-        break;
+      __extension__ __u->__sca3 = __src3;
+      break;
     case 4:
-        __extension__ __u->__sca4 = __src4;
-        break;
+      __extension__ __u->__sca4 = __src4;
+      break;
     case 5:
-        __extension__ __u->__sca5 = __src5;
-        break;
+      __extension__ __u->__sca5 = __src5;
+      break;
     case 6:
-        __extension__ __u->__sca6 = __src6;
-        break;
+      __extension__ __u->__sca6 = __src6;
+      break;
     case 7:
-        __extension__ __u->__sca7 = __src7;
-        break;
+      __extension__ __u->__sca7 = __src7;
+      break;
     case 8:
-        __extension__ __u->__sca8 = __src8;
-        break;
+      __extension__ __u->__sca8 = __src8;
+      break;
     }
-    return __extension__((void *) __u + __srclen);
+  return __extension__ ((void *) __u + __srclen);
 }
 #   endif
 #  endif
@@ -388,7 +390,7 @@ __mempcpy_small(void *__dest, char __src1,
 
 /* Return pointer to C in S.  */
 #ifndef _HAVE_STRING_ARCH_strchr
-extern void *__rawmemchr(const void *__s, int __c);
+extern void *__rawmemchr (const void *__s, int __c);
 # if __GNUC_PREREQ (3, 2)
 #  define strchr(s, c) \
   (__extension__ (__builtin_constant_p (c) && !__builtin_constant_p (s)	      \
@@ -425,58 +427,59 @@ extern void *__rawmemchr(const void *__s, int __c);
      __extension__ __STRING2_SMALL_GET32 (src, 0),			      \
      __extension__ __STRING2_SMALL_GET32 (src, 4)
 #  endif
-__STRING_INLINE char *__strcpy_small(char *, __uint16_t, __uint16_t,
-                                     __uint32_t, __uint32_t, size_t);
+__STRING_INLINE char *__strcpy_small (char *, __uint16_t, __uint16_t,
+				      __uint32_t, __uint32_t, size_t);
 __STRING_INLINE char *
-__strcpy_small(char *__dest,
-               __uint16_t __src0_2, __uint16_t __src4_2,
-               __uint32_t __src0_4, __uint32_t __src4_4,
-               size_t __srclen)
+__strcpy_small (char *__dest,
+		__uint16_t __src0_2, __uint16_t __src4_2,
+		__uint32_t __src0_4, __uint32_t __src4_4,
+		size_t __srclen)
 {
-union {
+  union {
     __uint32_t __ui;
     __uint16_t __usi;
     unsigned char __uc;
-} *__u = (void *) __dest;
-switch ((unsigned int) __srclen) {
-case 1:
-    __u->__uc = '\0';
-    break;
-case 2:
-    __u->__usi = __src0_2;
-    break;
-case 3:
-    __u->__usi = __src0_2;
-    __u = __extension__((void *) __u + 2);
-    __u->__uc = '\0';
-    break;
-case 4:
-    __u->__ui = __src0_4;
-    break;
-case 5:
-    __u->__ui = __src0_4;
-    __u = __extension__((void *) __u + 4);
-    __u->__uc = '\0';
-    break;
-case 6:
-    __u->__ui = __src0_4;
-    __u = __extension__((void *) __u + 4);
-    __u->__usi = __src4_2;
-    break;
-case 7:
-    __u->__ui = __src0_4;
-    __u = __extension__((void *) __u + 4);
-    __u->__usi = __src4_2;
-    __u = __extension__((void *) __u + 2);
-    __u->__uc = '\0';
-    break;
-case 8:
-    __u->__ui = __src0_4;
-    __u = __extension__((void *) __u + 4);
-    __u->__ui = __src4_4;
-    break;
-}
-return __dest;
+  } *__u = (void *) __dest;
+  switch ((unsigned int) __srclen)
+    {
+    case 1:
+      __u->__uc = '\0';
+      break;
+    case 2:
+      __u->__usi = __src0_2;
+      break;
+    case 3:
+      __u->__usi = __src0_2;
+      __u = __extension__ ((void *) __u + 2);
+      __u->__uc = '\0';
+      break;
+    case 4:
+      __u->__ui = __src0_4;
+      break;
+    case 5:
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      __u->__uc = '\0';
+      break;
+    case 6:
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      __u->__usi = __src4_2;
+      break;
+    case 7:
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      __u->__usi = __src4_2;
+      __u = __extension__ ((void *) __u + 2);
+      __u->__uc = '\0';
+      break;
+    case 8:
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      __u->__ui = __src4_4;
+      break;
+    }
+  return __dest;
 }
 # else
 #  ifndef _FORCE_INLINES
@@ -508,21 +511,21 @@ return __dest;
 	  ((const char *) (src))[4], ((const char *) (src))[5],		      \
 	  ((const char *) (src))[6], '\0' } })
 #  endif
-__STRING_INLINE char *__strcpy_small(char *, __STRING2_COPY_ARR2,
-                                     __STRING2_COPY_ARR3,
-                                     __STRING2_COPY_ARR4,
-                                     __STRING2_COPY_ARR5,
-                                     __STRING2_COPY_ARR6,
-                                     __STRING2_COPY_ARR7,
-                                     __STRING2_COPY_ARR8, size_t);
+__STRING_INLINE char *__strcpy_small (char *, __STRING2_COPY_ARR2,
+				      __STRING2_COPY_ARR3,
+				      __STRING2_COPY_ARR4,
+				      __STRING2_COPY_ARR5,
+				      __STRING2_COPY_ARR6,
+				      __STRING2_COPY_ARR7,
+				      __STRING2_COPY_ARR8, size_t);
 __STRING_INLINE char *
-__strcpy_small(char *__dest,
-               __STRING2_COPY_ARR2 __src2, __STRING2_COPY_ARR3 __src3,
-               __STRING2_COPY_ARR4 __src4, __STRING2_COPY_ARR5 __src5,
-               __STRING2_COPY_ARR6 __src6, __STRING2_COPY_ARR7 __src7,
-               __STRING2_COPY_ARR8 __src8, size_t __srclen)
+__strcpy_small (char *__dest,
+		__STRING2_COPY_ARR2 __src2, __STRING2_COPY_ARR3 __src3,
+		__STRING2_COPY_ARR4 __src4, __STRING2_COPY_ARR5 __src5,
+		__STRING2_COPY_ARR6 __src6, __STRING2_COPY_ARR7 __src7,
+		__STRING2_COPY_ARR8 __src8, size_t __srclen)
 {
-union {
+  union {
     char __c;
     __STRING2_COPY_ARR2 __sca2;
     __STRING2_COPY_ARR3 __sca3;
@@ -531,34 +534,35 @@ union {
     __STRING2_COPY_ARR6 __sca6;
     __STRING2_COPY_ARR7 __sca7;
     __STRING2_COPY_ARR8 __sca8;
-} *__u = (void *) __dest;
-switch ((unsigned int) __srclen) {
-case 1:
-    __u->__c = '\0';
-    break;
-case 2:
-    __extension__ __u->__sca2 = __src2;
-    break;
-case 3:
-    __extension__ __u->__sca3 = __src3;
-    break;
-case 4:
-    __extension__ __u->__sca4 = __src4;
-    break;
-case 5:
-    __extension__ __u->__sca5 = __src5;
-    break;
-case 6:
-    __extension__ __u->__sca6 = __src6;
-    break;
-case 7:
-    __extension__ __u->__sca7 = __src7;
-    break;
-case 8:
-    __extension__ __u->__sca8 = __src8;
-    break;
-}
-return __dest;
+  } *__u = (void *) __dest;
+  switch ((unsigned int) __srclen)
+    {
+    case 1:
+      __u->__c = '\0';
+      break;
+    case 2:
+      __extension__ __u->__sca2 = __src2;
+      break;
+    case 3:
+      __extension__ __u->__sca3 = __src3;
+      break;
+    case 4:
+      __extension__ __u->__sca4 = __src4;
+      break;
+    case 5:
+      __extension__ __u->__sca5 = __src5;
+      break;
+    case 6:
+      __extension__ __u->__sca6 = __src6;
+      break;
+    case 7:
+      __extension__ __u->__sca7 = __src7;
+      break;
+    case 8:
+      __extension__ __u->__sca8 = __src8;
+      break;
+  }
+  return __dest;
 }
 # endif
 #endif
@@ -602,63 +606,64 @@ return __dest;
      __extension__ __STRING2_SMALL_GET32 (src, 0),			      \
      __extension__ __STRING2_SMALL_GET32 (src, 4)
 #    endif
-__STRING_INLINE char *__stpcpy_small(char *, __uint16_t, __uint16_t,
-                                     __uint32_t, __uint32_t, size_t);
+__STRING_INLINE char *__stpcpy_small (char *, __uint16_t, __uint16_t,
+				      __uint32_t, __uint32_t, size_t);
 __STRING_INLINE char *
-__stpcpy_small(char *__dest,
-               __uint16_t __src0_2, __uint16_t __src4_2,
-               __uint32_t __src0_4, __uint32_t __src4_4,
-               size_t __srclen)
+__stpcpy_small (char *__dest,
+		__uint16_t __src0_2, __uint16_t __src4_2,
+		__uint32_t __src0_4, __uint32_t __src4_4,
+		size_t __srclen)
 {
-union {
+  union {
     unsigned int __ui;
     unsigned short int __usi;
     unsigned char __uc;
     char __c;
-} *__u = (void *) __dest;
-switch ((unsigned int) __srclen) {
-case 1:
-    __u->__uc = '\0';
-    break;
-case 2:
-    __u->__usi = __src0_2;
-    __u = __extension__((void *) __u + 1);
-    break;
-case 3:
-    __u->__usi = __src0_2;
-    __u = __extension__((void *) __u + 2);
-    __u->__uc = '\0';
-    break;
-case 4:
-    __u->__ui = __src0_4;
-    __u = __extension__((void *) __u + 3);
-    break;
-case 5:
-    __u->__ui = __src0_4;
-    __u = __extension__((void *) __u + 4);
-    __u->__uc = '\0';
-    break;
-case 6:
-    __u->__ui = __src0_4;
-    __u = __extension__((void *) __u + 4);
-    __u->__usi = __src4_2;
-    __u = __extension__((void *) __u + 1);
-    break;
-case 7:
-    __u->__ui = __src0_4;
-    __u = __extension__((void *) __u + 4);
-    __u->__usi = __src4_2;
-    __u = __extension__((void *) __u + 2);
-    __u->__uc = '\0';
-    break;
-case 8:
-    __u->__ui = __src0_4;
-    __u = __extension__((void *) __u + 4);
-    __u->__ui = __src4_4;
-    __u = __extension__((void *) __u + 3);
-    break;
-}
-return &__u->__c;
+  } *__u = (void *) __dest;
+  switch ((unsigned int) __srclen)
+    {
+    case 1:
+      __u->__uc = '\0';
+      break;
+    case 2:
+      __u->__usi = __src0_2;
+      __u = __extension__ ((void *) __u + 1);
+      break;
+    case 3:
+      __u->__usi = __src0_2;
+      __u = __extension__ ((void *) __u + 2);
+      __u->__uc = '\0';
+      break;
+    case 4:
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 3);
+      break;
+    case 5:
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      __u->__uc = '\0';
+      break;
+    case 6:
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      __u->__usi = __src4_2;
+      __u = __extension__ ((void *) __u + 1);
+      break;
+    case 7:
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      __u->__usi = __src4_2;
+      __u = __extension__ ((void *) __u + 2);
+      __u->__uc = '\0';
+      break;
+    case 8:
+      __u->__ui = __src0_4;
+      __u = __extension__ ((void *) __u + 4);
+      __u->__ui = __src4_4;
+      __u = __extension__ ((void *) __u + 3);
+      break;
+    }
+  return &__u->__c;
 }
 #   else
 #    ifndef _FORCE_INLINES
@@ -690,21 +695,21 @@ return &__u->__c;
 	  ((const char *) (src))[4], ((const char *) (src))[5],		      \
 	  ((const char *) (src))[6], '\0' } })
 #    endif
-__STRING_INLINE char *__stpcpy_small(char *, __STRING2_COPY_ARR2,
-                                     __STRING2_COPY_ARR3,
-                                     __STRING2_COPY_ARR4,
-                                     __STRING2_COPY_ARR5,
-                                     __STRING2_COPY_ARR6,
-                                     __STRING2_COPY_ARR7,
-                                     __STRING2_COPY_ARR8, size_t);
+__STRING_INLINE char *__stpcpy_small (char *, __STRING2_COPY_ARR2,
+				      __STRING2_COPY_ARR3,
+				      __STRING2_COPY_ARR4,
+				      __STRING2_COPY_ARR5,
+				      __STRING2_COPY_ARR6,
+				      __STRING2_COPY_ARR7,
+				      __STRING2_COPY_ARR8, size_t);
 __STRING_INLINE char *
-__stpcpy_small(char *__dest,
-               __STRING2_COPY_ARR2 __src2, __STRING2_COPY_ARR3 __src3,
-               __STRING2_COPY_ARR4 __src4, __STRING2_COPY_ARR5 __src5,
-               __STRING2_COPY_ARR6 __src6, __STRING2_COPY_ARR7 __src7,
-               __STRING2_COPY_ARR8 __src8, size_t __srclen)
+__stpcpy_small (char *__dest,
+		__STRING2_COPY_ARR2 __src2, __STRING2_COPY_ARR3 __src3,
+		__STRING2_COPY_ARR4 __src4, __STRING2_COPY_ARR5 __src5,
+		__STRING2_COPY_ARR6 __src6, __STRING2_COPY_ARR7 __src7,
+		__STRING2_COPY_ARR8 __src8, size_t __srclen)
 {
-union {
+  union {
     char __c;
     __STRING2_COPY_ARR2 __sca2;
     __STRING2_COPY_ARR3 __sca3;
@@ -713,34 +718,35 @@ union {
     __STRING2_COPY_ARR6 __sca6;
     __STRING2_COPY_ARR7 __sca7;
     __STRING2_COPY_ARR8 __sca8;
-} *__u = (void *) __dest;
-switch ((unsigned int) __srclen) {
-case 1:
-    __u->__c = '\0';
-    break;
-case 2:
-    __extension__ __u->__sca2 = __src2;
-    break;
-case 3:
-    __extension__ __u->__sca3 = __src3;
-    break;
-case 4:
-    __extension__ __u->__sca4 = __src4;
-    break;
-case 5:
-    __extension__ __u->__sca5 = __src5;
-    break;
-case 6:
-    __extension__ __u->__sca6 = __src6;
-    break;
-case 7:
-    __extension__ __u->__sca7 = __src7;
-    break;
-case 8:
-    __extension__ __u->__sca8 = __src8;
-    break;
-}
-return __dest + __srclen - 1;
+  } *__u = (void *) __dest;
+  switch ((unsigned int) __srclen)
+    {
+    case 1:
+      __u->__c = '\0';
+      break;
+    case 2:
+      __extension__ __u->__sca2 = __src2;
+      break;
+    case 3:
+      __extension__ __u->__sca3 = __src3;
+      break;
+    case 4:
+      __extension__ __u->__sca4 = __src4;
+      break;
+    case 5:
+      __extension__ __u->__sca5 = __src5;
+      break;
+    case 6:
+      __extension__ __u->__sca6 = __src6;
+      break;
+    case 7:
+      __extension__ __u->__sca7 = __src7;
+      break;
+    case 8:
+      __extension__ __u->__sca8 = __src8;
+      break;
+  }
+  return __dest + __srclen - 1;
 }
 #   endif
 #  endif
@@ -959,39 +965,39 @@ return __dest + __srclen - 1;
 #  endif
 # endif
 
-__STRING_INLINE size_t __strcspn_c1(const char *__s, int __reject);
+__STRING_INLINE size_t __strcspn_c1 (const char *__s, int __reject);
 __STRING_INLINE size_t
-__strcspn_c1(const char *__s, int __reject)
+__strcspn_c1 (const char *__s, int __reject)
 {
-register size_t __result = 0;
-while (__s[__result] != '\0' && __s[__result] != __reject)
+  register size_t __result = 0;
+  while (__s[__result] != '\0' && __s[__result] != __reject)
     ++__result;
-return __result;
+  return __result;
 }
 
-__STRING_INLINE size_t __strcspn_c2(const char *__s, int __reject1,
-                                    int __reject2);
+__STRING_INLINE size_t __strcspn_c2 (const char *__s, int __reject1,
+				     int __reject2);
 __STRING_INLINE size_t
-__strcspn_c2(const char *__s, int __reject1, int __reject2)
+__strcspn_c2 (const char *__s, int __reject1, int __reject2)
 {
-register size_t __result = 0;
-while (__s[__result] != '\0' && __s[__result] != __reject1
-        && __s[__result] != __reject2)
+  register size_t __result = 0;
+  while (__s[__result] != '\0' && __s[__result] != __reject1
+	 && __s[__result] != __reject2)
     ++__result;
-return __result;
+  return __result;
 }
 
-__STRING_INLINE size_t __strcspn_c3(const char *__s, int __reject1,
-                                    int __reject2, int __reject3);
+__STRING_INLINE size_t __strcspn_c3 (const char *__s, int __reject1,
+				     int __reject2, int __reject3);
 __STRING_INLINE size_t
-__strcspn_c3(const char *__s, int __reject1, int __reject2,
-             int __reject3)
+__strcspn_c3 (const char *__s, int __reject1, int __reject2,
+	      int __reject3)
 {
-register size_t __result = 0;
-while (__s[__result] != '\0' && __s[__result] != __reject1
-        && __s[__result] != __reject2 && __s[__result] != __reject3)
+  register size_t __result = 0;
+  while (__s[__result] != '\0' && __s[__result] != __reject1
+	 && __s[__result] != __reject2 && __s[__result] != __reject3)
     ++__result;
-return __result;
+  return __result;
 }
 #endif
 
@@ -1035,40 +1041,40 @@ return __result;
 #  endif
 # endif
 
-__STRING_INLINE size_t __strspn_c1(const char *__s, int __accept);
+__STRING_INLINE size_t __strspn_c1 (const char *__s, int __accept);
 __STRING_INLINE size_t
-__strspn_c1(const char *__s, int __accept)
+__strspn_c1 (const char *__s, int __accept)
 {
-register size_t __result = 0;
-/* Please note that __accept never can be '\0'.  */
-while (__s[__result] == __accept)
+  register size_t __result = 0;
+  /* Please note that __accept never can be '\0'.  */
+  while (__s[__result] == __accept)
     ++__result;
-return __result;
+  return __result;
 }
 
-__STRING_INLINE size_t __strspn_c2(const char *__s, int __accept1,
-                                   int __accept2);
+__STRING_INLINE size_t __strspn_c2 (const char *__s, int __accept1,
+				    int __accept2);
 __STRING_INLINE size_t
-__strspn_c2(const char *__s, int __accept1, int __accept2)
+__strspn_c2 (const char *__s, int __accept1, int __accept2)
 {
-register size_t __result = 0;
-/* Please note that __accept1 and __accept2 never can be '\0'.  */
-while (__s[__result] == __accept1 || __s[__result] == __accept2)
+  register size_t __result = 0;
+  /* Please note that __accept1 and __accept2 never can be '\0'.  */
+  while (__s[__result] == __accept1 || __s[__result] == __accept2)
     ++__result;
-return __result;
+  return __result;
 }
 
-__STRING_INLINE size_t __strspn_c3(const char *__s, int __accept1,
-                                   int __accept2, int __accept3);
+__STRING_INLINE size_t __strspn_c3 (const char *__s, int __accept1,
+				    int __accept2, int __accept3);
 __STRING_INLINE size_t
-__strspn_c3(const char *__s, int __accept1, int __accept2, int __accept3)
+__strspn_c3 (const char *__s, int __accept1, int __accept2, int __accept3)
 {
-register size_t __result = 0;
-/* Please note that __accept1 to __accept3 never can be '\0'.  */
-while (__s[__result] == __accept1 || __s[__result] == __accept2
-        || __s[__result] == __accept3)
+  register size_t __result = 0;
+  /* Please note that __accept1 to __accept3 never can be '\0'.  */
+  while (__s[__result] == __accept1 || __s[__result] == __accept2
+	 || __s[__result] == __accept3)
     ++__result;
-return __result;
+  return __result;
 }
 #endif
 
@@ -1111,27 +1117,27 @@ return __result;
 #  endif
 # endif
 
-__STRING_INLINE char *__strpbrk_c2(const char *__s, int __accept1,
-                                   int __accept2);
+__STRING_INLINE char *__strpbrk_c2 (const char *__s, int __accept1,
+				    int __accept2);
 __STRING_INLINE char *
-__strpbrk_c2(const char *__s, int __accept1, int __accept2)
+__strpbrk_c2 (const char *__s, int __accept1, int __accept2)
 {
-/* Please note that __accept1 and __accept2 never can be '\0'.  */
-while (*__s != '\0' && *__s != __accept1 && *__s != __accept2)
+  /* Please note that __accept1 and __accept2 never can be '\0'.  */
+  while (*__s != '\0' && *__s != __accept1 && *__s != __accept2)
     ++__s;
-return *__s == '\0' ? NULL : (char *)(size_t) __s;
+  return *__s == '\0' ? NULL : (char *) (size_t) __s;
 }
 
-__STRING_INLINE char *__strpbrk_c3(const char *__s, int __accept1,
-                                   int __accept2, int __accept3);
+__STRING_INLINE char *__strpbrk_c3 (const char *__s, int __accept1,
+				    int __accept2, int __accept3);
 __STRING_INLINE char *
-__strpbrk_c3(const char *__s, int __accept1, int __accept2, int __accept3)
+__strpbrk_c3 (const char *__s, int __accept1, int __accept2, int __accept3)
 {
-/* Please note that __accept1 to __accept3 never can be '\0'.  */
-while (*__s != '\0' && *__s != __accept1 && *__s != __accept2
-        && *__s != __accept3)
+  /* Please note that __accept1 to __accept3 never can be '\0'.  */
+  while (*__s != '\0' && *__s != __accept1 && *__s != __accept2
+	 && *__s != __accept3)
     ++__s;
-return *__s == '\0' ? NULL : (char *)(size_t) __s;
+  return *__s == '\0' ? NULL : (char *) (size_t) __s;
 }
 #endif
 
@@ -1161,26 +1167,28 @@ return *__s == '\0' ? NULL : (char *)(size_t) __s;
 		  : __strtok_r (s, sep, nextp)))
 # endif
 
-__STRING_INLINE char *__strtok_r_1c(char *__s, char __sep, char **__nextp);
+__STRING_INLINE char *__strtok_r_1c (char *__s, char __sep, char **__nextp);
 __STRING_INLINE char *
-__strtok_r_1c(char *__s, char __sep, char **__nextp)
+__strtok_r_1c (char *__s, char __sep, char **__nextp)
 {
-char *__result;
-if (__s == NULL)
+  char *__result;
+  if (__s == NULL)
     __s = *__nextp;
-while (*__s == __sep)
+  while (*__s == __sep)
     ++__s;
-__result = NULL;
-if (*__s != '\0') {
-    __result = __s++;
-    while (*__s != '\0')
-        if (*__s++ == __sep) {
-            __s[-1] = '\0';
-            break;
-        }
-}
-*__nextp = __s;
-return __result;
+  __result = NULL;
+  if (*__s != '\0')
+    {
+      __result = __s++;
+      while (*__s != '\0')
+	if (*__s++ == __sep)
+	  {
+	    __s[-1] = '\0';
+	    break;
+	  }
+    }
+  *__nextp = __s;
+  return __result;
 }
 # if defined __USE_POSIX || defined __USE_MISC
 #  define strtok_r(s, sep, nextp) __strtok_r (s, sep, nextp)
@@ -1191,7 +1199,7 @@ return __result;
 #if !defined _HAVE_STRING_ARCH_strsep || defined _FORCE_INLINES
 # ifndef _HAVE_STRING_ARCH_strsep
 
-extern char *__strsep_g(char **__stringp, const char *__delim);
+extern char *__strsep_g (char **__stringp, const char *__delim);
 #  define __strsep(s, reject) \
   __extension__								      \
   ({ char __r0, __r1, __r2;						      \
@@ -1209,61 +1217,69 @@ extern char *__strsep_g(char **__stringp, const char *__delim);
       : __strsep_g (s, reject)); })
 # endif
 
-__STRING_INLINE char *__strsep_1c(char **__s, char __reject);
+__STRING_INLINE char *__strsep_1c (char **__s, char __reject);
 __STRING_INLINE char *
-__strsep_1c(char **__s, char __reject)
+__strsep_1c (char **__s, char __reject)
 {
-register char *__retval = *__s;
-if (__retval != NULL && (*__s = strchr(__retval, __reject)) != NULL)
-    * (*__s)++ = '\0';
-return __retval;
+  register char *__retval = *__s;
+  if (__retval != NULL && (*__s = strchr (__retval, __reject)) != NULL)
+    *(*__s)++ = '\0';
+  return __retval;
 }
 
-__STRING_INLINE char *__strsep_2c(char **__s, char __reject1, char __reject2);
+__STRING_INLINE char *__strsep_2c (char **__s, char __reject1, char __reject2);
 __STRING_INLINE char *
-__strsep_2c(char **__s, char __reject1, char __reject2)
+__strsep_2c (char **__s, char __reject1, char __reject2)
 {
-register char *__retval = *__s;
-if (__retval != NULL) {
-    register char *__cp = __retval;
-    while (1) {
-        if (*__cp == '\0') {
-            __cp = NULL;
-            break;
-        }
-        if (*__cp == __reject1 || *__cp == __reject2) {
-            *__cp++ = '\0';
-            break;
-        }
-        ++__cp;
+  register char *__retval = *__s;
+  if (__retval != NULL)
+    {
+      register char *__cp = __retval;
+      while (1)
+	{
+	  if (*__cp == '\0')
+	    {
+	      __cp = NULL;
+	  break;
+	    }
+	  if (*__cp == __reject1 || *__cp == __reject2)
+	    {
+	      *__cp++ = '\0';
+	      break;
+	    }
+	  ++__cp;
+	}
+      *__s = __cp;
     }
-    *__s = __cp;
-}
-return __retval;
+  return __retval;
 }
 
-__STRING_INLINE char *__strsep_3c(char **__s, char __reject1, char __reject2,
-                                  char __reject3);
+__STRING_INLINE char *__strsep_3c (char **__s, char __reject1, char __reject2,
+				   char __reject3);
 __STRING_INLINE char *
-__strsep_3c(char **__s, char __reject1, char __reject2, char __reject3)
+__strsep_3c (char **__s, char __reject1, char __reject2, char __reject3)
 {
-register char *__retval = *__s;
-if (__retval != NULL) {
-    register char *__cp = __retval;
-    while (1) {
-        if (*__cp == '\0') {
-            __cp = NULL;
-            break;
-        }
-        if (*__cp == __reject1 || *__cp == __reject2 || *__cp == __reject3) {
-            *__cp++ = '\0';
-            break;
-        }
-        ++__cp;
+  register char *__retval = *__s;
+  if (__retval != NULL)
+    {
+      register char *__cp = __retval;
+      while (1)
+	{
+	  if (*__cp == '\0')
+	    {
+	      __cp = NULL;
+	  break;
+	    }
+	  if (*__cp == __reject1 || *__cp == __reject2 || *__cp == __reject3)
+	    {
+	      *__cp++ = '\0';
+	      break;
+	    }
+	  ++__cp;
+	}
+      *__s = __cp;
     }
-    *__s = __cp;
-}
-return __retval;
+  return __retval;
 }
 # ifdef __USE_BSD
 #  define strsep(s, reject) __strsep (s, reject)
@@ -1282,7 +1298,7 @@ return __retval;
 
 # ifndef _HAVE_STRING_ARCH_strdup
 
-extern char *__strdup(const char *__string) __THROW __attribute_malloc__;
+extern char *__strdup (const char *__string) __THROW __attribute_malloc__;
 #  define __strdup(s) \
   (__extension__ (__builtin_constant_p (s) && __string2_1bptr_p (s)	      \
 		  ? (((const char *) (s))[0] == '\0'			      \
@@ -1301,8 +1317,8 @@ extern char *__strdup(const char *__string) __THROW __attribute_malloc__;
 
 # ifndef _HAVE_STRING_ARCH_strndup
 
-extern char *__strndup(const char *__string, size_t __n)
-__THROW __attribute_malloc__;
+extern char *__strndup (const char *__string, size_t __n)
+     __THROW __attribute_malloc__;
 #  define __strndup(s, n) \
   (__extension__ (__builtin_constant_p (s) && __string2_1bptr_p (s)	      \
 		  ? (((const char *) (s))[0] == '\0'			      \
@@ -1334,4 +1350,3 @@ __THROW __attribute_malloc__;
 #endif
 
 #endif /* No string inlines.  */
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

@@ -46,4 +46,3 @@
 # define BOOST_PP_CHECK_RESULT_1 1, BOOST_PP_NIL
 #
 # endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

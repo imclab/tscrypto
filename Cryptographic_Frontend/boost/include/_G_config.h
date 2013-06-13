@@ -18,22 +18,26 @@
 # define __need_wint_t
 #endif
 #include <wchar.h>
-typedef struct {
-    __off_t __pos;
-    __mbstate_t __state;
+typedef struct
+{
+  __off_t __pos;
+  __mbstate_t __state;
 } _G_fpos_t;
-typedef struct {
-    __off64_t __pos;
-    __mbstate_t __state;
+typedef struct
+{
+  __off64_t __pos;
+  __mbstate_t __state;
 } _G_fpos64_t;
 #if defined _LIBC || defined _GLIBCPP_USE_WCHAR_T
 # include <gconv.h>
-typedef union {
+typedef union
+{
+  struct __gconv_info __cd;
+  struct
+  {
     struct __gconv_info __cd;
-    struct {
-        struct __gconv_info __cd;
-        struct __gconv_step_data __data;
-    } __combined;
+    struct __gconv_step_data __data;
+  } __combined;
 } _G_iconv_t;
 #endif
 
@@ -52,4 +56,3 @@ typedef union {
 #define _G_BUFSIZ 8192
 
 #endif	/* _G_config.h */
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

@@ -30,4 +30,3 @@ extern const char *const sys_errlist[];
 extern int _sys_nerr;
 extern const char *const _sys_errlist[];
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

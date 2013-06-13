@@ -10,18 +10,18 @@
 
 #include <boost/config.hpp>
 
-namespace boost
-{
-namespace type_traits
-{
+namespace boost {
+namespace type_traits {
 
 template <bool b>
-struct ice_not {
+struct ice_not
+{
     BOOST_STATIC_CONSTANT(bool, value = true);
 };
 
 template <>
-struct ice_not<true> {
+struct ice_not<true>
+{
     BOOST_STATIC_CONSTANT(bool, value = false);
 };
 
@@ -29,4 +29,3 @@ struct ice_not<true> {
 } // namespace boost
 
 #endif // BOOST_TT_DETAIL_ICE_NOT_HPP_INCLUDED
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

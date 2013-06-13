@@ -142,8 +142,7 @@
 #define _IO_BOOLALPHA 0200000
 
 
-struct _IO_jump_t;
-struct _IO_FILE;
+struct _IO_jump_t;  struct _IO_FILE;
 
 /* Handle lock.  */
 #ifdef _IO_MTSAFE_IO
@@ -160,159 +159,156 @@ typedef void _IO_lock_t;
 /* A streammarker remembers a position in a buffer. */
 
 struct _IO_marker {
-    struct _IO_marker *_next;
-    struct _IO_FILE *_sbuf;
-    /* If _pos >= 0
-    it points to _buf->Gbase()+_pos. FIXME comment */
-    /* if _pos < 0, it points to _buf->eBptr()+_pos. FIXME comment */
-    int _pos;
+  struct _IO_marker *_next;
+  struct _IO_FILE *_sbuf;
+  /* If _pos >= 0
+ it points to _buf->Gbase()+_pos. FIXME comment */
+  /* if _pos < 0, it points to _buf->eBptr()+_pos. FIXME comment */
+  int _pos;
 #if 0
-    void set_streampos(streampos sp) {
-        _spos = sp;
-    }
-    void set_offset(int offset) {
-        _pos = offset;
-        _spos = (streampos)(-2);
-    }
-public:
+    void set_streampos(streampos sp) { _spos = sp; }
+    void set_offset(int offset) { _pos = offset; _spos = (streampos)(-2); }
+  public:
     streammarker(streambuf *sb);
     ~streammarker();
-    int saving() {
-        return  _spos == -2;
-    }
-    int delta(streammarker &);
+    int saving() { return  _spos == -2; }
+    int delta(streammarker&);
     int delta();
 #endif
 };
 
 /* This is the structure from the libstdc++ codecvt class.  */
-enum __codecvt_result {
-    __codecvt_ok,
-    __codecvt_partial,
-    __codecvt_error,
-    __codecvt_noconv
+enum __codecvt_result
+{
+  __codecvt_ok,
+  __codecvt_partial,
+  __codecvt_error,
+  __codecvt_noconv
 };
 
 #if defined _LIBC || defined _GLIBCPP_USE_WCHAR_T
 /* The order of the elements in the following struct must match the order
    of the virtual functions in the libstdc++ codecvt class.  */
-struct _IO_codecvt {
-    void (*__codecvt_destr)(struct _IO_codecvt *);
-    enum __codecvt_result(*__codecvt_do_out)(struct _IO_codecvt *,
-            __mbstate_t *,
-            const wchar_t *,
-            const wchar_t *,
-            const wchar_t **, char *,
-            char *, char **);
-    enum __codecvt_result(*__codecvt_do_unshift)(struct _IO_codecvt *,
-            __mbstate_t *, char *,
-            char *, char **);
-    enum __codecvt_result(*__codecvt_do_in)(struct _IO_codecvt *,
-                                            __mbstate_t *,
-                                            const char *, const char *,
-                                            const char **, wchar_t *,
-                                            wchar_t *, wchar_t **);
-    int (*__codecvt_do_encoding)(struct _IO_codecvt *);
-    int (*__codecvt_do_always_noconv)(struct _IO_codecvt *);
-    int (*__codecvt_do_length)(struct _IO_codecvt *, __mbstate_t *,
-                               const char *, const char *, _IO_size_t);
-    int (*__codecvt_do_max_length)(struct _IO_codecvt *);
+struct _IO_codecvt
+{
+  void (*__codecvt_destr) (struct _IO_codecvt *);
+  enum __codecvt_result (*__codecvt_do_out) (struct _IO_codecvt *,
+					     __mbstate_t *,
+					     const wchar_t *,
+					     const wchar_t *,
+					     const wchar_t **, char *,
+					     char *, char **);
+  enum __codecvt_result (*__codecvt_do_unshift) (struct _IO_codecvt *,
+						 __mbstate_t *, char *,
+						 char *, char **);
+  enum __codecvt_result (*__codecvt_do_in) (struct _IO_codecvt *,
+					    __mbstate_t *,
+					    const char *, const char *,
+					    const char **, wchar_t *,
+					    wchar_t *, wchar_t **);
+  int (*__codecvt_do_encoding) (struct _IO_codecvt *);
+  int (*__codecvt_do_always_noconv) (struct _IO_codecvt *);
+  int (*__codecvt_do_length) (struct _IO_codecvt *, __mbstate_t *,
+			      const char *, const char *, _IO_size_t);
+  int (*__codecvt_do_max_length) (struct _IO_codecvt *);
 
-    _IO_iconv_t __cd_in;
-    _IO_iconv_t __cd_out;
+  _IO_iconv_t __cd_in;
+  _IO_iconv_t __cd_out;
 };
 
 /* Extra data for wide character streams.  */
-struct _IO_wide_data {
-    wchar_t *_IO_read_ptr;	/* Current read pointer */
-    wchar_t *_IO_read_end;	/* End of get area. */
-    wchar_t *_IO_read_base;	/* Start of putback+get area. */
-    wchar_t *_IO_write_base;	/* Start of put area. */
-    wchar_t *_IO_write_ptr;	/* Current put pointer. */
-    wchar_t *_IO_write_end;	/* End of put area. */
-    wchar_t *_IO_buf_base;	/* Start of reserve area. */
-    wchar_t *_IO_buf_end;		/* End of reserve area. */
-    /* The following fields are used to support backing up and undo. */
-    wchar_t *_IO_save_base;	/* Pointer to start of non-current get area. */
-    wchar_t *_IO_backup_base;	/* Pointer to first valid character of
+struct _IO_wide_data
+{
+  wchar_t *_IO_read_ptr;	/* Current read pointer */
+  wchar_t *_IO_read_end;	/* End of get area. */
+  wchar_t *_IO_read_base;	/* Start of putback+get area. */
+  wchar_t *_IO_write_base;	/* Start of put area. */
+  wchar_t *_IO_write_ptr;	/* Current put pointer. */
+  wchar_t *_IO_write_end;	/* End of put area. */
+  wchar_t *_IO_buf_base;	/* Start of reserve area. */
+  wchar_t *_IO_buf_end;		/* End of reserve area. */
+  /* The following fields are used to support backing up and undo. */
+  wchar_t *_IO_save_base;	/* Pointer to start of non-current get area. */
+  wchar_t *_IO_backup_base;	/* Pointer to first valid character of
 				   backup area */
-    wchar_t *_IO_save_end;	/* Pointer to end of non-current get area. */
+  wchar_t *_IO_save_end;	/* Pointer to end of non-current get area. */
 
-    __mbstate_t _IO_state;
-    __mbstate_t _IO_last_state;
-    struct _IO_codecvt _codecvt;
+  __mbstate_t _IO_state;
+  __mbstate_t _IO_last_state;
+  struct _IO_codecvt _codecvt;
 
-    wchar_t _shortbuf[1];
+  wchar_t _shortbuf[1];
 
-    const struct _IO_jump_t *_wide_vtable;
+  const struct _IO_jump_t *_wide_vtable;
 };
 #endif
 
 struct _IO_FILE {
-    int _flags;		/* High-order word is _IO_MAGIC; rest is flags. */
+  int _flags;		/* High-order word is _IO_MAGIC; rest is flags. */
 #define _IO_file_flags _flags
 
-    /* The following pointers correspond to the C++ streambuf protocol. */
-    /* Note:  Tk uses the _IO_read_ptr and _IO_read_end fields directly. */
-    char *_IO_read_ptr;	/* Current read pointer */
-    char *_IO_read_end;	/* End of get area. */
-    char *_IO_read_base;	/* Start of putback+get area. */
-    char *_IO_write_base;	/* Start of put area. */
-    char *_IO_write_ptr;	/* Current put pointer. */
-    char *_IO_write_end;	/* End of put area. */
-    char *_IO_buf_base;	/* Start of reserve area. */
-    char *_IO_buf_end;	/* End of reserve area. */
-    /* The following fields are used to support backing up and undo. */
-    char *_IO_save_base; /* Pointer to start of non-current get area. */
-    char *_IO_backup_base;  /* Pointer to first valid character of backup area */
-    char *_IO_save_end; /* Pointer to end of non-current get area. */
+  /* The following pointers correspond to the C++ streambuf protocol. */
+  /* Note:  Tk uses the _IO_read_ptr and _IO_read_end fields directly. */
+  char* _IO_read_ptr;	/* Current read pointer */
+  char* _IO_read_end;	/* End of get area. */
+  char* _IO_read_base;	/* Start of putback+get area. */
+  char* _IO_write_base;	/* Start of put area. */
+  char* _IO_write_ptr;	/* Current put pointer. */
+  char* _IO_write_end;	/* End of put area. */
+  char* _IO_buf_base;	/* Start of reserve area. */
+  char* _IO_buf_end;	/* End of reserve area. */
+  /* The following fields are used to support backing up and undo. */
+  char *_IO_save_base; /* Pointer to start of non-current get area. */
+  char *_IO_backup_base;  /* Pointer to first valid character of backup area */
+  char *_IO_save_end; /* Pointer to end of non-current get area. */
 
-    struct _IO_marker *_markers;
+  struct _IO_marker *_markers;
 
-    struct _IO_FILE *_chain;
+  struct _IO_FILE *_chain;
 
-    int _fileno;
+  int _fileno;
 #if 0
-    int _blksize;
+  int _blksize;
 #else
-    int _flags2;
+  int _flags2;
 #endif
-    _IO_off_t _old_offset; /* This used to be _offset but it's too small.  */
+  _IO_off_t _old_offset; /* This used to be _offset but it's too small.  */
 
 #define __HAVE_COLUMN /* temporary */
-    /* 1+column number of pbase(); 0 is unknown. */
-    unsigned short _cur_column;
-    signed char _vtable_offset;
-    char _shortbuf[1];
+  /* 1+column number of pbase(); 0 is unknown. */
+  unsigned short _cur_column;
+  signed char _vtable_offset;
+  char _shortbuf[1];
 
-    /*  char* _save_gptr;  char* _save_egptr; */
+  /*  char* _save_gptr;  char* _save_egptr; */
 
-    _IO_lock_t *_lock;
+  _IO_lock_t *_lock;
 #ifdef _IO_USE_OLD_IO_FILE
 };
 
-struct _IO_FILE_complete {
-    struct _IO_FILE _file;
+struct _IO_FILE_complete
+{
+  struct _IO_FILE _file;
 #endif
 #if defined _G_IO_IO_FILE_VERSION && _G_IO_IO_FILE_VERSION == 0x20001
-    _IO_off64_t _offset;
+  _IO_off64_t _offset;
 # if defined _LIBC || defined _GLIBCPP_USE_WCHAR_T
-    /* Wide character stream stuff.  */
-    struct _IO_codecvt *_codecvt;
-    struct _IO_wide_data *_wide_data;
-    struct _IO_FILE *_freeres_list;
-    void *_freeres_buf;
-    size_t _freeres_size;
+  /* Wide character stream stuff.  */
+  struct _IO_codecvt *_codecvt;
+  struct _IO_wide_data *_wide_data;
+  struct _IO_FILE *_freeres_list;
+  void *_freeres_buf;
+  size_t _freeres_size;
 # else
-    void *__pad1;
-    void *__pad2;
-    void *__pad3;
-    void *__pad4;
-    size_t __pad5;
+  void *__pad1;
+  void *__pad2;
+  void *__pad3;
+  void *__pad4;
+  size_t __pad5;
 # endif
-    int _mode;
-    /* Make sure we don't get into trouble again.  */
-    char _unused2[15 * sizeof(int) - 4 * sizeof(void *) - sizeof(size_t)];
+  int _mode;
+  /* Make sure we don't get into trouble again.  */
+  char _unused2[15 * sizeof (int) - 4 * sizeof (void *) - sizeof (size_t)];
 #endif
 };
 
@@ -340,7 +336,7 @@ extern _IO_FILE *_IO_stderr attribute_hidden;
 
 /* Read NBYTES bytes from COOKIE into a buffer pointed to by BUF.
    Return number of bytes read.  */
-typedef __ssize_t __io_read_fn(void *__cookie, char *__buf, size_t __nbytes);
+typedef __ssize_t __io_read_fn (void *__cookie, char *__buf, size_t __nbytes);
 
 /* Write N bytes pointed to by BUF to COOKIE.  Write all N bytes
    unless there is an error.  Return number of bytes written.  If
@@ -348,8 +344,8 @@ typedef __ssize_t __io_read_fn(void *__cookie, char *__buf, size_t __nbytes);
    has been opened for append (__mode.__append set), then set the file
    pointer to the end of the file and then do the write; if not, just
    write at the current file pointer.  */
-typedef __ssize_t __io_write_fn(void *__cookie, const char *__buf,
-                                size_t __n);
+typedef __ssize_t __io_write_fn (void *__cookie, const char *__buf,
+				 size_t __n);
 
 /* Move COOKIE's file position to *POS bytes from the
    beginning of the file (if W is SEEK_SET),
@@ -357,10 +353,10 @@ typedef __ssize_t __io_write_fn(void *__cookie, const char *__buf,
    or the end of the file (if W is SEEK_END).
    Set *POS to the new file position.
    Returns zero if successful, nonzero if not.  */
-typedef int __io_seek_fn(void *__cookie, _IO_off64_t *__pos, int __w);
+typedef int __io_seek_fn (void *__cookie, _IO_off64_t *__pos, int __w);
 
 /* Close COOKIE.  */
-typedef int __io_close_fn(void *__cookie);
+typedef int __io_close_fn (void *__cookie);
 
 
 #ifdef _GNU_SOURCE
@@ -371,19 +367,20 @@ typedef __io_seek_fn cookie_seek_function_t;
 typedef __io_close_fn cookie_close_function_t;
 
 /* The structure with the cookie function pointers.  */
-typedef struct {
-    __io_read_fn *read;		/* Read bytes.  */
-    __io_write_fn *write;		/* Write bytes.  */
-    __io_seek_fn *seek;		/* Seek/tell file position.  */
-    __io_close_fn *close;		/* Close file.  */
+typedef struct
+{
+  __io_read_fn *read;		/* Read bytes.  */
+  __io_write_fn *write;		/* Write bytes.  */
+  __io_seek_fn *seek;		/* Seek/tell file position.  */
+  __io_close_fn *close;		/* Close file.  */
 } _IO_cookie_io_functions_t;
 typedef _IO_cookie_io_functions_t cookie_io_functions_t;
 
 struct _IO_cookie_file;
 
 /* Initialize one of those.  */
-extern void _IO_cookie_init(struct _IO_cookie_file *__cfile, int __read_write,
-                            void *__cookie, _IO_cookie_io_functions_t __fns);
+extern void _IO_cookie_init (struct _IO_cookie_file *__cfile, int __read_write,
+			     void *__cookie, _IO_cookie_io_functions_t __fns);
 #endif
 
 
@@ -391,13 +388,13 @@ extern void _IO_cookie_init(struct _IO_cookie_file *__cfile, int __read_write,
 extern "C" {
 #endif
 
-extern int __underflow(_IO_FILE *);
-extern int __uflow(_IO_FILE *);
-extern int __overflow(_IO_FILE *, int);
+extern int __underflow (_IO_FILE *);
+extern int __uflow (_IO_FILE *);
+extern int __overflow (_IO_FILE *, int);
 #if defined _LIBC || defined _GLIBCPP_USE_WCHAR_T
-extern _IO_wint_t __wunderflow(_IO_FILE *);
-extern _IO_wint_t __wuflow(_IO_FILE *);
-extern _IO_wint_t __woverflow(_IO_FILE *, _IO_wint_t);
+extern _IO_wint_t __wunderflow (_IO_FILE *);
+extern _IO_wint_t __wuflow (_IO_FILE *);
+extern _IO_wint_t __woverflow (_IO_FILE *, _IO_wint_t);
 #endif
 
 #if  __GNUC__ >= 3
@@ -435,20 +432,20 @@ extern _IO_wint_t __woverflow(_IO_FILE *, _IO_wint_t);
 #define _IO_feof_unlocked(__fp) (((__fp)->_flags & _IO_EOF_SEEN) != 0)
 #define _IO_ferror_unlocked(__fp) (((__fp)->_flags & _IO_ERR_SEEN) != 0)
 
-extern int _IO_getc(_IO_FILE *__fp);
-extern int _IO_putc(int __c, _IO_FILE *__fp);
-extern int _IO_feof(_IO_FILE *__fp) __THROW;
-extern int _IO_ferror(_IO_FILE *__fp) __THROW;
+extern int _IO_getc (_IO_FILE *__fp);
+extern int _IO_putc (int __c, _IO_FILE *__fp);
+extern int _IO_feof (_IO_FILE *__fp) __THROW;
+extern int _IO_ferror (_IO_FILE *__fp) __THROW;
 
-extern int _IO_peekc_locked(_IO_FILE *__fp);
+extern int _IO_peekc_locked (_IO_FILE *__fp);
 
 /* This one is for Emacs. */
 #define _IO_PENDING_OUTPUT_COUNT(_fp)	\
 	((_fp)->_IO_write_ptr - (_fp)->_IO_write_base)
 
-extern void _IO_flockfile(_IO_FILE *) __THROW;
-extern void _IO_funlockfile(_IO_FILE *) __THROW;
-extern int _IO_ftrylockfile(_IO_FILE *) __THROW;
+extern void _IO_flockfile (_IO_FILE *) __THROW;
+extern void _IO_funlockfile (_IO_FILE *) __THROW;
+extern int _IO_ftrylockfile (_IO_FILE *) __THROW;
 
 #ifdef _IO_MTSAFE_IO
 # define _IO_peekc(_fp) _IO_peekc_locked (_fp)
@@ -465,22 +462,22 @@ extern int _IO_ftrylockfile(_IO_FILE *) __THROW;
 # define _IO_cleanup_region_end(_Doit) /**/
 #endif /* !_IO_MTSAFE_IO */
 
-extern int _IO_vfscanf(_IO_FILE *__restrict, const char *__restrict,
-                       _IO_va_list, int *__restrict);
-extern int _IO_vfprintf(_IO_FILE *__restrict, const char *__restrict,
-                        _IO_va_list);
-extern _IO_ssize_t _IO_padn(_IO_FILE *, int, _IO_ssize_t);
-extern _IO_size_t _IO_sgetn(_IO_FILE *, void *, _IO_size_t);
+extern int _IO_vfscanf (_IO_FILE * __restrict, const char * __restrict,
+			_IO_va_list, int *__restrict);
+extern int _IO_vfprintf (_IO_FILE *__restrict, const char *__restrict,
+			 _IO_va_list);
+extern _IO_ssize_t _IO_padn (_IO_FILE *, int, _IO_ssize_t);
+extern _IO_size_t _IO_sgetn (_IO_FILE *, void *, _IO_size_t);
 
-extern _IO_off64_t _IO_seekoff(_IO_FILE *, _IO_off64_t, int, int);
-extern _IO_off64_t _IO_seekpos(_IO_FILE *, _IO_off64_t, int);
+extern _IO_off64_t _IO_seekoff (_IO_FILE *, _IO_off64_t, int, int);
+extern _IO_off64_t _IO_seekpos (_IO_FILE *, _IO_off64_t, int);
 
-extern void _IO_free_backup_area(_IO_FILE *) __THROW;
+extern void _IO_free_backup_area (_IO_FILE *) __THROW;
 
 #if defined _LIBC || defined _GLIBCPP_USE_WCHAR_T
-extern _IO_wint_t _IO_getwc(_IO_FILE *__fp);
-extern _IO_wint_t _IO_putwc(wchar_t __wc, _IO_FILE *__fp);
-extern int _IO_fwide(_IO_FILE *__fp, int __mode) __THROW;
+extern _IO_wint_t _IO_getwc (_IO_FILE *__fp);
+extern _IO_wint_t _IO_putwc (wchar_t __wc, _IO_FILE *__fp);
+extern int _IO_fwide (_IO_FILE *__fp, int __mode) __THROW;
 # if __GNUC__ >= 2
 /* While compiling glibc we have to handle compatibility with very old
    versions.  */
@@ -490,7 +487,7 @@ extern int _IO_fwide(_IO_FILE *__fp, int __mode) __THROW;
 #    define _IO_fwide_maybe_incompatible \
   (__builtin_expect (&_IO_stdin_used == NULL, 0))
 extern const int _IO_stdin_used;
-weak_extern(_IO_stdin_used);
+weak_extern (_IO_stdin_used);
 #   endif
 #  endif
 #  ifndef _IO_fwide_maybe_incompatible
@@ -514,12 +511,12 @@ weak_extern(_IO_stdin_used);
      __result; })
 # endif
 
-extern int _IO_vfwscanf(_IO_FILE *__restrict, const wchar_t *__restrict,
-                        _IO_va_list, int *__restrict);
-extern int _IO_vfwprintf(_IO_FILE *__restrict, const wchar_t *__restrict,
-                         _IO_va_list);
-extern _IO_ssize_t _IO_wpadn(_IO_FILE *, wint_t, _IO_ssize_t);
-extern void _IO_free_wbackup_area(_IO_FILE *) __THROW;
+extern int _IO_vfwscanf (_IO_FILE * __restrict, const wchar_t * __restrict,
+			 _IO_va_list, int *__restrict);
+extern int _IO_vfwprintf (_IO_FILE *__restrict, const wchar_t *__restrict,
+			  _IO_va_list);
+extern _IO_ssize_t _IO_wpadn (_IO_FILE *, wint_t, _IO_ssize_t);
+extern void _IO_free_wbackup_area (_IO_FILE *) __THROW;
 #endif
 
 #ifdef __LDBL_COMPAT
@@ -531,4 +528,3 @@ extern void _IO_free_wbackup_area(_IO_FILE *) __THROW;
 #endif
 
 #endif /* _IO_STDIO_H */
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

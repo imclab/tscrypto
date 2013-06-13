@@ -21,9 +21,9 @@
 #endif
 
 /* Helper functions to issue warnings and errors when needed.  */
-extern long int __fdelt_chk(long int __d);
-extern long int __fdelt_warn(long int __d)
-__warnattr("bit outside of fd_set selected");
+extern long int __fdelt_chk (long int __d);
+extern long int __fdelt_warn (long int __d)
+  __warnattr ("bit outside of fd_set selected");
 #undef __FD_ELT
 #define	__FD_ELT(d) \
   __extension__								    \
@@ -33,4 +33,3 @@ __warnattr("bit outside of fd_set selected");
 	 ? (__d / __NFDBITS)						    \
 	 : __fdelt_warn (__d))						    \
       : __fdelt_chk (__d)); })
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

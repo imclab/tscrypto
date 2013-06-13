@@ -42,9 +42,8 @@
 # endif
 #else
 static __inline unsigned short int
-__bswap_16(unsigned short int __bsx)
+__bswap_16 (unsigned short int __bsx)
 {
-    return __bswap_constant_16(__bsx);
+  return __bswap_constant_16 (__bsx);
 }
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

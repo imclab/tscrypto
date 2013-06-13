@@ -15,4 +15,3 @@
 # include <boost/preprocessor/repetition/repeat.hpp>
 #
 # endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
