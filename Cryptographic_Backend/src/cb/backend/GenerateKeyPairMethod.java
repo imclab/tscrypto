@@ -14,7 +14,7 @@ import java.security.spec.RSAKeyGenParameterSpec;
 public class GenerateKeyPairMethod implements Method {
 
   public static class ReturnValue {
-    public int handler;
+    public long handler;
   }
 
   public static class Args {
@@ -59,7 +59,7 @@ public class GenerateKeyPairMethod implements Method {
       kpg.initialize(rsaParams, random);
 
       KeyPair pair = kpg.generateKeyPair();
-      int handler = ks.storeKeyPair(keyType, keySize, pair);
+      long handler = ks.storeKeyPair(keyType, keySize, pair);
 
       // Defino el return value, para ser luego serializado en json.
       rv.handler = handler;

@@ -12,9 +12,9 @@ public class FindKeyMethod implements Method {
   }
 
   public static class Args {
-    public int handler;
+    public long handler;
   }
-  private int handler;
+  private long handler;
 
   public FindKeyMethod(Args args) {
     handler = args.handler;

@@ -1,10 +1,10 @@
-#include <Method.hpp>
-#include <methods/GenerateKeyPairMethod.hpp>
-#include <methods/SignInitMethod.hpp>
-#include <methods/SignMethod.hpp>
-#include <methods/FindKeyMethod.hpp>
-#include <RabbitConnection.hpp>
-#include <ResponseMessage.hpp>
+#include "cf/Method.hpp"
+#include "cf/GenerateKeyPairMethod.hpp"
+#include "cf/SignInitMethod.hpp"
+#include "cf/SignMethod.hpp"
+#include "cf/FindKeyMethod.hpp"
+#include "cf/RabbitConnection.hpp"
+#include "cf/ResponseMessage.hpp"
 
 #include <iostream>
 #include <string>
@@ -14,28 +14,22 @@ using namespace cf;
 int main()
 {
     try {
+        long long handler;
+        
         RabbitConnection connection("localhost", 5672, "", "rpc_queue", 1);
-        std::unique_ptr<Method> method(new GenerateKeyPairMethod("RSA", 1024, "65537"));
+        Method* method = new cf::GenerateKeyPairMethod("RSA", 2048, "65537");
         method->execute(connection);
-        ResponseMessagePtr response(method->getResponse());
-
-        int handler = response->getValue<int>("handler");
-        std::cout << handler << std::endl;
-
-        method.reset(new SignInitMethod("SHA1withRSA", handler));
-        method->execute(connection);
-        response.reset(method->getResponse().release());
-        std::cout << "OK!" << std::endl;
-
-        method.reset(new SignMethod("SG9sYSBNdW5kbyE="));
+        cf::ResponseMessagePtr response(method->getResponse());
+        handler = response->getValue<long long>("handler");
+        delete method;
+        
+        method = new cf::FindKeyMethod(handler);
         method->execute(connection);
         response.reset(method->getResponse().release());
-        std::cout << response->getValue<std::string>("signedData") << std::endl;
-
-        method.reset(new FindKeyMethod(handler));
-        method->execute(connection);
-        response.reset(method->getResponse().release());
-        std::cout << response->getValue<std::string>("key") << std::endl;
+        std::string pemPublicKey = response->getValue<std::string>("key");
+        delete method;
+        
+        std::cout << pemPublicKey << std::endl;
 
     } catch (std::exception &e) {
         std::cerr << "Error: " << e.what() << std::endl;

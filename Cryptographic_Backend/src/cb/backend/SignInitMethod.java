@@ -9,12 +9,12 @@ import com.google.gson.Gson;
 public class SignInitMethod implements Method {
 	public static class Args {
 		public String mechanism;
-		public int handler;
+		public long handler;
 	}
 	private String mechanism;
-	private int privateKeyHandler;
+	private long privateKeyHandler;
 	
-	public SignInitMethod(String mechanism, int privateKeyHandler) {
+	public SignInitMethod(String mechanism, long privateKeyHandler) {
 		this.mechanism = mechanism;
 		this.privateKeyHandler = privateKeyHandler;
 	}
@@ -27,7 +27,7 @@ public class SignInitMethod implements Method {
 	@Override
 	public ResponseMessage execute() {
 		KeyStorage ks = MapKeyStorage.getInstance();
-		int handler = privateKeyHandler;
+		long handler = privateKeyHandler;
 		PrivateKey pk = ks.getPrivateKey(handler);
 		if (pk != null) {
 			Signer signer = Signer.getInstance();

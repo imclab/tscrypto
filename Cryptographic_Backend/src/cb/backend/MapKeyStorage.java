@@ -15,18 +15,18 @@ import javax.xml.bind.DatatypeConverter;
 public class MapKeyStorage implements KeyStorage {
 
   final static private KeyStorage instance = new MapKeyStorage();
-  HashMap<Integer, String[]> store;
+  HashMap<Long, String[]> store = new HashMap<>();
+  Random random = new Random();
 
   public static KeyStorage getInstance() {
     return instance;
   }
 
   private MapKeyStorage() {
-    store = new HashMap<>();
   }
 
   @Override
-  public int storeKeyPair(String keyType, int keySize, KeyPair pair) {
+  public long storeKeyPair(String keyType, int keySize, KeyPair pair) {
 
     X509EncodedKeySpec publicSpec =
             new X509EncodedKeySpec(pair.getPublic().getEncoded());
@@ -40,20 +40,20 @@ public class MapKeyStorage implements KeyStorage {
       DatatypeConverter.printBase64Binary(privateSpec.getEncoded())
     };
 
-    Random random = new Random();
-    Integer handle;
+    
+    Long handle;
     do {
-      handle = random.nextInt();
+      handle = random.nextLong();
     } while (store.containsKey(handle));
 
     store.put(handle, vals);
 
-    return handle.intValue();
+    return handle.longValue();
   }
 
   @Override
-  public PrivateKey getPrivateKey(int _handler) {
-    Integer handler = _handler;
+  public PrivateKey getPrivateKey(long _handler) {
+    Long handler = _handler;
     byte[] byteKey = DatatypeConverter.parseBase64Binary(store.get(handler)[3]);
     PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(byteKey);
 
@@ -67,8 +67,8 @@ public class MapKeyStorage implements KeyStorage {
   }
 
   @Override
-  public PublicKey getPublicKey(int _handler) {
-    Integer handler = _handler;
+  public PublicKey getPublicKey(long _handler) {
+    Long handler = _handler;
     byte[] byteKey = DatatypeConverter.parseBase64Binary(store.get(handler)[2]);
     X509EncodedKeySpec spec = new X509EncodedKeySpec(byteKey);
 
@@ -82,8 +82,9 @@ public class MapKeyStorage implements KeyStorage {
   }
 
   @Override
-  public String getAttribute(String attr, int handler) throws Exception {
-    String[] values = store.get(new Integer(handler));
+  public String getAttribute(String attr, long handler) throws Exception {
+    String[] values;
+    values = store.get(new Long(handler));
     switch (attr) {
       case "keyType":
         return values[0];

@@ -42,13 +42,15 @@ public class SignMethod implements Method {
     GenerateKeyPairMethod gkpm = new GenerateKeyPairMethod("RSA", 1024);
     SignInitMethod sim;
     SignMethod sm;
+    
+    
 
     rm = gkpm.execute();
     System.out.println(rm);
     if (rm.getReturnCode().equals("OK")) {
       rv = gson.fromJson(rm.getValue(), GenerateKeyPairMethod.ReturnValue.class);
 
-      sim = new SignInitMethod("SHA1withRSA", rv.handler);
+      sim = new SignInitMethod("RSA", rv.handler);
       rm = sim.execute();
       System.out.println(rm);
 
