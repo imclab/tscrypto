@@ -1,0 +1,5 @@
+#define MIN_PIN_LEN 3
+#define MAX_PIN_LEN 10
+#define MAX_SESSION_COUNT 1
+#define VERSION_MAJOR 0
+#define VERSION_MINOR 1

@@ -1,0 +1,24 @@
+#include "TcbError.h"
+
+using namespace tcbhsm;
+
+TcbError::TcbError(std::string error, CK_RV code) : error_(error), code_(code)
+{
+  //ctor
+}
+
+TcbError::TcbError(std::string who, std::string error, CK_RV code) : error_(who + " : " + error), code_(code) {
+}
+
+TcbError::~TcbError()
+{
+  //dtor
+}
+
+CK_RV TcbError::getErrorCode() const {
+  return code_;
+}
+
+const char* TcbError::what() const throw() {
+  return error_.c_str();
+}

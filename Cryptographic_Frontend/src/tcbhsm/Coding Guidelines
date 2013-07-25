@@ -1,0 +1,6 @@
+-- Si se necesita que un objeto exista por un tiempo indeterminado se almacena como puntero
+--- Los punteros son siempre SmartPointers, SIEMPRE std::unique_ptr..
+
+-- Si un objeto existe si y solo sí está contenido dentro de otro objeto se utiliza un objeto de Stack.
+
+-- Hay que ser claro con quien es el dueño de un objeto. Por eso utilizar std::unique_ptr o objetos de Stack.
