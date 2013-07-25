@@ -5,7 +5,7 @@
 #include "Application.h"
 
 #include <iostream>
-#include <stdexcept>
+#include "TcbError.h"
 
 using namespace tcbhsm;
 
@@ -30,10 +30,14 @@ void Application::errorLog(std::string message) const
 
 Session & Application::getSession(CK_SESSION_HANDLE session) const
 {
-  unsigned long i = static_cast<unsigned long>(session);
-  Session & s = *(sessions_.at(i));
-  s.retain();
-  return s;
+  try {
+    unsigned long i = static_cast<unsigned long>(session);
+    Session & s = *(sessions_.at(i));
+    s.retain();
+    return s;
+  } catch(...) {
+    throw TcbError("Application::getSession : Mal indice de sesion.", CKR_SESSION_HANDLE_INVALID);
+  }
 }
 
 const std::vector<SlotPtr> & Application::getSlotList() const
@@ -63,12 +67,16 @@ void Application::openSession(CK_SLOT_ID slotID, CK_FLAGS flags,
     ++i;
   }
 
-  throw std::runtime_error("No se pueden abrir mas sesiones.");
+  throw TcbError("Application::openSession : No se pueden abrir mas sesiones", CKR_GENERAL_ERROR);
 }
 
-void Application::closeSession(CK_SESSION_HANDLE hSession)
+void Application::closeSession(CK_SESSION_HANDLE hSession) // throws
 {
   int i = hSession;
   // Se elimina la sesion con todo lo que tiene adentro
-  sessions_.at(i).reset(nullptr);
+  try {
+    sessions_.at(i).reset(nullptr);
+  } catch(...) {
+    throw TcbError("Application::closeSession : Mal indice de sesion.", CKR_SESSION_HANDLE_INVALID);
+  }
 }

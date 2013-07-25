@@ -3,8 +3,8 @@
  */
 
 #include "Token.h"
+#include "TcbError.h"
 
-#include <stdexcept>
 #include <cstring>
 
 using namespace tcbhsm;
@@ -15,7 +15,7 @@ Token::Token(std::string label, std::string pin)
   if (label.size() <= 32)
     label_ = label;
   else
-    throw std::runtime_error("Etiqueta con mas de 32 caracteres");
+    throw TcbError("Etiqueta con mas de 32 caracteres", CKR_ARGUMENTS_BAD);
 }
 
 Token::~Token()
@@ -26,7 +26,7 @@ Token::~Token()
 void Token::getInfo(CK_TOKEN_INFO_PTR pInfo) const
 {
   if (!pInfo)
-    throw new std::runtime_error("Puntero nulo pasado a getInfo.");
+    throw TcbError("Puntero nulo pasado a getInfo.", CKR_ARGUMENTS_BAD);
 
   if (label_.empty()) {
     memset(pInfo->label, ' ', 32);

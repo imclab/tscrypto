@@ -11,6 +11,8 @@
 #include <string>
 #include <memory>
 
+#include "TcbError.h"
+
 using namespace tcbhsm;
 
 namespace
@@ -91,13 +93,13 @@ CK_RV C_GetSlotInfo(CK_SLOT_ID slotId, CK_SLOT_INFO_PTR pInfo)
   }
 
   try {
-    const Slot & slot = app->getSlot(slotId);
-    slot.getInfo(pInfo);
-    return CKR_OK;
+    app->getSlot(slotId).getInfo(pInfo);
   } catch (std::exception & e) {
     app->errorLog(e.what());
     return CKR_SLOT_ID_INVALID;
   }
+
+  return CKR_OK;
 }
 
 CK_RV C_GetTokenInfo(CK_SLOT_ID slotID, CK_TOKEN_INFO_PTR pInfo)
@@ -107,27 +109,16 @@ CK_RV C_GetTokenInfo(CK_SLOT_ID slotID, CK_TOKEN_INFO_PTR pInfo)
   if (pInfo == nullptr) {
     return CKR_ARGUMENTS_BAD;
   }
-
-  // Horrible workaround :D
-  const Slot * slot; // Borrowed pointer
   try {
-    slot = &(app->getSlot(slotID));
-  } catch (std::exception & e) {
+    app->getSlot(slotID).getToken().getInfo(pInfo);
+  } catch (TcbError & e) {
     app->errorLog(e.what());
-    return CKR_SLOT_ID_INVALID;
+    return e.getErrorCode();
   }
-
-  const Token * token; // Borrowed pointer
-  try {
-    token = &(slot->getToken());
-  } catch (std::exception & e) {
-    app->errorLog(e.what());
-    return CKR_TOKEN_NOT_PRESENT;
-  }
-
-  token->getInfo(pInfo);
 
   return CKR_OK;
+
+
 }
 
 CK_RV C_OpenSession(CK_SLOT_ID slotID, CK_FLAGS flags,
@@ -137,30 +128,18 @@ CK_RV C_OpenSession(CK_SLOT_ID slotID, CK_FLAGS flags,
   // Primero la verificacion de todos los casos degenerados
   if (!appIsInited())
     return CKR_CRYPTOKI_NOT_INITIALIZED;
-
-  const Slot * slot;
   try {
-    slot = &(app->getSlot(slotID));
-  } catch (std::exception & e) {
-    app->errorLog(e.what());
-    return CKR_SLOT_ID_INVALID;
-  }
+    Token & token = app->getSlot(slotID).getToken();
 
-  try {
-    if (!(slot->getToken().isInited()))
+    if (!(token.isInited()))
       return CKR_TOKEN_NOT_RECOGNIZED;
-  } catch (std::exception & e) {
+
+    app->openSession(slotID, flags, pApplication, Notify, phSession);
+  } catch (TcbError & e) {
     app->errorLog(e.what());
-    return CKR_SLOT_ID_INVALID;
+    return e.getErrorCode();
   }
 
-  // TODO: realizar todas las validaciones necesarias.
-  try {
-    app->openSession(slotID, flags, pApplication, Notify, phSession);
-  } catch (std::exception & e) {
-    app->errorLog(e.what());
-    return CKR_GENERAL_ERROR;
-  }
   return CKR_OK;
 }
 
@@ -171,9 +150,9 @@ CK_RV C_CloseSession(CK_SESSION_HANDLE hSession)
 
   try {
     app->closeSession(hSession);
-  } catch(std::exception & e) {
+  } catch(TcbError & e) {
     app->errorLog(e.what());
-    return CKR_GENERAL_ERROR;
+    return e.getErrorCode();
   }
 
   return CKR_OK;
@@ -188,12 +167,11 @@ CK_RV C_GetSessionInfo(CK_SESSION_HANDLE hSession, CK_SESSION_INFO_PTR pInfo) {
       app->getSession(hSession).getSessionInfo(pInfo);
     else
       return CKR_ARGUMENTS_BAD;
-  } catch(std::exception & e) {
+  } catch(TcbError & e) {
     app->errorLog(e.what());
-    return CKR_SESSION_HANDLE_INVALID;
+    return e.getErrorCode();
   }
 
-  // NUNCA debería llegar acá.
   return CKR_GENERAL_ERROR;
 }
 
@@ -215,6 +193,37 @@ CK_RV C_Logout(CK_SESSION_HANDLE hSession) {
 
   app->getSession(hSession).logout();
   return CKR_OK;
+}
+
+CK_RV C_CreateObject (CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount, CK_OBJECT_HANDLE_PTR phObject) {
+    if (!appIsInited())
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    if (phObject == nullptr)
+      return CKR_ARGUMENTS_BAD;
+
+    try {
+      *phObject = app->getSession(hSession).createObject(pTemplate, ulCount);
+    } catch (TcbError& e) {
+      app->errorLog(e.what());
+      return e.getErrorCode();
+    }
+
+    return CKR_GENERAL_ERROR;
+}
+
+CK_RV C_DestroyObject (CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject) {
+  if (!appIsInited())
+    return CKR_CRYPTOKI_NOT_INITIALIZED;
+
+    try {
+      app->getSession(hSession).destroyObject(hObject);
+    } catch (TcbError & e) {
+      app->errorLog(e.what());
+      return e.getErrorCode();
+    }
+
+    return CKR_GENERAL_ERROR;
+
 }
 
 //CK_RV C_SignInit(CK_SESSION_HANDLE hSession,

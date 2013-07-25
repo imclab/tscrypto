@@ -4,7 +4,7 @@
 
 #include "Slot.h"
 
-#include <stdexcept>
+#include "TcbError.h"
 #include <cstring> // memset, memcpy
 
 using namespace tcbhsm;
@@ -28,7 +28,7 @@ CK_SLOT_ID Slot::getId() const
 void Slot::getInfo(CK_SLOT_INFO_PTR pInfo) const
 {
   if (pInfo == NULL) {
-    throw std::runtime_error("El puntero pasado a getInfo es NULL.");
+    throw TcbError("El puntero pasado a getInfo es NULL.", CKR_ARGUMENTS_BAD);
   }
 
   std::memset(pInfo->slotDescription, ' ', 64);
@@ -55,5 +55,5 @@ Token & Slot::getToken() const
   if(tokenIsPresent())
     return *token_;
   else
-    throw std::runtime_error("El token no esta presente.");
+    throw TcbError("El token no esta presente.", CKR_SLOT_ID_INVALID);
 }

@@ -6,7 +6,7 @@ include_directories (${src_dir}/src/ ${src_dir}/src/tcbhsm/cryptoki)
 
 set (SOURCES Application.cpp
     main.cpp Session.cpp  SessionObject.cpp
-    Slot.cpp  Token.cpp)
+    Slot.cpp  Token.cpp TcbError.cpp)
 
 add_library (tcbhsm SHARED ${SOURCES})
 target_link_libraries (tcbhsm ${RABBITMQ_LIBRARIES})

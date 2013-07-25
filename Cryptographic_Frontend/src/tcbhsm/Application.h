@@ -35,8 +35,8 @@ public:
 
   void openSession(CK_SLOT_ID slotID, CK_FLAGS flags,
                    CK_VOID_PTR pApplication, CK_NOTIFY Notify,
-                   CK_SESSION_HANDLE_PTR phSession);
-  void closeSession(CK_SESSION_HANDLE hSession);
+                   CK_SESSION_HANDLE_PTR phSession); // throws Exception
+  void closeSession(CK_SESSION_HANDLE hSession); // throws Exception
 
 private:
   std::ostream * out_;
