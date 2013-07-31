@@ -37,8 +37,11 @@ public:
 
   ConnectionPtr && createConnection(); // RAII connection, rvalue reference
 
+  // Session Objects
   CK_OBJECT_HANDLE createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount); // throws exception
   void destroyObject(CK_OBJECT_HANDLE hObject); // throws exception
+  void findObjectsInit(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount);
+  std::vector<CK_OBJECT_HANDLE> findObjects(CK_ULONG maxObjectCount);
 
   // Reference counting;
   void retain();
@@ -58,6 +61,12 @@ private:
   const CK_VOID_PTR application_;
   const CK_NOTIFY notify_;
   Slot & currentSlot_;
+
+  // Busqueda de Objetos
+  bool findInitialized = false;
+  std::vector<CK_OBJECT_HANDLE> foundObjects;
+  std::vector<CK_OBJECT_HANDLE>::iterator foundObjectsIterator;
+  std::vector<CK_OBJECT_HANDLE>::iterator foundObjectsEnd;
 
 };
 }

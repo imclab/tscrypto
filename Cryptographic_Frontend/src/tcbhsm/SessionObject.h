@@ -5,16 +5,18 @@
 #ifndef TCBHSM_SESSIONOBJECT_H
 #define TCBHSM_SESSIONOBJECT_H
 #include "cryptoki.h"
+#include <vector>
 
 namespace tcbhsm
 {
+
 class SessionObject
 {
 private:
-  CK_ATTRIBUTE_TYPE attribute_;
+  std::vector<CK_ATTRIBUTE> attributes_;
   SessionObject() = delete;
 public:
-  SessionObject(CK_ATTRIBUTE_TYPE attribute_);
+  SessionObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount);
   SessionObject( const SessionObject & other) = default;
   SessionObject & operator=(const SessionObject & other) = default;
 

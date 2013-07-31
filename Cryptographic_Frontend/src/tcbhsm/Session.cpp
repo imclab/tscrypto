@@ -2,6 +2,8 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
+
+#include <cstdlib> // getenv
 #include "tcbhsm/Session.h"
 #include "cf/RabbitConnection.hpp"
 #include "TcbError.h"
@@ -75,9 +77,22 @@ Session::~Session()
 
 auto Session::createConnection() -> ConnectionPtr &&
 {
+  const char* hostname = std::getenv("TCB_HOSTNAME");
+  const char* port = std::getenv("TCB_PORT");
+
+  if (hostname == nullptr) {
+    hostname = "localhost";
+  }
+  if (port == nullptr) {
+    port = "5672";
+  }
+
+  int portNumber = std::stoi(port);
+  
+
   // TODO: crear algun tipo de sistema de configuración (Me tinca algo como
   // variables de entorno)...
-  return std::move(ConnectionPtr(new cf::RabbitConnection("localhost", 5672, "", "rpc_queue", 1)));
+  return std::move(ConnectionPtr(new cf::RabbitConnection(hostname, portNumber, "", "rpc_queue", 1)));
 }
 
 void Session::retain()
@@ -160,9 +175,44 @@ void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
   if (it != objects_.end()) {
     objects_.erase(it);
   } else {
-    throw TcbError("Objeto no encontrado.", CKR_OBJECT_HANDLE_INVALID);
+    throw TcbError("Session::destroyObject", "Objeto no encontrado.", CKR_OBJECT_HANDLE_INVALID);
   }
 }
+
+void Session::findObjectsInit(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
+  // TODO: Verificar correctitud
+  if (ulCount == 0) {
+    // Busco todos los objetos...
+    for (auto& handleObjectPair: objects_) {
+      foundObjects.push_back(handleObjectPair.first);
+    }
+  } else {
+    for (auto& handleObjectPair: objects_) {
+      if (handleObjectPair.second->match(pTemplate, ulCount)) {
+        foundObjects.push_back(handleObjectPair.first);
+      }
+    }
+  }
+  //TODO: verificar permisos de acceso.
+  foundObjectsIterator = foundObjects.begin();
+  foundObjectsEnd = foundObjects.end();
+
+}
+
+auto Session::findObjects(CK_ULONG maxObjectCount) -> std::vector<CK_OBJECT_HANDLE> {
+  if (!findInitialized)
+    throw TcbError("Session::findObjects", "No se inicio la busqueda.", CKR_OPERATION_NOT_INITIALIZED);
+
+  // La inicializacion del for está aca...
+  auto end = foundObjectsIterator + maxObjectCount;
+  if (foundObjectsEnd < end)
+    end = foundObjectsEnd;
+
+  std::vector<CK_OBJECT_HANDLE> response(foundObjectsIterator, end);
+  foundObjectsIterator = end;
+  return response;
+}
+
 
 CK_STATE Session::getState() const {
   // TODO: Completar la semántica de lecto-escritura.

@@ -223,7 +223,46 @@ CK_RV C_DestroyObject (CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject) {
     }
 
     return CKR_GENERAL_ERROR;
+}
 
+
+CK_RV C_FindObjectsInit(CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
+  if (!appIsInited())
+    return CKR_CRYPTOKI_NOT_INITIALIZED;
+  if (pTemplate == nullptr)
+    return CKR_ARGUMENTS_BAD;
+
+  try {
+    app->getSession(hSession).findObjectsInit(pTemplate, ulCount);
+  } catch (TcbError & e) {
+    app->errorLog(e.what());
+    return e.getErrorCode();
+  }
+
+  return CKR_OK;
+}
+
+CK_RV C_FindObjects(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE_PTR phObject, CK_ULONG ulMaxObjectCount, CK_ULONG_PTR pulObjectCount) {
+  if (!appIsInited())
+    return CKR_CRYPTOKI_NOT_INITIALIZED;
+  
+  try {
+    std::vector<CK_OBJECT_HANDLE> handles (app->getSession(hSession).findObjects(ulMaxObjectCount));
+    // handles tiene a lo mas ulMaxObjectCount elementos, por lo que no hay que verificar.
+    int i = 0;
+    for (auto& handle: handles) {
+      phObject[i] = handle;
+      ++i;
+    }
+    *pulObjectCount = i;
+  } catch (TcbError & e) {
+    app->errorLog(e.what());
+    return e.getErrorCode();
+  } catch (...) {
+    return CKR_GENERAL_ERROR;
+  }
+
+  return CKR_OK;
 }
 
 //CK_RV C_SignInit(CK_SESSION_HANDLE hSession,
