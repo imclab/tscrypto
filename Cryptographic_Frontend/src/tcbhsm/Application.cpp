@@ -18,11 +18,6 @@ Application::Application()
     slots_.push_back(std::move(slot0));
 }
 
-Application::~Application()
-{
-
-}
-
 void Application::errorLog(std::string message) const
 {
   (*out_) << message << std::endl;

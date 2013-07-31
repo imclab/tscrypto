@@ -18,11 +18,6 @@ Token::Token(std::string label, std::string pin)
     throw TcbError("Etiqueta con mas de 32 caracteres", CKR_ARGUMENTS_BAD);
 }
 
-Token::~Token()
-{
-
-}
-
 void Token::getInfo(CK_TOKEN_INFO_PTR pInfo) const
 {
   if (!pInfo)

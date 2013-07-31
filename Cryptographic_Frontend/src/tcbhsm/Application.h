@@ -25,7 +25,6 @@ class Application
 {
 public:
   Application();
-  virtual ~Application();
 
   void errorLog(std::string message) const;
   const std::vector<SlotPtr> & getSlotList() const;

@@ -20,11 +20,10 @@ public:
   };
 
   Token(std::string label, std::string pin);
-  virtual ~Token();
-  virtual void getInfo(CK_TOKEN_INFO_PTR pInfo) const;
-  virtual bool isInited() const;
-  virtual void login(CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen);
-  virtual void logout();
+  void getInfo(CK_TOKEN_INFO_PTR pInfo) const;
+  bool isInited() const;
+  void login(CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen);
+  void logout();
   SecurityLevel getSecurityLevel() const;
 
 private:
@@ -35,8 +34,8 @@ private:
   SecurityLevel securityLevel_;
 
 protected:
-  virtual bool checkUserPin(const std::string & pin) const;
-  virtual bool checkSecurityOfficerPin(const std::string & pin) const;
+  bool checkUserPin(const std::string & pin) const;
+  bool checkSecurityOfficerPin(const std::string & pin) const;
 };
 }
 

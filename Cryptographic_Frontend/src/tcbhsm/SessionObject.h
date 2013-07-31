@@ -14,14 +14,12 @@ class SessionObject
 {
 private:
   std::vector<CK_ATTRIBUTE> attributes_;
-  SessionObject() = delete;
 public:
-  SessionObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount);
-  SessionObject( const SessionObject & other) = default;
-  SessionObject & operator=(const SessionObject & other) = default;
+  SessionObject (CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount);
 
-  virtual ~SessionObject();
-  bool match(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) const;
+  bool match (CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) const;
+  void copyAttributes (CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) const; // throw Exception
+  const CK_ATTRIBUTE * findAttribute (CK_ATTRIBUTE* attribute) const;
 };
 
 

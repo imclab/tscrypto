@@ -70,13 +70,9 @@ Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify, Slo
 
 }
 
-Session::~Session()
-{
-
-}
-
 auto Session::createConnection() -> ConnectionPtr &&
 {
+  // Ojo! La configuracion de la conexión esta hecha con variables de entorno...
   const char* hostname = std::getenv("TCB_HOSTNAME");
   const char* port = std::getenv("TCB_PORT");
 
@@ -89,9 +85,6 @@ auto Session::createConnection() -> ConnectionPtr &&
 
   int portNumber = std::stoi(port);
   
-
-  // TODO: crear algun tipo de sistema de configuración (Me tinca algo como
-  // variables de entorno)...
   return std::move(ConnectionPtr(new cf::RabbitConnection(hostname, portNumber, "", "rpc_queue", 1)));
 }
 
@@ -203,7 +196,6 @@ auto Session::findObjects(CK_ULONG maxObjectCount) -> std::vector<CK_OBJECT_HAND
   if (!findInitialized)
     throw TcbError("Session::findObjects", "No se inicio la busqueda.", CKR_OPERATION_NOT_INITIALIZED);
 
-  // La inicializacion del for está aca...
   auto end = foundObjectsIterator + maxObjectCount;
   if (foundObjectsEnd < end)
     end = foundObjectsEnd;
@@ -211,6 +203,16 @@ auto Session::findObjects(CK_ULONG maxObjectCount) -> std::vector<CK_OBJECT_HAND
   std::vector<CK_OBJECT_HANDLE> response(foundObjectsIterator, end);
   foundObjectsIterator = end;
   return response;
+}
+
+
+SessionObject & Session::getObject(CK_OBJECT_HANDLE objectHandle) {
+  try {
+    SessionObject & object = *(objects_.at(objectHandle));
+    return object;
+  } catch (std::out_of_range &e) {
+    throw TcbError("Session::getObject", "Objeto no existe en la sesion.", CKR_ARGUMENTS_BAD);
+  }
 }
 
 
