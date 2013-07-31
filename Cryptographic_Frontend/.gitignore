@@ -1,3 +1,6 @@
-/build/
-/lib/
-cf
+build/
+lib/
+src/HTML/
+src/tcbhsm/GPATH
+src/tcbhsm/GRTAGS
+src/tcbhsm/GTAGS
