@@ -246,3 +246,30 @@ void Session::login(CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinL
 void Session::logout() {
   currentSlot_.getToken().logout();
 }
+
+
+/***
+ * FUNCIONES CRIPTOGRAFICAS
+ ***/
+
+CK_OBJECT_HANDLE Session::generateKeyPair(CK_MECHANISM_PTR pMechanism, 
+                                          CK_ATTRIBUTE_PTR pPublicKeyTemplate, CK_ULONG ulPublicKeyAttributeCount, 
+                                          CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount) {
+  // TODO: verificar permisos de acceso.
+  if (pMechanism == nullptr || pPublicKeyTemplate == nullptr || pPrivateKeyTemplate == nullptr) {
+    throw TcbError("Session::generateKeyPair", "Argumentos nulos", CKR_ARGUMENTS_BAD);
+  }
+
+  switch (pMechanism->mechanism) {
+    case CKM_RSA_PKCS_KEY_PAIR_GEN:
+      // TODO: Rellenar acá para generar llaves a través de rabbit.
+      return 0;
+      break;
+    default:
+      break;
+  }
+
+  throw TcbError("Session::generateKeyPair", "Mecanismo no soportado", CKR_MECHANISM_INVALID);
+  
+}
+

@@ -25,6 +25,17 @@ bool appIsInited(void)
 }
 }
 
+/***
+ * - ¿Cómo se estructuran las funciones de este archivo?
+ *  - Primero se verifica si la aplicacion está iniciada
+ *  - Luego se verifican todos los argumentos que sean sólo utilizados por la función.
+ *    Si el argumento es pasado a otra función es esa la encargada de verificar cada error.
+ *  - Por esto, toda llamada a una funcion debe estar envuelta en un try-catch de TcbError's
+ *  - Al final de cada funcion debe estar el "return CKR_OK;"
+ *  - Mantener la lógica de estas funciones lo más sencilla posible.
+ ***/
+
+
 CK_RV C_Initialize(CK_VOID_PTR pInitArgs)
 {
   CK_C_INITIALIZE_ARGS_PTR args =
@@ -172,7 +183,7 @@ CK_RV C_GetSessionInfo(CK_SESSION_HANDLE hSession, CK_SESSION_INFO_PTR pInfo) {
     return e.getErrorCode();
   }
 
-  return CKR_GENERAL_ERROR;
+  return CKR_OK;
 }
 
 CK_RV C_Login(CK_SESSION_HANDLE hSession,
@@ -183,7 +194,12 @@ CK_RV C_Login(CK_SESSION_HANDLE hSession,
   if (!appIsInited())
     return CKR_CRYPTOKI_NOT_INITIALIZED;
 
-  app->getSession(hSession).login(userType, pPin, ulPinLen);
+  try {
+    app->getSession(hSession).login(userType, pPin, ulPinLen);
+  } catch (TcbError & e) {
+    app->errorLog(e.what());
+    return e.getErrorCode();
+  }
   return CKR_OK;
 }
 
@@ -191,7 +207,12 @@ CK_RV C_Logout(CK_SESSION_HANDLE hSession) {
   if (!appIsInited())
     return CKR_CRYPTOKI_NOT_INITIALIZED;
 
-  app->getSession(hSession).logout();
+  try {
+    app->getSession(hSession).logout();
+  } catch (TcbError &e) {
+    app->errorLog(e.what());
+    return e.getErrorCode();
+  }
   return CKR_OK;
 }
 
@@ -215,14 +236,14 @@ CK_RV C_DestroyObject (CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject) {
   if (!appIsInited())
     return CKR_CRYPTOKI_NOT_INITIALIZED;
 
-    try {
-      app->getSession(hSession).destroyObject(hObject);
-    } catch (TcbError & e) {
-      app->errorLog(e.what());
-      return e.getErrorCode();
-    }
+  try {
+    app->getSession(hSession).destroyObject(hObject);
+  } catch (TcbError & e) {
+    app->errorLog(e.what());
+    return e.getErrorCode();
+  }
 
-    return CKR_GENERAL_ERROR;
+  return CKR_GENERAL_ERROR;
 }
 
 
@@ -255,12 +276,11 @@ CK_RV C_FindObjects(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE_PTR phObject, C
       ++i;
     }
     *pulObjectCount = i;
+
   } catch (TcbError & e) {
     app->errorLog(e.what());
     return e.getErrorCode();
-  } catch (...) {
-    return CKR_GENERAL_ERROR;
-  }
+  } 
 
   return CKR_OK;
 }
@@ -279,63 +299,26 @@ CK_RV C_GetAttributeValue(CK_SESSION_HANDLE sessionHandle, CK_OBJECT_HANDLE obje
   return CKR_OK;
 }
 
+CK_RV C_GenerateKeyPair(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_ATTRIBUTE_PTR pPublicKeyTemplate, 
+                        CK_ULONG ulPublicKeyAttributeCount, CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount,
+                        CK_OBJECT_HANDLE_PTR phPublicKey, CK_OBJECT_HANDLE_PTR phPrivateKey) {
+  if (!appIsInited())
+    return CKR_CRYPTOKI_NOT_INITIALIZED;
+  
+  if (phPublicKey == nullptr || phPrivateKey == nullptr)
+    return CKR_ARGUMENTS_BAD;
 
-//CK_RV C_SignInit(CK_SESSION_HANDLE hSession,
-//                 CK_MECHANISM_PTR  pMechanism,
-//                 CK_OBJECT_HANDLE  hKey)
-//{
-//
-//  switch(*pMechanism) {
-//    case CKM_SHA1_RSA_PKCS: // Solo se maneja este tipo de firma.
-//      Session const& session = app->getSession(hSession);
-//      long long keyHandle = session.getKeyHandle(hKey);
-//
-//      std::string mechanism = "SHA1WithRSA";
-//      cf::SignInitMethod method(mechanism, hKey);
-//      try {
-//        std::unique_ptr<Connection> connection(session.createConnection());
-//
-//        method.execute(*connection);
-//        cf::ResponseMessagePtr rm(method.getResponse());
-//      } catch(std::exception& e) {
-//        app->errorLog(e.what());
-//        return CKR_FUNCTION_FAILED;
-//      }
-//
-//      return CKR_OK;
-//
-//    default:
-//      return CKR_MECHANISM_INVALID;
-//  }
-//}
-//
-//CK_RV C_Sign(CK_SESSION_HANDLE hSession,
-//             CK_BYTE_PTR       pData,
-//             CK_ULONG          ulDataLen,
-//             CK_BYTE_PTR       pSignature,
-//             CK_ULONG_PTR      pulSignatureLen)
-//{
-//  Session const& session = app->getSession(hSession);
-//  std::string data = tcb::functions::toBase64(pData, ulDataLen);
-//
-//  cf::SignMethod method(data);
-//  cf::ResponseMessagePtr rm;
-//  try {
-//    method.execute(session.getConnection());
-//    rm = method.getResponse().release();
-//  } catch(std::exception& e) {
-//    app->errorLog(e.what());
-//    return CKR_FUNCTION_FAILED;
-//  }
-//
-//  std::string signedData = rm.getValue<std::string>("signedData");
-//  tcb::Base64Value b64(signedData);
-//
-//  if (*pulSignatureLen < b64.getLength())
-//    return CKR_BUFFER_TOO_SMALL;
-//  else {
-//    *pulSignatureLen = b64.getLength();
-//    b64.copyBytes(pSignature);
-//    return CKR_OK;
-//  }
-//}
+  try {
+    CK_OBJECT_HANDLE keysHandle; // Por diseño, ambas llaves tienen el mismo handle.
+    keysHandle = app->getSession(hSession).generateKeyPair(pMechanism, pPublicKeyTemplate, ulPublicKeyAttributeCount,
+                                                           pPrivateKeyTemplate, ulPrivateKeyAttributeCount);
+
+    *phPublicKey = *phPrivateKey = keysHandle;
+  } catch (TcbError &e) {
+    app->errorLog(e.what());
+    return e.getErrorCode();
+  }
+
+  return CKR_OK;
+}
+

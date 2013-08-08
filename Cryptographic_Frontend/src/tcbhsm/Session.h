@@ -33,6 +33,13 @@ public:
   void login(CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen);
   void logout();
 
+  // Funciones criptográficas
+  CK_OBJECT_HANDLE generateKeyPair(CK_MECHANISM_PTR pMechanism, 
+                                   CK_ATTRIBUTE_PTR pPublicKeyTemplate, CK_ULONG ulPublicKeyAttributeCount, 
+                                   CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount);
+    
+
+  // Conexiones
   ConnectionPtr && createConnection(); // RAII connection encapsulada en un puntero. R-Value reference.
 
   // Session Objects

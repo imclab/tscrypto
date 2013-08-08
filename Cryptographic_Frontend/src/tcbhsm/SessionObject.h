@@ -12,6 +12,7 @@ namespace tcbhsm
 
 class SessionObject
 {
+  // TODO: Agregar manera de saber que es un objeto almacenado de manera distribuida. IE. es una llave RSA.
 private:
   std::vector<CK_ATTRIBUTE> attributes_;
 public:
