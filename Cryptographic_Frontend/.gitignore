@@ -2,4 +2,4 @@
 *.a
 hsm
 *.kate-swp
-
+.kateproject*
