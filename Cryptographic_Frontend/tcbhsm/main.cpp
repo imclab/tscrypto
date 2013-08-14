@@ -235,14 +235,14 @@ CK_RV C_CreateObject (CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK
 CK_RV C_DestroyObject (CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject) {
   if (!appIsInited())
     return CKR_CRYPTOKI_NOT_INITIALIZED;
-
+  
   try {
     app->getSession(hSession).destroyObject(hObject);
   } catch (TcbError & e) {
     app->errorLog(e.what());
     return e.getErrorCode();
   }
-
+  
   return CKR_GENERAL_ERROR;
 }
 

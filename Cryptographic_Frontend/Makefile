@@ -1,15 +1,15 @@
 include Makefile.inc
 
 DIRS	=	cf tcbhsm
-EXE		=	hsm
+EXE	=	hsm
 OBJS	=	main.o
 OBJLIBS	=	libcf.a libtcbhsm.a
 LDFLAGS	=	-L. -lcf -ltcbhsm -lrabbitmq
-CXXFLAGS	=	$(PRJCXXFLAGS)
+CXXFLAGS=	$(PRJCXXFLAGS)
 
 all:	$(EXE)
 
-$(EXE):	$(OBJS) $(OBJLIBS)
+$(EXE):	$(OBJLIBS) $(OBJS) 
 	$(LD) -o $@ $(OBJS) $(OBJLIB) $(LDFLAGS)
 
 libcf.a: force_look
