@@ -3,7 +3,15 @@
 
 using namespace tcbhsm;
 
-SessionObject::SessionObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount) {
+SessionObject::SessionObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount) : isDistributed_(false) {
+  auto end = pAttributes + ulCount;
+  for (auto it = pAttributes; it != end; ++it) {
+      attributes_.push_back(*it);
+  }
+
+}
+
+SessionObject::SessionObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount, bool distributed) : isDistributed_(distributed) {
   auto end = pAttributes + ulCount;
   for (auto it = pAttributes; it != end; ++it) {
       attributes_.push_back(*it);
@@ -76,5 +84,9 @@ void SessionObject::copyAttributes(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount)
     CK_ATTRIBUTE* ptr = &(pTemplate[i]);
     copyAttribute(findAttribute(ptr), ptr);
   }
+}
+
+bool SessionObject::isDistributed() const {
+  return isDistributed_;
 }
 

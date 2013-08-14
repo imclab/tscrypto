@@ -18,7 +18,7 @@ int main()
 
     RabbitConnection connection("localhost", 5672, "", "rpc_queue", 1);
     Method * method = new cf::GenerateKeyPairMethod("RSA", 2048, "65537");
-    method->execute(connection);
+    method->execute(connection);   
     cf::ResponseMessagePtr response(method->getResponse());
     handler = response->getValue<long long>("handler");
     delete method;

@@ -125,6 +125,7 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
   CK_BBOOL isPrivate = CK_TRUE;
   CK_OBJECT_CLASS oClass = CKO_VENDOR_DEFINED;
   CK_KEY_TYPE keyType = CKK_VENDOR_DEFINED;
+  bool distributedObject = false;
 
   // Extract object information
   for(CK_ULONG i = 0; i < ulCount; i++) {
@@ -149,6 +150,10 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
           keyType = *(CK_KEY_TYPE*)pTemplate[i].pValue;
         }
         break;
+      case CKA_VENDOR_DEFINED: // RabbitConnection :D
+        if (pTemplate[i].ulValueLen > 0) {
+          distributedObject = true;
+        }
       default:
         break;
     }
@@ -161,7 +166,8 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
   if(userAuth == CK_FALSE)
     throw TcbError("Session::createObject", "User is not authorized", CKR_USER_NOT_LOGGED_IN);
 
-  CK_OBJECT_HANDLE oHandle = 0; // lol, por mientras.
+  CK_OBJECT_HANDLE oHandle = actualObjectHandle_++; // lol, por mientras.
+  objects_[oHandle].reset(new SessionObject(pTemplate, ulCount, distributedObject));
 
   return oHandle;
 }
@@ -305,6 +311,7 @@ CK_OBJECT_HANDLE Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
         CK_ATTRIBUTE aEndDate = { CKA_END_DATE, &emptyDate, 0 };
         
         // NOTE: CKA_VENDOR_DEFINED = CKA_RABBIT_HANDLER :D.
+        // i.e. si está ocupado se ocupa rabbit :P.
         CK_ATTRIBUTE aValue = { CKA_VENDOR_DEFINED, &handler, sizeof(handler) };
         
         // Se sobre escriben los datos...
