@@ -1,5 +1,5 @@
-CC  = clang
-CXX = clang++
+CC  = gcc
+CXX = g++
 PRJCFLAGS = -g
 PRJCXXFLAGS = -g -std=c++11
 LD  = $(CXX)

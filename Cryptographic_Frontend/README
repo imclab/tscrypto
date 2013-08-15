@@ -1,0 +1,3 @@
+Dependencias:
+ - boost
+ - rabbitmq-c
