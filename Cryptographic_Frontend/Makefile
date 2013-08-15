@@ -4,13 +4,19 @@ DIRS	=	cf tcbhsm
 EXE	=	hsm
 OBJS	=	main.o
 OBJLIBS	=	libcf.a libtcbhsm.a
-LDFLAGS	=	-L. -lcf -ltcbhsm -lrabbitmq
+TEST	=	test
+TESTOBJS	=	test.o
+LDFLAGS	=	-L. -lrabbitmq -lcf -ltcbhsm
+CFLAGS	=	$(PRJCFLAGS) -Itcbhsm/cryptoki
 CXXFLAGS=	$(PRJCXXFLAGS)
 
-all:	$(EXE)
+all:	$(EXE) $(TEST)
 
 $(EXE):	$(OBJLIBS) $(OBJS) 
-	$(LD) -o $@ $(OBJS) $(OBJLIB) $(LDFLAGS)
+	$(LD) -o $@ $(OBJS) $(LDFLAGS)
+	
+$(TEST):	$(OBJLIBS) $(TESTOBJS)
+	$(LD) -o $@ $(TESTOBJS) $(OBJLIBS) $(LDFLAGS)
 
 libcf.a: force_look
 	@cd cf; $(MAKE) $(MFLAGS)

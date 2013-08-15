@@ -1,7 +1,7 @@
 CC  = gcc
 CXX = g++
-PRJCFLAGS = -g
-PRJCXXFLAGS = -g -std=c++11
+PRJCFLAGS = -ggdb
+PRJCXXFLAGS = -ggdb -std=c++11
 LD  = $(CXX)
 LDFLAGS =
 AR  = ar

@@ -285,6 +285,20 @@ CK_RV C_FindObjects(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE_PTR phObject, C
   return CKR_OK;
 }
 
+CK_RV C_FindObjectsFinal(CK_SESSION_HANDLE hSession) {
+  if (!appIsInited())
+    return CKR_CRYPTOKI_NOT_INITIALIZED;
+  
+  try {
+    app->getSession(hSession).findObjectsFinal();
+  } catch (TcbError & e) {
+    app->errorLog(e.what());
+    return e.getErrorCode();
+  } 
+  
+  return CKR_OK;
+}
+
 CK_RV C_GetAttributeValue(CK_SESSION_HANDLE sessionHandle, CK_OBJECT_HANDLE objectHandle, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
   if (!appIsInited())
     return CKR_CRYPTOKI_NOT_INITIALIZED;

@@ -47,6 +47,7 @@ public:
   void destroyObject(CK_OBJECT_HANDLE hObject); // throws exception
   void findObjectsInit(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount);
   std::vector<CK_OBJECT_HANDLE> findObjects(CK_ULONG maxObjectCount);
+  void findObjectsFinal();
   SessionObject & getObject(CK_OBJECT_HANDLE objectHandle); // throws exception
 
   // Reference counting;

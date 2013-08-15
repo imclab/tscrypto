@@ -198,6 +198,7 @@ void Session::findObjectsInit(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
   //TODO: verificar permisos de acceso.
   foundObjectsIterator = foundObjects.begin();
   foundObjectsEnd = foundObjects.end();
+  findInitialized = true;
 
 }
 
@@ -212,6 +213,10 @@ auto Session::findObjects(CK_ULONG maxObjectCount) -> std::vector<CK_OBJECT_HAND
   std::vector<CK_OBJECT_HANDLE> response(foundObjectsIterator, end);
   foundObjectsIterator = end;
   return response;
+}
+
+void Session::findObjectsFinal() {
+  findInitialized = false;
 }
 
 
