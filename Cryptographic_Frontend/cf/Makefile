@@ -1,10 +1,12 @@
 include ../Makefile.inc
 
-INCLUDES = -I.
+# INCLUDES = -I.
 
-CXXFLAGS	=	$(PRJCXXFLAGS) $(INCLUDES)
-OBJLIBS	=	../libcf.a
-OBJS	=	Argument.o FindKeyMethod.o GenerateKeyPairMethod.o GetAttributeMethod.o IntegerArgument.o jsoncpp.o Method.o MethodMessage.o RabbitConnection.o ResponseMessage.o SignInitMethod.o SignMethod.o StringArgument.o
+PKGCONFIG_LIBS    = librabbitmq
+OBJLIBS	= ../libcf.a
+OBJS	= Argument.o FindKeyMethod.o GenerateKeyPairMethod.o GetAttributeMethod.o IntegerArgument.o jsoncpp.o Method.o MethodMessage.o RabbitConnection.o ResponseMessage.o SignInitMethod.o SignMethod.o StringArgument.o
+
+CXXFLAGS= -I. $(shell pkg-config --libs $(PKGCONFIG_LIBS)) $(PRJCXXFLAGS)
 
 all:	$(OBJLIBS)
 

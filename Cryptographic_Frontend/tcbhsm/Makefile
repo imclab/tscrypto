@@ -1,13 +1,12 @@
 include ../Makefile.inc
+ 
+OBJLIBS = ../libtcbhsm.a
+OBJS = Application.o main.o Session.o SessionObject.o Slot.o TcbError.o Token.o	
 
-INCLUDES = -I. -I.. -Icryptoki/
+CXXFLAGS = -I. -I.. -Icryptoki/ $(PRJCXXFLAGS) $(INCLUDES)
+all: $(OBJLIBS)
 
-CXXFLAGS	=	$(PRJCXXFLAGS) $(INCLUDES)
-OBJLIBS	=	../libtcbhsm.a
-OBJS	=	Application.o main.o Session.o SessionObject.o Slot.o TcbError.o Token.o	
-all:	$(OBJLIBS)
-
-$(OBJLIBS):	$(OBJS)
+$(OBJLIBS): $(OBJS)
 	$(AR) $(ARFLAGS) rv $@ $?
 	$(RANLIB) $@
 

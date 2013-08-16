@@ -1,32 +1,38 @@
 include Makefile.inc
 
-DIRS	=	cf tcbhsm
-EXE	=	hsm
-OBJS	=	main.o
-OBJLIBS	=	libcf.a libtcbhsm.a
-TEST	=	test
-TESTOBJS	=	test.o
-LDFLAGS	=	-L. -lrabbitmq -lcf -ltcbhsm
-CFLAGS	=	$(PRJCFLAGS) -Itcbhsm/cryptoki
-CXXFLAGS=	$(PRJCXXFLAGS)
+DIRS = cf tcbhsm
 
-all:	$(EXE) $(TEST)
+# Cada executable va con su propia lista de objetivos
+# Supone que todo se compila contra las mismas librerías =)
+EXE = hsm test
+hsm_OBJS = main.o
+test_OBJS = test.o
 
-$(EXE):	$(OBJLIBS) $(OBJS) 
-	$(LD) -o $@ $(OBJS) $(LDFLAGS)
-	
-$(TEST):	$(OBJLIBS) $(TESTOBJS)
-	$(LD) -o $@ $(TESTOBJS) $(OBJLIBS) $(LDFLAGS)
+LIBS = tcbhsm cf # El minimo comun multiplo de todas las librerias
+PKGCONFIG_LIBS = librabbitmq
 
-libcf.a: force_look
-	@cd cf; $(MAKE) $(MFLAGS)
+# Modularización...
+OBJS = $(foreach o, $(addsuffix _OBJS, $(EXE)), $($(o)))
+LIBS_FILENAMES = $(addprefix lib, $(addsuffix .a, $(LIBS)))
+LOCAL_LDFLAGS = -L. $(addprefix -l, $(LIBS)) $(shell pkg-config --libs $(PKGCONFIG_LIBS))
+LOCAL_CFLAGS = -Itcbhsm/cryptoki $(shell pkg-config --cflags $(PKGCONFIG_LIBS))
+LOCAL_CXXFLAGS = $(shell pkg-config --cflags $(PKGCONFIG_LIBS))
 
-libtcbhsm.a: force_look
-	@cd tcbhsm; $(MAKE) $(MFLAGS)
+LDFLAGS	= $(LOCAL_LDFLAGS) $(PRJLDFLAGS)
+CFLAGS	= $(LOCAL_CFLAGS) $(PRJCFLAGS) 
+CXXFLAGS= $(LOCAL_CXXFLAGS) $(PRJCXXFLAGS) 
+
+all:	$(EXE)
+
+$(EXE): $(LIBS) $($@_OBJS)
+	$(LD) -o $@ $($@_OBJS) $(LDFLAGS)
+
+$(LIBS): force_look
+	@cd $@; $(MAKE) $(MFLAGS)
 
 clean:
-	-$(RM) -f $(EXE) $(OBJS) $(OBJLIBS)
-	-for dir in $(DIRS); do (cd $$dir; $(MAKE) clean); done
+	-$(RM) -f $(OBJS) $(LIBS_FILENAMES)
+	-@for dir in $(DIRS); do (cd $$dir; $(MAKE) clean); done
 
 force_look:
 	@true

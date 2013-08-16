@@ -1,9 +1,9 @@
 CC  = gcc
 CXX = g++
-PRJCFLAGS = -ggdb
-PRJCXXFLAGS = -ggdb -std=c++11
+PRJCFLAGS = -ggdb -pipe
+PRJCXXFLAGS = -ggdb -std=c++11 -pipe
+PRJLDFLAGS = -pipe
 LD  = $(CXX)
-LDFLAGS =
 AR  = ar
 ARFLAGS =
 RANLIB  = ranlib
