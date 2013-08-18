@@ -7,7 +7,7 @@ CXXFLAGS = -I. -I.. -Icryptoki/ $(PRJCXXFLAGS) $(INCLUDES)
 all: $(OBJLIBS)
 
 $(OBJLIBS): $(OBJS)
-	$(AR) $(ARFLAGS) rv $@ $?
+	$(AR) $(ARFLAGS) r $@ $?
 	$(RANLIB) $@
 
 clean:

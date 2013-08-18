@@ -24,7 +24,7 @@ CXXFLAGS= $(LOCAL_CXXFLAGS) $(PRJCXXFLAGS)
 
 all:	$(EXE)
 
-$(EXE): $(LIBS) $($@_OBJS)
+$(EXE): $(LIBS) $(OBJS)
 	$(LD) -o $@ $($@_OBJS) $(LDFLAGS)
 
 $(LIBS): force_look

@@ -11,7 +11,7 @@ CXXFLAGS= -I. $(shell pkg-config --libs $(PKGCONFIG_LIBS)) $(PRJCXXFLAGS)
 all:	$(OBJLIBS)
 
 $(OBJLIBS):	$(OBJS)
-	$(AR) $(ARFLAGS) rv $@ $?
+	$(AR) $(ARFLAGS) r $@ $?
 	$(RANLIB) $@
 
 clean:

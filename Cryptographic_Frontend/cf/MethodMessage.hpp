@@ -12,7 +12,7 @@ namespace cf
 // tanto hay que usar std::move para ser explicito
 // en quien es el dueño del puntero.
 class Argument;
-typedef std::unique_ptr<Argument> ArgumentPtr;
+using ArgumentPtr = std::unique_ptr<Argument>;
 
 class MethodMessage
 {

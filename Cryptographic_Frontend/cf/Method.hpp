@@ -17,8 +17,8 @@ namespace cf
 
 class ResponseMessage;
 class Connection;
-typedef std::unique_ptr<ResponseMessage> ResponseMessagePtr;
-typedef std::function<ResponseMessagePtr(std::string const &)> ResponseMessageStrategy;
+using ResponseMessagePtr = std::unique_ptr<ResponseMessage>;
+using ResponseMessageStrategy = std::function<ResponseMessagePtr(std::string const &)>;
 
 
 class Method   // Por ahora los metodos devuelven un string json...

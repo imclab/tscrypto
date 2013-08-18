@@ -15,9 +15,8 @@ namespace cf
 {
 
 class ResponseMessage;
-typedef std::unique_ptr<ResponseMessage> ResponseMessagePtr;
-typedef std::function<ResponseMessagePtr(std::string const &)> ResponseMessageStrategy;
-
+using ResponseMessagePtr = std::unique_ptr<ResponseMessage>;
+using ResponseMessageStrategy = std::function<ResponseMessagePtr(std::string const &)>;
 
 class ResponseMessage
 {

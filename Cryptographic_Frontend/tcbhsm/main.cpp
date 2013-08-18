@@ -8,6 +8,8 @@
 #include "Application.h"
 #include "Token.h"
 
+#include <functional>
+#include <algorithm>
 #include <string>
 #include <memory>
 
@@ -23,6 +25,11 @@ bool appIsInited(void)
 {
   return static_cast<bool>(app);
 }
+
+CK_RV error(TcbError &e) {
+  app->errorLog(e.what());
+  return e.getErrorCode();
+}
 }
 
 /***
@@ -35,7 +42,7 @@ bool appIsInited(void)
  *  - Mantener la lógica de estas funciones lo más sencilla posible.
  ***/
 
-
+extern "C" {
 CK_RV C_Initialize(CK_VOID_PTR pInitArgs)
 {
   CK_C_INITIALIZE_ARGS_PTR args =
@@ -67,8 +74,10 @@ CK_RV C_GetSlotList(CK_BBOOL tokenPresent, CK_SLOT_ID_PTR pSlotList, CK_ULONG_PT
 
   unsigned long bufSize = 0;
   if (tokenPresent == CK_TRUE) {
-    for (auto const& pSlot: slotList) {
-      bufSize += (pSlot->tokenIsPresent()? 1 : 0);
+    for (auto const& pSlot: slotList) { 
+      if (pSlot->tokenIsPresent()) {
+	bufSize += 1;
+      }
     }
   } else {
     bufSize = slotList.size();
@@ -105,9 +114,8 @@ CK_RV C_GetSlotInfo(CK_SLOT_ID slotId, CK_SLOT_INFO_PTR pInfo)
 
   try {
     app->getSlot(slotId).getInfo(pInfo);
-  } catch (std::exception & e) {
-    app->errorLog(e.what());
-    return CKR_SLOT_ID_INVALID;
+  } catch (TcbError & e) {
+    return error(e);
   }
 
   return CKR_OK;
@@ -117,14 +125,14 @@ CK_RV C_GetTokenInfo(CK_SLOT_ID slotID, CK_TOKEN_INFO_PTR pInfo)
 {
   if (!appIsInited())
     return CKR_CRYPTOKI_NOT_INITIALIZED;
-  if (pInfo == nullptr) {
+  
+  if (pInfo == nullptr)
     return CKR_ARGUMENTS_BAD;
-  }
+  
   try {
     app->getSlot(slotID).getToken().getInfo(pInfo);
   } catch (TcbError & e) {
-    app->errorLog(e.what());
-    return e.getErrorCode();
+    return error(e);
   }
 
   return CKR_OK;
@@ -136,9 +144,9 @@ CK_RV C_OpenSession(CK_SLOT_ID slotID, CK_FLAGS flags,
                     CK_VOID_PTR pApplication, CK_NOTIFY Notify,
                     CK_SESSION_HANDLE_PTR phSession)
 {
-  // Primero la verificacion de todos los casos degenerados
   if (!appIsInited())
     return CKR_CRYPTOKI_NOT_INITIALIZED;
+  
   try {
     Token & token = app->getSlot(slotID).getToken();
 
@@ -147,8 +155,7 @@ CK_RV C_OpenSession(CK_SLOT_ID slotID, CK_FLAGS flags,
 
     app->openSession(slotID, flags, pApplication, Notify, phSession);
   } catch (TcbError & e) {
-    app->errorLog(e.what());
-    return e.getErrorCode();
+    return error(e);
   }
 
   return CKR_OK;
@@ -162,8 +169,7 @@ CK_RV C_CloseSession(CK_SESSION_HANDLE hSession)
   try {
     app->closeSession(hSession);
   } catch(TcbError & e) {
-    app->errorLog(e.what());
-    return e.getErrorCode();
+    return error(e);
   }
 
   return CKR_OK;
@@ -179,8 +185,7 @@ CK_RV C_GetSessionInfo(CK_SESSION_HANDLE hSession, CK_SESSION_INFO_PTR pInfo) {
     else
       return CKR_ARGUMENTS_BAD;
   } catch(TcbError & e) {
-    app->errorLog(e.what());
-    return e.getErrorCode();
+    return error(e);
   }
 
   return CKR_OK;
@@ -197,8 +202,7 @@ CK_RV C_Login(CK_SESSION_HANDLE hSession,
   try {
     app->getSession(hSession).login(userType, pPin, ulPinLen);
   } catch (TcbError & e) {
-    app->errorLog(e.what());
-    return e.getErrorCode();
+    return error(e);
   }
   return CKR_OK;
 }
@@ -210,8 +214,7 @@ CK_RV C_Logout(CK_SESSION_HANDLE hSession) {
   try {
     app->getSession(hSession).logout();
   } catch (TcbError &e) {
-    app->errorLog(e.what());
-    return e.getErrorCode();
+    return error(e);
   }
   return CKR_OK;
 }
@@ -225,8 +228,7 @@ CK_RV C_CreateObject (CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK
     try {
       *phObject = app->getSession(hSession).createObject(pTemplate, ulCount);
     } catch (TcbError& e) {
-      app->errorLog(e.what());
-      return e.getErrorCode();
+      return error(e);
     }
 
     return CKR_GENERAL_ERROR;
@@ -239,8 +241,7 @@ CK_RV C_DestroyObject (CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject) {
   try {
     app->getSession(hSession).destroyObject(hObject);
   } catch (TcbError & e) {
-    app->errorLog(e.what());
-    return e.getErrorCode();
+    return error(e);
   }
   
   return CKR_GENERAL_ERROR;
@@ -256,8 +257,7 @@ CK_RV C_FindObjectsInit(CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, 
   try {
     app->getSession(hSession).findObjectsInit(pTemplate, ulCount);
   } catch (TcbError & e) {
-    app->errorLog(e.what());
-    return e.getErrorCode();
+    return error(e);
   }
 
   return CKR_OK;
@@ -278,8 +278,7 @@ CK_RV C_FindObjects(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE_PTR phObject, C
     *pulObjectCount = i;
 
   } catch (TcbError & e) {
-    app->errorLog(e.what());
-    return e.getErrorCode();
+    return error(e);
   } 
 
   return CKR_OK;
@@ -292,8 +291,7 @@ CK_RV C_FindObjectsFinal(CK_SESSION_HANDLE hSession) {
   try {
     app->getSession(hSession).findObjectsFinal();
   } catch (TcbError & e) {
-    app->errorLog(e.what());
-    return e.getErrorCode();
+    return error(e);
   } 
   
   return CKR_OK;
@@ -306,8 +304,7 @@ CK_RV C_GetAttributeValue(CK_SESSION_HANDLE sessionHandle, CK_OBJECT_HANDLE obje
   try {
     app->getSession(sessionHandle).getObject(objectHandle).copyAttributes(pTemplate, ulCount);
   } catch (TcbError & e) {
-    app->errorLog(e.what());
-    return e.getErrorCode();
+    return error(e);
   }
 
   return CKR_OK;
@@ -329,10 +326,9 @@ CK_RV C_GenerateKeyPair(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism,
 
     *phPublicKey = *phPrivateKey = keysHandle;
   } catch (TcbError &e) {
-    app->errorLog(e.what());
-    return e.getErrorCode();
+    return error(e);
   }
 
   return CKR_OK;
 }
-
+}

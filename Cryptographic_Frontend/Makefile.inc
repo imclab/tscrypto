@@ -1,12 +1,12 @@
-CC  = gcc
-CXX = g++
+CC  = @echo "[CC] $@."; gcc
+CXX = @echo "[CXX] $@."; g++
 PRJCFLAGS = -ggdb -pipe
 PRJCXXFLAGS = -ggdb -std=c++11 -pipe
 PRJLDFLAGS = -pipe
-LD  = $(CXX)
-AR  = ar
+LD  = @echo "[LD] $@."; g++
+AR  = @echo "[AR] $@."; ar
 ARFLAGS =
-RANLIB  = ranlib
+RANLIB  = @echo "[RANLIB] $@."; ranlib
 RM  = rm
 ECHO  = echo
 
