@@ -1,38 +1,48 @@
 include Makefile.inc
 
-DIRS = cf tcbhsm
+MODULES = tcbhsm cf
 
 # Cada executable va con su propia lista de objetivos
-# Supone que todo se compila contra las mismas librerías =)
+LIB = pkcs11 # LIB agarra todo los .o de los dirs y los pone en un .so
+LIB_RPATH = . # dejar vacio para ¿deploy? xD.
 EXE = hsm test
 hsm_OBJS = main.o
 test_OBJS = test.o
 
-LIBS = tcbhsm cf # El minimo comun multiplo de todas las librerias
 PKGCONFIG_LIBS = librabbitmq
 
 # Modularización...
+LIB_FILENAME = $(addprefix lib,$(addsuffix .so, $(LIB)))
 OBJS = $(foreach o, $(addsuffix _OBJS, $(EXE)), $($(o)))
-LIBS_FILENAMES = $(addprefix lib, $(addsuffix .a, $(LIBS)))
-LOCAL_LDFLAGS = -L. $(addprefix -l, $(LIBS)) $(shell pkg-config --libs $(PKGCONFIG_LIBS))
-LOCAL_CFLAGS = -Itcbhsm/cryptoki $(shell pkg-config --cflags $(PKGCONFIG_LIBS))
-LOCAL_CXXFLAGS = $(shell pkg-config --cflags $(PKGCONFIG_LIBS))
 
-LDFLAGS	= $(LOCAL_LDFLAGS) $(PRJLDFLAGS)
-CFLAGS	= $(LOCAL_CFLAGS) $(PRJCFLAGS) 
-CXXFLAGS= $(LOCAL_CXXFLAGS) $(PRJCXXFLAGS) 
+PKGCONFIG_LDFLAGS = $(shell pkg-config --libs $(PKGCONFIG_LIBS))
+PKGCONFIG_CFLAGS = $(shell pkg-config --cflags $(PKGCONFIG_LIBS))
+
+LIB_LDFLAGS = $(PKGCONFIG_LDFLAGS) $(PRJLDFLAGS)
+
+RPATH_OPTION = -Wl,-rpath=$(LIB_RPATH)
+EXE_LDFLAGS = -L. $(addprefix -l, $(LIB)) $(if $(LIB_RPATH), $(RPATH_OPTION)) $(PKGCONFIG_LDFLAGS) $(PRJLDFLAGS)
+EXE_CFLAGS = -Itcbhsm/cryptoki $(PKGCONFIG_CFLAGS)
+EXE_CXXFLAGS = $(PKGCONFIG_CFLAGS)
+
+CFLAGS	= $(EXE_CFLAGS) $(PRJCFLAGS) 
+CXXFLAGS= $(EXE_CXXFLAGS) $(PRJCXXFLAGS) 
 
 all:	$(EXE)
 
-$(EXE): $(LIBS) $(OBJS)
-	$(LD) -o $@ $($@_OBJS) $(LDFLAGS)
+$(EXE): $(LIB_FILENAME) $(OBJS)
+	$(LD) -o $@ $($@_OBJS) $(EXE_LDFLAGS)
+	
+$(LIB_FILENAME): $(MODULES)
+	$(LD) -fpic -shared -o $@ $(addsuffix /*.o, $^) $(LIB_LDFLAGS)
 
-$(LIBS): force_look
+$(MODULES): force_look
 	@cd $@; $(MAKE) $(MFLAGS)
 
+.PHONY:
 clean:
 	-$(RM) -f $(OBJS) $(LIBS_FILENAMES)
-	-@for dir in $(DIRS); do (cd $$dir; $(MAKE) clean); done
-
+	-@for dir in $(MODULES); do (cd $$dir; $(MAKE) clean); done
+	
 force_look:
 	@true

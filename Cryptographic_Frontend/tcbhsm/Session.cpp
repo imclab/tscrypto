@@ -123,8 +123,8 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
   // Copiado de SoftHSM, valores por defecto:
   CK_BBOOL isToken = CK_FALSE;
   CK_BBOOL isPrivate = CK_TRUE;
-  CK_OBJECT_CLASS oClass = CKO_VENDOR_DEFINED;
-  CK_KEY_TYPE keyType = CKK_VENDOR_DEFINED;
+  
+  // Recupera la opcion de si es un objeto distribuido o no...
   bool distributedObject = false;
 
   // Extract object information
@@ -138,16 +138,6 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
       case CKA_PRIVATE:
         if(pTemplate[i].ulValueLen == sizeof(CK_BBOOL)) {
           isPrivate = *(CK_BBOOL*)pTemplate[i].pValue;
-        }
-        break;
-      case CKA_CLASS:
-        if(pTemplate[i].ulValueLen == sizeof(CK_OBJECT_CLASS)) {
-          oClass = *(CK_OBJECT_CLASS*)pTemplate[i].pValue;
-        }
-        break;
-      case CKA_KEY_TYPE:
-        if(pTemplate[i].ulValueLen == sizeof(CK_KEY_TYPE)) {
-          keyType = *(CK_KEY_TYPE*)pTemplate[i].pValue;
         }
         break;
       case CKA_VENDOR_DEFINED: // RabbitConnection :D
