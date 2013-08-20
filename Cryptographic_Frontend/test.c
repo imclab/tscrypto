@@ -3,6 +3,27 @@
 #include <stdlib.h>
 #include <string.h>
 
+// Tiene que ser freeida por el usuario
+int read_all_file(FILE *fp, unsigned char **text) { 
+  int actual_max_buffer_size = 512;
+  
+  unsigned char *ret = malloc(actual_max_buffer_size*sizeof(*ret));
+  int size = 0;
+  
+  unsigned char c;
+  while((c = getc(fp)) != EOF) {
+    if (size + 1 > actual_max_buffer_size) {
+      actual_max_buffer_size *= 2;
+      ret = realloc(ret, actual_max_buffer_size*sizeof(*ret));
+    }
+    ret[size] = c;
+    size++;
+  }
+  ret = realloc(ret, size*sizeof(*ret));
+  *text = ret;
+  return size;
+}
+
 void
 check_return_value(CK_RV rv, const char *message)
 {
@@ -157,6 +178,10 @@ read_private_keys(session)
      check_return_value(rv, "Find objects final");
 }
 
+#define ID {0x45}
+#define ID_LENGTH 1
+#define LABEL "llave"
+#define LABEL_LENGTH 5
 void
 create_key_pair(CK_SESSION_HANDLE session)
 {
@@ -165,14 +190,14 @@ create_key_pair(CK_SESSION_HANDLE session)
      CK_MECHANISM mechanism = {
           CKM_RSA_PKCS_KEY_PAIR_GEN, NULL_PTR, 0
      };
-     CK_ULONG modulusBits = 1024;
+     CK_ULONG modulusBits = 4096;
      CK_BYTE publicExponent[] = { 1, 0, 1 };
-     CK_BYTE subject[] = "mykey";
-     CK_BYTE id[] = {0xa1};
+     CK_BYTE subject[] = LABEL;
+     CK_BYTE id[] = ID;
      CK_BBOOL true = CK_TRUE;
      CK_ATTRIBUTE publicKeyTemplate[] = {
-          {CKA_ID, id, 3},
-          {CKA_LABEL, subject, 5},
+          {CKA_ID, id, sizeof(id)},
+          {CKA_LABEL, subject, LABEL_LENGTH},
           {CKA_TOKEN, &true, sizeof(true)},
           {CKA_ENCRYPT, &true, sizeof(true)},
           {CKA_VERIFY, &true, sizeof(true)},
@@ -182,7 +207,7 @@ create_key_pair(CK_SESSION_HANDLE session)
      };
      CK_ATTRIBUTE privateKeyTemplate[] = {
           {CKA_ID, id, sizeof(id)},
-          {CKA_LABEL, subject, 5},
+          {CKA_LABEL, subject, LABEL_LENGTH},
           {CKA_TOKEN, &true, sizeof(true)},
           {CKA_PRIVATE, &true, sizeof(true)},
           {CKA_SENSITIVE, &true, sizeof(true)},
@@ -200,27 +225,130 @@ create_key_pair(CK_SESSION_HANDLE session)
      check_return_value(rv, "generate key pair");
 }
 
+CK_OBJECT_HANDLE
+get_private_key(CK_SESSION_HANDLE session, CK_BYTE *id, size_t id_len)
+{
+     CK_RV rv;
+     CK_OBJECT_CLASS keyClass = CKO_PRIVATE_KEY;
+     CK_ATTRIBUTE template[] = {
+          { CKA_CLASS, &keyClass, sizeof(keyClass) },
+          { CKA_ID, id, id_len }
+     };
+     CK_ULONG objectCount;
+     CK_OBJECT_HANDLE object;
+
+     rv = C_FindObjectsInit(session, template, 1);
+     check_return_value(rv, "Find objects init");
+
+     rv = C_FindObjects(session, &object, 1, &objectCount);
+     check_return_value(rv, "Find first object");
+
+     if (objectCount > 0) {
+          rv = C_FindObjectsFinal(session);
+          check_return_value(rv, "Find objects final");
+          return object;
+     } else {
+          fprintf(stderr, "Private key not found\n");
+          exit(2);
+     }
+}
+
+CK_OBJECT_HANDLE
+get_public_key(CK_SESSION_HANDLE session, CK_BYTE *id, size_t id_len)
+{
+     CK_RV rv;
+     CK_OBJECT_CLASS keyClass = CKO_PUBLIC_KEY;
+     CK_ATTRIBUTE template[] = {
+          { CKA_CLASS, &keyClass, sizeof(keyClass) },
+          { CKA_ID, id, id_len }
+     };
+     CK_ULONG objectCount;
+     CK_OBJECT_HANDLE object;
+
+     rv = C_FindObjectsInit(session, template, 1);
+     check_return_value(rv, "Find objects init");
+
+     rv = C_FindObjects(session, &object, 1, &objectCount);
+     check_return_value(rv, "Find first object");
+
+     if (objectCount > 0) {
+          rv = C_FindObjectsFinal(session);
+          check_return_value(rv, "Find objects final");
+          return object;
+     } else {
+          fprintf(stderr, "Public key not found\n");
+          exit(3);
+     }
+}
+
+void
+sign_data(CK_SESSION_HANDLE session, FILE *data_file, FILE *signature_file)
+{
+     CK_RV rv;
+     CK_BYTE id[] = ID;
+     CK_OBJECT_HANDLE key = get_private_key(session, id, sizeof(id));
+     CK_MECHANISM sign_mechanism;
+
+     CK_ULONG signatureLen = 512;
+     CK_BYTE *signature = malloc(signatureLen);
+     
+     CK_BYTE_PTR text;
+     int text_size = read_all_file(data_file, &text);
+
+     sign_mechanism.mechanism = CKM_SHA1_RSA_PKCS;
+     sign_mechanism.pParameter = NULL;
+     sign_mechanism.ulParameterLen = 0;
+
+     rv = C_SignInit(session, &sign_mechanism, key);
+     check_return_value(rv, "sign init new");
+
+     rv = C_Sign(session, text, text_size, signature, &signatureLen);
+     check_return_value(rv, "sign final");
+
+     if (signatureLen > 0) {
+          fwrite(signature, signatureLen, 1, signature_file);
+     }
+     free(signature);
+     free(text);
+}
+
+
+
 int
 main(int argc, char **argv)
 {
      CK_SLOT_ID slot;
      CK_SESSION_HANDLE session;
-     CK_BYTE *user_pin = "1234";
+     FILE *input_file = NULL;
+     FILE *output_file = NULL;
+     CK_BYTE *user_pin = NULL;
+
+     if (argc < 3) {
+          printf("Usage: pkcs11_example3 <input file> <output file> <pin>\n");
+          exit(0);
+     }
+     if (argc > 3) {
+          user_pin = (CK_BYTE *) argv[3];
+     }
 
      initialize();
      slot = get_slot();
 
+     /* signing */
+     input_file = fopen(argv[1], "r");
+     output_file = fopen(argv[2], "w");
      session = start_session(slot);
      if (user_pin) {
           login(session, user_pin);
      }
-     
      create_key_pair(session);
-     
+     sign_data(session, input_file, output_file);
      if (user_pin) {
           logout(session);
      }
      end_session(session);
+     fclose(input_file);
+     fclose(output_file);
 
      finalize();
 

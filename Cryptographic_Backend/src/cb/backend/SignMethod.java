@@ -50,7 +50,7 @@ public class SignMethod implements Method {
     if (rm.getReturnCode().equals("OK")) {
       rv = gson.fromJson(rm.getValue(), GenerateKeyPairMethod.ReturnValue.class);
 
-      sim = new SignInitMethod("RSA", rv.handler);
+      sim = new SignInitMethod("SHA1withRSA", rv.handler);
       rm = sim.execute();
       System.out.println(rm);
 

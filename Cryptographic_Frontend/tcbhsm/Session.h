@@ -37,10 +37,12 @@ public:
   CK_OBJECT_HANDLE generateKeyPair(CK_MECHANISM_PTR pMechanism, 
                                    CK_ATTRIBUTE_PTR pPublicKeyTemplate, CK_ULONG ulPublicKeyAttributeCount, 
                                    CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount);
+  void signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey);
+  void sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen);
     
 
   // Conexiones
-  ConnectionPtr && createConnection(); // RAII connection encapsulada en un puntero. R-Value reference.
+  cf::Connection* createConnection(); // RAII connection encapsulada en un puntero. R-Value reference.
 
   // Session Objects
   CK_OBJECT_HANDLE createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount); // throws exception
@@ -69,6 +71,9 @@ private:
   std::vector<CK_OBJECT_HANDLE> foundObjects;
   std::vector<CK_OBJECT_HANDLE>::iterator foundObjectsIterator;
   std::vector<CK_OBJECT_HANDLE>::iterator foundObjectsEnd;
+  
+  // Firmado
+  bool signInitialized_ = false;
 
 };
 }

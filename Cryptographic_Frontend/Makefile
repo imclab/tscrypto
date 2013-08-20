@@ -1,6 +1,6 @@
 include Makefile.inc
 
-MODULES = tcbhsm cf
+MODULES = jsoncpp tcbhsm cf
 
 # Cada executable va con su propia lista de objetivos
 LIB = pkcs11 # LIB agarra todo los .o de los dirs y los pone en un .so

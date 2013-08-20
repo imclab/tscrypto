@@ -7,6 +7,7 @@
 #include "tcbhsm/Session.h"
 #include "cf/Method.hpp"
 #include "cf/GenerateKeyPairMethod.hpp"
+#include "cf/SignInitMethod.hpp"
 #include "cf/RabbitConnection.hpp"
 #include "cf/ResponseMessage.hpp"
 #include "TcbError.h"
@@ -73,7 +74,7 @@ Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify, Slo
 
 }
 
-auto Session::createConnection() -> ConnectionPtr &&
+auto Session::createConnection() -> cf::Connection*
 {
   // Ojo! La configuracion de la conexión esta hecha con variables de entorno...
   const char* hostname = std::getenv("TCB_HOSTNAME");
@@ -88,7 +89,7 @@ auto Session::createConnection() -> ConnectionPtr &&
 
   int portNumber = std::stoi(port);
   
-  return std::move(ConnectionPtr(new cf::RabbitConnection(hostname, portNumber, "", "rpc_queue", 1)));
+  return new cf::RabbitConnection(hostname, portNumber, "", "rpc_queue", 1);
 }
 
 void Session::retain()
@@ -269,15 +270,16 @@ CK_OBJECT_HANDLE Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
       try {
         long long handler;
         
-        cf::RabbitConnection connection("localhost", 5672, "", "rpc_queue", 1);
-        cf::Method * method = new cf::GenerateKeyPairMethod("RSA", 4096, "65537");
-        method->execute(connection);
-        cf::ResponseMessagePtr response(method->getResponse());
+        ConnectionPtr connection(createConnection());
+        
+        cf::GenerateKeyPairMethod method("RSA", 4096, "65537"); // Unico metodo aceptado :B...
+        method.execute(*connection);
+        cf::ResponseMessagePtr response(method.getResponse());
         handler = response->getValue<long long>("handler");
-        delete method;
         
         // NOTE: Esto está mas o menos copiado de SoftHSM...
-        CK_OBJECT_CLASS oClass = CKO_PUBLIC_KEY;
+        CK_OBJECT_CLASS oClass = CKO_PUBLIC_KEY; // NOTE: Revisar como guardar estas dos cosas...
+        CK_OBJECT_CLASS oClassPrivate = CKO_PRIVATE_KEY;
         CK_KEY_TYPE keyType = CKK_RSA;
         CK_MECHANISM_TYPE mechType = CKM_RSA_PKCS_KEY_PAIR_GEN;
         CK_BBOOL ckTrue = CK_TRUE, ckFalse = CK_FALSE;
@@ -285,7 +287,7 @@ CK_OBJECT_HANDLE Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
                 
         // Atributos genéricos...
         // TODO: verificar que se copien los atributos y no solo su puntero...
-        CK_ATTRIBUTE aClass = { CKA_CLASS, &oClass, sizeof(oClass) };
+        CK_ATTRIBUTE aClass = { CKA_CLASS, &oClassPrivate, sizeof(oClass) };
         CK_ATTRIBUTE aKeyType = { CKA_KEY_TYPE, &keyType, sizeof(keyType) };
         CK_ATTRIBUTE aMechType = { CKA_KEY_GEN_MECHANISM, &mechType, sizeof(mechType) };
         CK_ATTRIBUTE aLocal = { CKA_LOCAL, &ckTrue, sizeof(ckTrue) };
@@ -307,7 +309,11 @@ CK_OBJECT_HANDLE Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
         
         // NOTE: CKA_VENDOR_DEFINED = CKA_RABBIT_HANDLER :D.
         // i.e. si está ocupado se ocupa rabbit :P.
-        CK_ATTRIBUTE aValue = { CKA_VENDOR_DEFINED, &handler, sizeof(handler) };
+        CK_ATTRIBUTE aValue = { 
+          .type=CKA_VENDOR_DEFINED, 
+          .pValue=&handler, 
+          .ulValueLen=sizeof(handler) 
+        };
         
         // Se sobre escriben los datos...
         for(CK_ULONG i = 0; i < ulPublicKeyAttributeCount; i++) {
@@ -395,3 +401,54 @@ CK_OBJECT_HANDLE Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
   
 }
 
+void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
+  try {
+    ConnectionPtr connection(createConnection());
+    SessionObject &keyObject = getObject(hKey);
+    CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
+    const CK_ATTRIBUTE * handlerAttribute = keyObject.findAttribute(&tmpl);
+    
+    if (!handlerAttribute) {
+      throw TcbError("Session::signInit", "El object handle no contiene ninguna llave", CKR_ARGUMENTS_BAD);
+    }
+    
+    long long handler = *(long long*)handlerAttribute->pValue;
+    
+    std::string mechanism;
+    switch(pMechanism->mechanism) {
+      case CKM_SHA1_RSA_PKCS:
+        mechanism = "SHA1withRSA";
+        break;
+      case CKM_RSA_PKCS:
+      case CKM_RSA_X_509:
+      case CKM_MD5_RSA_PKCS:
+      case CKM_RIPEMD160_RSA_PKCS:
+      case CKM_SHA256_RSA_PKCS:
+      case CKM_SHA384_RSA_PKCS:
+      case CKM_SHA512_RSA_PKCS:
+      case CKM_SHA1_RSA_PKCS_PSS:
+      case CKM_SHA256_RSA_PKCS_PSS:
+      case CKM_SHA384_RSA_PKCS_PSS:
+      case CKM_SHA512_RSA_PKCS_PSS:
+      default:
+        throw TcbError("Session::signInit", "The selected mechanism is not supported", CKR_MECHANISM_INVALID);
+        break;
+    }
+    
+    cf::SignInitMethod method(mechanism, handler);
+    method.execute(*connection);
+    cf::ResponseMessagePtr response(method.getResponse());
+    
+    signInitialized_ = true;
+  }
+  catch (TcbError &e) {
+    throw e;
+  }
+  catch (std::exception &e) {
+    throw TcbError("Session::signInit", e.what(), CKR_GENERAL_ERROR);
+  }
+}
+
+void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen) {
+  
+}
