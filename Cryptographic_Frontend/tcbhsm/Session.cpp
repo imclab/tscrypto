@@ -2,15 +2,20 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-
-#include <cstdlib> // getenv
 #include "tcbhsm/Session.h"
 #include "cf/Method.hpp"
 #include "cf/GenerateKeyPairMethod.hpp"
 #include "cf/SignInitMethod.hpp"
 #include "cf/RabbitConnection.hpp"
 #include "cf/ResponseMessage.hpp"
+#include "cf/SignMethod.hpp"
 #include "TcbError.h"
+
+#include "base64/base64.h"
+
+#include <algorithm>
+#include <cstdlib> // getenv
+
 
 using namespace tcbhsm;
 
@@ -519,8 +524,6 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
   switch (pMechanism->mechanism) {
     case CKM_RSA_PKCS_KEY_PAIR_GEN:
       try {
-        
-        
         ConnectionPtr connection(createConnection());
         
         cf::GenerateKeyPairMethod method("RSA", 4096, "65537"); // Unico metodo aceptado :B...
@@ -575,7 +578,7 @@ void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
       case CKM_SHA384_RSA_PKCS_PSS:
       case CKM_SHA512_RSA_PKCS_PSS:
       default:
-        throw TcbError("Session::signInit", "The selected mechanism is not supported", CKR_MECHANISM_INVALID);
+        throw TcbError("Session::signInit", "El mecanismo no esta soportado.", CKR_MECHANISM_INVALID);
         break;
     }
     
@@ -595,4 +598,35 @@ void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
 
 void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen) {
   
+  if (!signInitialized_) {
+    throw TcbError("Session::sign", "Firmado nunca inicializado", CKR_OPERATION_NOT_INITIALIZED);
+  }
+  
+  try {
+    ConnectionPtr connection(createConnection());
+    
+    std::string encodedData (base64::encode(pData, ulDataLen));
+    cf::SignMethod method (encodedData);
+    method.execute (*connection);
+    cf::ResponseMessagePtr response (method.getResponse());
+    
+    std::string responseDecoded (base64::decode(response->getValue<std::string>("signedData")));
+    unsigned long responseSize = responseDecoded.size(); 
+    
+    if (*pulSignatureLen < responseSize) {
+      throw TcbError("Session::sign", "Buffer muy pequeño.", CKR_BUFFER_TOO_SMALL);
+    }
+    *pulSignatureLen = responseSize;
+    
+    const char *data = responseDecoded.c_str();
+    std::copy(data, data + *pulSignatureLen, pSignature);
+
+    signInitialized_ = false;
+  }
+  catch (TcbError &e) {
+    throw e;
+  }
+  catch (std::exception &e) {
+    throw TcbError("Session::sign", e.what(), CKR_GENERAL_ERROR);
+  }
 }
