@@ -1,5 +1,6 @@
 *.o
 *.a
+*.so
 hsm
 test
 *.kate-swp
