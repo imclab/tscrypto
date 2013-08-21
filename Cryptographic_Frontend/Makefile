@@ -29,6 +29,7 @@ CFLAGS	= $(EXE_CFLAGS) $(PRJCFLAGS)
 CXXFLAGS= $(EXE_CXXFLAGS) $(PRJCXXFLAGS) 
 
 all:	$(EXE)
+	@echo "LISTO!"
 
 $(EXE): $(LIB_FILENAME) $(OBJS)
 	$(LD) -o $@ $($@_OBJS) $(EXE_LDFLAGS)

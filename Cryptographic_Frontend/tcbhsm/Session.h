@@ -6,17 +6,22 @@
 #define SESSION_H
 
 #include "config.h"
+
 #include "cf/Connection.hpp"
 #include "cryptoki.h"
 
-#include <map>
-#include <memory>
 #include "SessionObject.h"
 #include "Slot.h"
+
+#include <map>
+#include <memory>
+#include <utility>
+
 namespace tcbhsm
 {
 using SessionObjectPtr = std::unique_ptr<SessionObject>;
 using ConnectionPtr = std::unique_ptr<cf::Connection>;
+using KeyPair = std::pair<CK_OBJECT_HANDLE, CK_OBJECT_HANDLE>; // (Privada, pública)
 
 // Una sesion es ademas un container de objetos de session.
 class Session
@@ -34,7 +39,7 @@ public:
   void logout();
 
   // Funciones criptográficas
-  CK_OBJECT_HANDLE generateKeyPair(CK_MECHANISM_PTR pMechanism, 
+  KeyPair generateKeyPair(CK_MECHANISM_PTR pMechanism, 
                                    CK_ATTRIBUTE_PTR pPublicKeyTemplate, CK_ULONG ulPublicKeyAttributeCount, 
                                    CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount);
   void signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey);

@@ -257,9 +257,260 @@ void Session::logout() {
  * FUNCIONES CRIPTOGRAFICAS
  ***/
 
-CK_OBJECT_HANDLE Session::generateKeyPair(CK_MECHANISM_PTR pMechanism, 
-                                          CK_ATTRIBUTE_PTR pPublicKeyTemplate, CK_ULONG ulPublicKeyAttributeCount, 
-                                          CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount) {
+namespace {
+  CK_OBJECT_HANDLE createPublicKey(Session &session, 
+                                   CK_ATTRIBUTE_PTR pPublicKeyTemplate, 
+                                   CK_ULONG ulPublicKeyAttributeCount,
+                                   long long rabbitHandler) {
+    // NOTE: Esto está mas o menos copiado de SoftHSM...
+    CK_OBJECT_CLASS oClass = CKO_PUBLIC_KEY; 
+    CK_KEY_TYPE keyType = CKK_RSA;
+    CK_MECHANISM_TYPE mechType = CKM_RSA_PKCS_KEY_PAIR_GEN;
+    CK_BBOOL ckTrue = CK_TRUE, ckFalse = CK_FALSE;
+    CK_DATE emptyDate;
+    
+    // Atributos genéricos...
+    // TODO: verificar que se copien los atributos y no solo su puntero...
+    CK_ATTRIBUTE aClass = { CKA_CLASS, &oClass, sizeof(oClass) };
+    CK_ATTRIBUTE aKeyType = { CKA_KEY_TYPE, &keyType, sizeof(keyType) };
+    CK_ATTRIBUTE aMechType = { CKA_KEY_GEN_MECHANISM, &mechType, sizeof(mechType) };
+    CK_ATTRIBUTE aLocal = { CKA_LOCAL, &ckTrue, sizeof(ckTrue) };
+    
+    CK_ATTRIBUTE aLabel = { CKA_LABEL, NULL_PTR, 0 };
+    CK_ATTRIBUTE aId = { CKA_ID, NULL_PTR, 0 };
+    CK_ATTRIBUTE aSubject = { CKA_SUBJECT, NULL_PTR, 0 };
+    CK_ATTRIBUTE aPrivate = { CKA_PRIVATE, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aModifiable = { CKA_MODIFIABLE, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aToken = { CKA_TOKEN, &ckFalse, sizeof(ckFalse) };
+    CK_ATTRIBUTE aDerive = { CKA_DERIVE, &ckFalse, sizeof(ckFalse) };
+    CK_ATTRIBUTE aEncrypt = { CKA_ENCRYPT, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aVerify = { CKA_VERIFY, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aVerifyRecover = { CKA_VERIFY_RECOVER, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aWrap = { CKA_WRAP, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aTrusted = { CKA_TRUSTED, &ckFalse, sizeof(ckFalse) };
+    CK_ATTRIBUTE aStartDate = { CKA_START_DATE, &emptyDate, 0 };
+    CK_ATTRIBUTE aEndDate = { CKA_END_DATE, &emptyDate, 0 };
+    
+    // NOTE: CKA_VENDOR_DEFINED = CKA_RABBIT_HANDLER :D.
+    // i.e. si está ocupado se ocupa rabbit :P.
+    CK_ATTRIBUTE aValue = { 
+      .type=CKA_VENDOR_DEFINED, 
+      .pValue=&rabbitHandler, 
+      .ulValueLen=sizeof(rabbitHandler) 
+    };
+    
+    // Se sobre escriben los datos...
+    for(CK_ULONG i = 0; i < ulPublicKeyAttributeCount; i++) {
+      switch(pPublicKeyTemplate[i].type) {
+        case CKA_LABEL:
+          aLabel = pPublicKeyTemplate[i];
+          break;
+        case CKA_ID:
+          aId = pPublicKeyTemplate[i];
+          break;
+        case CKA_SUBJECT:
+          aSubject = pPublicKeyTemplate[i];
+          break;
+        case CKA_DERIVE:
+          aDerive = pPublicKeyTemplate[i];
+          break;
+        case CKA_TOKEN:
+          aToken = pPublicKeyTemplate[i];
+          break;
+        case CKA_PRIVATE:
+          aPrivate = pPublicKeyTemplate[i];
+          break;
+        case CKA_MODIFIABLE:
+          aModifiable = pPublicKeyTemplate[i];
+          break;
+        case CKA_ENCRYPT:
+          aEncrypt = pPublicKeyTemplate[i];
+          break;
+        case CKA_VERIFY:
+          aVerify = pPublicKeyTemplate[i];
+          break;
+        case CKA_VERIFY_RECOVER:
+          aVerifyRecover = pPublicKeyTemplate[i];
+          break;
+        case CKA_WRAP:
+          aWrap = pPublicKeyTemplate[i];
+          break;
+        case CKA_TRUSTED:
+          aSubject = pPublicKeyTemplate[i];
+          break;
+        case CKA_START_DATE:
+          aStartDate = pPublicKeyTemplate[i];
+          break;
+        case CKA_END_DATE:
+          aEndDate = pPublicKeyTemplate[i];
+          break;
+        default:
+          break;
+      }
+    }
+    
+    CK_ATTRIBUTE attributes[] = {
+      aClass,
+      aKeyType,
+      aMechType,
+      aLocal,
+      aLabel,
+      aId,
+      aSubject,
+      aPrivate,
+      aModifiable,
+      aToken,
+      aDerive,
+      aEncrypt,
+      aVerify,
+      aVerifyRecover,
+      aWrap,
+      aTrusted,
+      aStartDate,
+      aEndDate,
+      aValue
+    };
+    
+    return session.createObject(attributes, sizeof(attributes)/sizeof(attributes[0]));
+  }
+  
+    CK_OBJECT_HANDLE createPrivateKey(Session &session, 
+                                      CK_ATTRIBUTE_PTR pPrivateKeyTemplate, 
+                                   CK_ULONG ulPrivateKeyAttributeCount,
+                                   long long rabbitHandler) {
+    CK_OBJECT_CLASS oClass = CKO_PRIVATE_KEY;
+    CK_KEY_TYPE keyType = CKK_RSA;
+    CK_MECHANISM_TYPE mechType = CKM_RSA_PKCS_KEY_PAIR_GEN;
+    CK_BBOOL ckTrue = CK_TRUE, ckFalse = CK_FALSE;
+    CK_DATE emptyDate;
+    
+    // Atributos genéricos...
+    CK_ATTRIBUTE aClass = { CKA_CLASS, &oClass, sizeof(oClass) };
+    CK_ATTRIBUTE aKeyType = { CKA_KEY_TYPE, &keyType, sizeof(keyType) };
+    CK_ATTRIBUTE aMechType = { CKA_KEY_GEN_MECHANISM, &mechType, sizeof(mechType) };
+    CK_ATTRIBUTE aLocal = { CKA_LOCAL, &ckTrue, sizeof(ckTrue) };
+    
+    CK_ATTRIBUTE aLabel = { CKA_LABEL, NULL_PTR, 0 };
+    CK_ATTRIBUTE aId = { CKA_ID, NULL_PTR, 0 };
+    CK_ATTRIBUTE aSubject = { CKA_SUBJECT, NULL_PTR, 0 };
+    CK_ATTRIBUTE aPrivate = { CKA_PRIVATE, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aModifiable = { CKA_MODIFIABLE, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aToken = { CKA_TOKEN, &ckFalse, sizeof(ckFalse) };
+    CK_ATTRIBUTE aDerive = { CKA_DERIVE, &ckFalse, sizeof(ckFalse) };
+    
+    CK_ATTRIBUTE aWrapWithTrusted = { CKA_WRAP_WITH_TRUSTED, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aAlwaysAuthenticate = { CKA_ALWAYS_AUTHENTICATE, &ckFalse, sizeof(ckFalse) };
+    CK_ATTRIBUTE aSensitive = { CKA_SENSITIVE, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aAlwaysSensitive = { CKA_ALWAYS_SENSITIVE, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aDecrypt = { CKA_DECRYPT, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aSign = { CKA_SIGN, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aSignRecover = { CKA_SIGN_RECOVER, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aUnwrap = { CKA_UNWRAP, &ckTrue, sizeof(ckTrue) };
+    CK_ATTRIBUTE aExtractable = { CKA_EXTRACTABLE, &ckFalse, sizeof(ckFalse) };
+    CK_ATTRIBUTE aNeverExtractable = { CKA_NEVER_EXTRACTABLE, &ckTrue, sizeof(ckTrue) };
+    
+    CK_ATTRIBUTE aStartDate = { CKA_START_DATE, &emptyDate, 0 };
+    CK_ATTRIBUTE aEndDate = { CKA_END_DATE, &emptyDate, 0 };
+  
+    
+    // NOTE: CKA_VENDOR_DEFINED = CKA_RABBIT_HANDLER :D.
+    // i.e. si está ocupado se ocupa rabbit :P.
+    CK_ATTRIBUTE aValue = { 
+      .type=CKA_VENDOR_DEFINED, 
+      .pValue=&rabbitHandler, 
+      .ulValueLen=sizeof(rabbitHandler) 
+    };
+    
+    // Se sobre escriben los datos...
+    for(CK_ULONG i = 0; i < ulPrivateKeyAttributeCount; i++) {
+      switch(pPrivateKeyTemplate[i].type) {
+        case CKA_LABEL:
+          aLabel = pPrivateKeyTemplate[i];
+          break;
+        case CKA_ID:
+          aId = pPrivateKeyTemplate[i];
+          break;
+        case CKA_SUBJECT:
+          aSubject = pPrivateKeyTemplate[i];
+          break;
+        case CKA_TOKEN:
+          aToken = pPrivateKeyTemplate[i];
+          break;
+        case CKA_PRIVATE:
+          aPrivate = pPrivateKeyTemplate[i];
+          break;
+        case CKA_DERIVE:
+          aDerive = pPrivateKeyTemplate[i];
+          break;
+        case CKA_MODIFIABLE:
+          aModifiable = pPrivateKeyTemplate[i];
+          break;
+        case CKA_DECRYPT:
+          aDecrypt = pPrivateKeyTemplate[i];
+          break;
+        case CKA_SIGN:
+          aSign = pPrivateKeyTemplate[i];
+          break;
+        case CKA_SIGN_RECOVER:
+          aSignRecover = pPrivateKeyTemplate[i];
+          break;
+        case CKA_UNWRAP:
+          aUnwrap = pPrivateKeyTemplate[i];
+          break;
+        case CKA_WRAP_WITH_TRUSTED:
+          aWrapWithTrusted = pPrivateKeyTemplate[i];
+          break;
+        case CKA_ALWAYS_AUTHENTICATE:
+          aAlwaysAuthenticate = pPrivateKeyTemplate[i];
+          break;
+        case CKA_START_DATE:
+          aStartDate = pPrivateKeyTemplate[i];
+          break;
+        case CKA_END_DATE:
+          aEndDate = pPrivateKeyTemplate[i];
+          break;
+        default:
+          break;
+      }
+    }
+    
+    CK_ATTRIBUTE attributes[] = {
+    aClass,
+    aKeyType,
+    aMechType,
+    aLocal,
+    
+    aLabel,
+    aId,
+    aSubject,
+    aPrivate,
+    aModifiable,
+    aToken,
+    aDerive,
+    aWrapWithTrusted,
+    aAlwaysAuthenticate,
+    aSensitive,
+    aAlwaysSensitive,
+    aDecrypt,
+    aSign,
+    aSignRecover,
+    aUnwrap,
+    aExtractable,
+    aNeverExtractable,
+    aValue,
+    
+    aStartDate,
+    aEndDate
+    };
+    
+    return session.createObject(attributes, sizeof(attributes)/sizeof(attributes[0]));
+  }
+  
+}
+
+KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism, 
+                                 CK_ATTRIBUTE_PTR pPublicKeyTemplate, CK_ULONG ulPublicKeyAttributeCount, 
+                                 CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount) {
   // TODO: verificar permisos de acceso.
   if (pMechanism == nullptr || pPublicKeyTemplate == nullptr || pPrivateKeyTemplate == nullptr) {
     throw TcbError("Session::generateKeyPair", "Argumentos nulos", CKR_ARGUMENTS_BAD);
@@ -268,126 +519,19 @@ CK_OBJECT_HANDLE Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
   switch (pMechanism->mechanism) {
     case CKM_RSA_PKCS_KEY_PAIR_GEN:
       try {
-        long long handler;
+        
         
         ConnectionPtr connection(createConnection());
         
         cf::GenerateKeyPairMethod method("RSA", 4096, "65537"); // Unico metodo aceptado :B...
         method.execute(*connection);
         cf::ResponseMessagePtr response(method.getResponse());
-        handler = response->getValue<long long>("handler");
+        long long handler = response->getValue<long long>("handler");
         
-        // NOTE: Esto está mas o menos copiado de SoftHSM...
-        CK_OBJECT_CLASS oClass = CKO_PUBLIC_KEY; // NOTE: Revisar como guardar estas dos cosas...
-        CK_OBJECT_CLASS oClassPrivate = CKO_PRIVATE_KEY;
-        CK_KEY_TYPE keyType = CKK_RSA;
-        CK_MECHANISM_TYPE mechType = CKM_RSA_PKCS_KEY_PAIR_GEN;
-        CK_BBOOL ckTrue = CK_TRUE, ckFalse = CK_FALSE;
-        CK_DATE emptyDate;
-                
-        // Atributos genéricos...
-        // TODO: verificar que se copien los atributos y no solo su puntero...
-        CK_ATTRIBUTE aClass = { CKA_CLASS, &oClassPrivate, sizeof(oClass) };
-        CK_ATTRIBUTE aKeyType = { CKA_KEY_TYPE, &keyType, sizeof(keyType) };
-        CK_ATTRIBUTE aMechType = { CKA_KEY_GEN_MECHANISM, &mechType, sizeof(mechType) };
-        CK_ATTRIBUTE aLocal = { CKA_LOCAL, &ckTrue, sizeof(ckTrue) };
-        
-        CK_ATTRIBUTE aLabel = { CKA_LABEL, NULL_PTR, 0 };
-        CK_ATTRIBUTE aId = { CKA_ID, NULL_PTR, 0 };
-        CK_ATTRIBUTE aSubject = { CKA_SUBJECT, NULL_PTR, 0 };
-        CK_ATTRIBUTE aPrivate = { CKA_PRIVATE, &ckTrue, sizeof(ckTrue) };
-        CK_ATTRIBUTE aModifiable = { CKA_MODIFIABLE, &ckTrue, sizeof(ckTrue) };
-        CK_ATTRIBUTE aToken = { CKA_TOKEN, &ckFalse, sizeof(ckFalse) };
-        CK_ATTRIBUTE aDerive = { CKA_DERIVE, &ckFalse, sizeof(ckFalse) };
-        CK_ATTRIBUTE aEncrypt = { CKA_ENCRYPT, &ckTrue, sizeof(ckTrue) };
-        CK_ATTRIBUTE aVerify = { CKA_VERIFY, &ckTrue, sizeof(ckTrue) };
-        CK_ATTRIBUTE aVerifyRecover = { CKA_VERIFY_RECOVER, &ckTrue, sizeof(ckTrue) };
-        CK_ATTRIBUTE aWrap = { CKA_WRAP, &ckTrue, sizeof(ckTrue) };
-        CK_ATTRIBUTE aTrusted = { CKA_TRUSTED, &ckFalse, sizeof(ckFalse) };
-        CK_ATTRIBUTE aStartDate = { CKA_START_DATE, &emptyDate, 0 };
-        CK_ATTRIBUTE aEndDate = { CKA_END_DATE, &emptyDate, 0 };
-        
-        // NOTE: CKA_VENDOR_DEFINED = CKA_RABBIT_HANDLER :D.
-        // i.e. si está ocupado se ocupa rabbit :P.
-        CK_ATTRIBUTE aValue = { 
-          .type=CKA_VENDOR_DEFINED, 
-          .pValue=&handler, 
-          .ulValueLen=sizeof(handler) 
-        };
-        
-        // Se sobre escriben los datos...
-        for(CK_ULONG i = 0; i < ulPublicKeyAttributeCount; i++) {
-          switch(pPublicKeyTemplate[i].type) {
-            case CKA_LABEL:
-              aLabel = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_ID:
-              aId = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_SUBJECT:
-              aSubject = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_DERIVE:
-              aDerive = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_TOKEN:
-              aToken = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_PRIVATE:
-              aPrivate = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_MODIFIABLE:
-              aModifiable = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_ENCRYPT:
-              aEncrypt = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_VERIFY:
-              aVerify = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_VERIFY_RECOVER:
-              aVerifyRecover = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_WRAP:
-              aWrap = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_TRUSTED:
-              aSubject = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_START_DATE:
-              aStartDate = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            case CKA_END_DATE:
-              aEndDate = { pPublicKeyTemplate[i].type, pPublicKeyTemplate[i].pValue, pPublicKeyTemplate[i].ulValueLen };
-              break;
-            default:
-              break;
-          }
-        }
-                
-        CK_ATTRIBUTE attributes[] = {
-          aClass,
-          aKeyType,
-          aMechType,
-          aLocal,
-          aLabel,
-          aId,
-          aSubject,
-          aPrivate,
-          aModifiable,
-          aToken,
-          aDerive,
-          aEncrypt,
-          aVerify,
-          aVerifyRecover,
-          aWrap,
-          aTrusted,
-          aStartDate,
-          aEndDate,
-          aValue
-        };
+        CK_OBJECT_HANDLE publicKeyHandle = createPublicKey(*this, pPublicKeyTemplate, ulPublicKeyAttributeCount, handler);
+        CK_OBJECT_HANDLE privateKeyHandle = createPrivateKey(*this, pPrivateKeyTemplate, ulPrivateKeyAttributeCount, handler);
           
-        return createObject(attributes, sizeof(attributes)/sizeof(attributes[0]));
+        return KeyPair(privateKeyHandle, publicKeyHandle);
         
       } catch (std::exception & e) {
         throw TcbError("Session::generateKeyPair", e.what(), CKR_GENERAL_ERROR);

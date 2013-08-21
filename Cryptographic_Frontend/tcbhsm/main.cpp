@@ -320,11 +320,11 @@ extern "C" {
       return CKR_ARGUMENTS_BAD;
     
     try {
-      CK_OBJECT_HANDLE keysHandle; // Por diseño, ambas llaves tienen el mismo handle.
-      keysHandle = app->getSession(hSession).generateKeyPair(pMechanism, pPublicKeyTemplate, ulPublicKeyAttributeCount,
-                                                             pPrivateKeyTemplate, ulPrivateKeyAttributeCount);
+      KeyPair keysHandle = app->getSession(hSession).generateKeyPair(pMechanism, pPublicKeyTemplate, ulPublicKeyAttributeCount,
+                                                                     pPrivateKeyTemplate, ulPrivateKeyAttributeCount);
+      *phPrivateKey = keysHandle.first;
+      *phPublicKey = keysHandle.second;
       
-      *phPublicKey = *phPrivateKey = keysHandle;
     } catch (TcbError &e) {
       return error(e);
     }
