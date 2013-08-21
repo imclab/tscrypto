@@ -11,7 +11,7 @@ class SignInitMethod : public Method
 protected:
   virtual ResponseMessageStrategy getStrategy() const override;
 public:
-  SignInitMethod(std::string mechanism, int privateKeyHandler);
+  SignInitMethod(std::string mechanism, long long privateKeyHandler);
 };
 
 }

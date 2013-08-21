@@ -4,7 +4,7 @@
 #include "StringArgument.hpp"
 #include "IntegerArgument.hpp"
 
-cf::SignInitMethod::SignInitMethod(std::string mechanism, int privateKeyHandler)
+cf::SignInitMethod::SignInitMethod(std::string mechanism, long long privateKeyHandler)
   : Method("SignInit")
 {
   addArgument(ArgumentPtr(new StringArgument("mechanism", mechanism)));

@@ -19,6 +19,7 @@ private:
 public:
   SessionObject (CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount);
   SessionObject (CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount, bool distributed);
+  ~SessionObject ();
 
   bool match (CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) const;
   void copyAttributes (CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) const; // throw Exception

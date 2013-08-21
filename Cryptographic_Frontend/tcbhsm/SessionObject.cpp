@@ -1,27 +1,47 @@
 #include "SessionObject.h"
 #include "TcbError.h"
 
+#include <cstdlib>
+#include <cstring>
+
 using namespace tcbhsm;
 
 SessionObject::SessionObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount) : isDistributed_(false) {
+  CK_ATTRIBUTE att;
   auto end = pAttributes + ulCount;
   for (auto it = pAttributes; it != end; ++it) {
-      attributes_.push_back(*it);
+    att.type = it->type;
+    att.ulValueLen = it->ulValueLen;
+    att.pValue = malloc(att.ulValueLen);
+    std::memcpy(att.pValue, it->pValue, att.ulValueLen);
+    
+    attributes_.push_back(att);
   }
-
 }
 
 SessionObject::SessionObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount, bool distributed) : isDistributed_(distributed) {
+  CK_ATTRIBUTE att;
   auto end = pAttributes + ulCount;
   for (auto it = pAttributes; it != end; ++it) {
-      attributes_.push_back(*it);
+    att.type = it->type;
+    att.ulValueLen = it->ulValueLen;
+    att.pValue = std::malloc(att.ulValueLen);
+    std::memcpy(att.pValue, it->pValue, att.ulValueLen);
+    
+    attributes_.push_back(att);
   }
+}
 
+SessionObject::~SessionObject() {
+  for (auto &attribute: attributes_) {
+    std::free(attribute.pValue);
+  }
 }
 
 namespace {
   bool operator==(const CK_ATTRIBUTE& lhs, const CK_ATTRIBUTE& rhs) {
-    return lhs.type == rhs.type && lhs.pValue == rhs.pValue && lhs.ulValueLen == rhs.ulValueLen;
+    // return lhs.type == rhs.type && lhs.pValue == rhs.pValue && lhs.ulValueLen == rhs.ulValueLen;
+    return lhs.type == rhs.type;
   }
 }
 

@@ -10,13 +10,13 @@ int read_all_file(FILE *fp, unsigned char **text) {
   unsigned char *ret = malloc(actual_max_buffer_size*sizeof(*ret));
   int size = 0;
   
-  unsigned char c;
+  int c;
   while((c = getc(fp)) != EOF) {
     if (size + 1 > actual_max_buffer_size) {
       actual_max_buffer_size *= 2;
       ret = realloc(ret, actual_max_buffer_size*sizeof(*ret));
     }
-    ret[size] = c;
+    ret[size] = (unsigned char) c;
     size++;
   }
   ret = realloc(ret, size*sizeof(*ret));
