@@ -52,3 +52,11 @@ Token & Slot::getToken() const
   else
     throw TcbError("El token no esta presente.", CKR_SLOT_ID_INVALID);
 }
+
+void Slot::addSession(unsigned int sessionHandler) {
+  sessions_.push_back(sessionHandler);
+}
+
+std::vector<unsigned int> & Slot::getSessions() {
+  return sessions_;
+}

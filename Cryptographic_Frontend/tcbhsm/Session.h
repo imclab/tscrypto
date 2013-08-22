@@ -19,7 +19,7 @@
 
 namespace tcbhsm
 {
-using SessionObjectPtr = std::unique_ptr<SessionObject>;
+
 using ConnectionPtr = std::unique_ptr<cf::Connection>;
 using KeyPair = std::pair<CK_OBJECT_HANDLE, CK_OBJECT_HANDLE>; // (Privada, pública)
 
@@ -81,6 +81,8 @@ private:
   bool signInitialized_ = false;
 
 };
+
+using SessionPtr = std::unique_ptr<Session>;
 }
 
 #endif // SESSION_H

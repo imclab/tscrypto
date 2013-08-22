@@ -6,6 +6,7 @@
 #define TCBHSM_SESSIONOBJECT_H
 #include "cryptoki.h"
 #include <vector>
+#include <memory>
 
 namespace tcbhsm
 {
@@ -27,7 +28,7 @@ public:
   bool isDistributed() const;
 };
 
-
+using SessionObjectPtr = std::unique_ptr<SessionObject>;
 }
 
 #endif // TCBHSM_SESSIONOBJECT_H

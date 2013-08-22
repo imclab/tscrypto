@@ -50,12 +50,14 @@ void Application::openSession(CK_SLOT_ID slotID, CK_FLAGS flags,
                               CK_VOID_PTR pApplication, CK_NOTIFY notify,
                               CK_SESSION_HANDLE_PTR phSession)
 {
-  int i = 0;
+  unsigned int i = 0;
+  Slot &slot = getSlot(slotID);
   for (SessionPtr& session: sessions_) {
     // De entre todos los espacios para hacer sesiones
     // se busca el que esté vacío.
-    if (session == nullptr) {
-      session.reset(new Session(flags, pApplication, notify, *(slots_.at(slotID))));
+    if (session == nullptr) {    
+      session.reset(new Session(flags, pApplication, notify, slot));
+      slot.addSession(i);
       *phSession = i;
       return;
     }
@@ -67,7 +69,7 @@ void Application::openSession(CK_SLOT_ID slotID, CK_FLAGS flags,
 
 void Application::closeSession(CK_SESSION_HANDLE hSession) // throws
 {
-  int i = hSession;
+  unsigned int i = hSession;
   // Se elimina la sesion con todo lo que tiene adentro
   try {
     sessions_.at(i).reset(nullptr);

@@ -1,1 +1,2 @@
-Revisar como hacer para agregar las dos clases al generar las llaves
+REFACTORING del manejo de slots para pensar el caso de cerrar todas las sessiones...
+ - Basicamente ¿Quien es el dueño de una sesion?, el Slot?, la aplicación?

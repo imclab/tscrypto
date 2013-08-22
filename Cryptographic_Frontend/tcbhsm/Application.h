@@ -18,8 +18,6 @@
 
 namespace tcbhsm
 {
-using SessionPtr = std::unique_ptr<Session>;
-using SlotPtr = std::unique_ptr<Slot>;
 
 class Application
 {

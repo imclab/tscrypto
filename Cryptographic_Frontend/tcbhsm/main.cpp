@@ -1,3 +1,5 @@
+#include "config.h"
+
 #include "cryptoki.h"
 
 #include <cf/SignInitMethod.hpp>
@@ -7,13 +9,13 @@
 #include "Session.h"
 #include "Application.h"
 #include "Token.h"
+#include "TcbError.h"
 
 #include <functional>
 #include <algorithm>
 #include <string>
 #include <memory>
 
-#include "TcbError.h"
 
 using namespace tcbhsm;
 
@@ -43,6 +45,80 @@ namespace
  ***/
 
 extern "C" {
+  
+  CK_FUNCTION_LIST functionList = {
+    { 2, 20 },
+    C_Initialize,
+    C_Finalize,
+    C_GetInfo,
+    C_GetFunctionList,
+    C_GetSlotList,
+    C_GetSlotInfo,
+    C_GetTokenInfo,
+    C_GetMechanismList,
+    C_GetMechanismInfo,
+    C_InitToken,
+    C_InitPIN,
+    C_SetPIN,
+    C_OpenSession,
+    C_CloseSession,
+    C_CloseAllSessions,
+    C_GetSessionInfo,
+    C_GetOperationState,
+    C_SetOperationState,
+    C_Login,
+    C_Logout,
+    C_CreateObject,
+    C_CopyObject,
+    C_DestroyObject,
+    C_GetObjectSize,
+    C_GetAttributeValue,
+    C_SetAttributeValue,
+    C_FindObjectsInit,
+    C_FindObjects,
+    C_FindObjectsFinal,
+    C_EncryptInit,
+    C_Encrypt,
+    C_EncryptUpdate,
+    C_EncryptFinal,
+    C_DecryptInit,
+    C_Decrypt,
+    C_DecryptUpdate,
+    C_DecryptFinal,
+    C_DigestInit,
+    C_Digest,
+    C_DigestUpdate,
+    C_DigestKey,
+    C_DigestFinal,
+    C_SignInit,
+    C_Sign,
+    C_SignUpdate,
+    C_SignFinal,
+    C_SignRecoverInit,
+    C_SignRecover,
+    C_VerifyInit,
+    C_Verify,
+    C_VerifyUpdate,
+    C_VerifyFinal,
+    C_VerifyRecoverInit,
+    C_VerifyRecover,
+    C_DigestEncryptUpdate,
+    C_DecryptDigestUpdate,
+    C_SignEncryptUpdate,
+    C_DecryptVerifyUpdate,
+    C_GenerateKey,
+    C_GenerateKeyPair,
+    C_WrapKey,
+    C_UnwrapKey,
+    C_DeriveKey,
+    C_SeedRandom,
+    C_GenerateRandom,
+    C_GetFunctionStatus,
+    C_CancelFunction,
+    C_WaitForSlotEvent
+  };
+extern CK_FUNCTION_LIST functionList;
+  
   CK_RV C_Initialize(CK_VOID_PTR pInitArgs)
   {
     CK_C_INITIALIZE_ARGS_PTR args =
@@ -62,6 +138,49 @@ extern "C" {
   CK_RV C_Finalize(CK_VOID_PTR pReserved)
   {
     app.reset(nullptr);
+    return CKR_OK;
+  }
+  
+  CK_RV C_GetInfo(CK_INFO_PTR pInfo) {
+    if (!appIsInited())
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    if (pInfo == nullptr)
+      return CKR_ARGUMENTS_BAD;
+    
+    std::string manufacturer { "NicLabs" };
+    std::string description { "Implementacion de PKCS11" };
+    
+    pInfo->cryptokiVersion.major = 2;
+    pInfo->cryptokiVersion.minor = 20;
+    
+    std::fill(pInfo->manufacturerID,
+              pInfo->manufacturerID + 32, 
+              ' ');
+    std::copy(manufacturer.cbegin(),
+              manufacturer.cend(),
+              pInfo->manufacturerID);
+    
+    std::fill(pInfo->libraryDescription,
+              pInfo->libraryDescription + 32, 
+              ' ');
+    std::copy(description.cbegin(),
+              description.cend(),
+              pInfo->libraryDescription);
+    
+    pInfo->flags = 0;
+    pInfo->libraryVersion.major = VERSION_MAJOR;
+    pInfo->libraryVersion.minor = VERSION_MINOR;
+    
+
+    return CKR_OK;
+  }
+  
+  CK_RV C_GetFunctionList(CK_FUNCTION_LIST_PTR_PTR ppFunctionList) {   
+    if (ppFunctionList == nullptr)
+      return CKR_ARGUMENTS_BAD;
+    
+    *ppFunctionList = &functionList;
+    
     return CKR_OK;
   }
   
@@ -150,7 +269,7 @@ extern "C" {
     try {
       Token & token = app->getSlot(slotID).getToken();
       
-      if (!(token.isInited()))
+      if (!token.isInited())
         return CKR_TOKEN_NOT_RECOGNIZED;
       
       app->openSession(slotID, flags, pApplication, Notify, phSession);
@@ -168,6 +287,23 @@ extern "C" {
     
     try {
       app->closeSession(hSession);
+    } catch(TcbError & e) {
+      return error(e);
+    }
+    
+    return CKR_OK;
+  }
+  
+  CK_RV C_CloseAllSessions(CK_SLOT_ID slotID) {
+    if (!appIsInited())
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    
+    try {
+      auto &sessions = app->getSlot(slotID).getSessions();
+      for(auto sessionHandler: sessions) {
+        app->closeSession(sessionHandler);
+      }
+      sessions.clear();
     } catch(TcbError & e) {
       return error(e);
     }
@@ -320,7 +456,8 @@ extern "C" {
       return CKR_ARGUMENTS_BAD;
     
     try {
-      KeyPair keysHandle = app->getSession(hSession).generateKeyPair(pMechanism, pPublicKeyTemplate, ulPublicKeyAttributeCount,
+      KeyPair keysHandle = app->getSession(hSession).generateKeyPair(pMechanism, 
+                                                                     pPublicKeyTemplate, ulPublicKeyAttributeCount,
                                                                      pPrivateKeyTemplate, ulPrivateKeyAttributeCount);
       *phPrivateKey = keysHandle.first;
       *phPublicKey = keysHandle.second;
@@ -357,5 +494,387 @@ extern "C" {
     }
     
     return CKR_OK;
+  }
+  
+  // NOTE: FUNCIONES NO IMPLEMENTADAS
+  CK_RV C_GetMechanismList(CK_SLOT_ID slotID, CK_MECHANISM_TYPE_PTR pMechanismList, CK_ULONG_PTR pulCount) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_GetMechanismInfo(CK_SLOT_ID slotID, CK_MECHANISM_TYPE type, CK_MECHANISM_INFO_PTR pInfo) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_InitToken(CK_SLOT_ID slotID, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen, CK_UTF8CHAR_PTR pLabel) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_InitPIN(CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) {
+   return CKR_FUNCTION_NOT_SUPPORTED; 
+  }
+  
+  CK_RV C_SetPIN(CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pOldPin, CK_ULONG ulOldLen, CK_UTF8CHAR_PTR pNewPin, CK_ULONG ulNewLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_GetOperationState(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_PTR) {  
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_SetOperationState(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_CopyObject(CK_SESSION_HANDLE, CK_OBJECT_HANDLE, CK_ATTRIBUTE_PTR, CK_ULONG, CK_OBJECT_HANDLE_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_GetObjectSize(CK_SESSION_HANDLE, CK_OBJECT_HANDLE, CK_ULONG_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_SetAttributeValue(CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_EncryptInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_Encrypt(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, 
+                  CK_BYTE_PTR pEncryptedData, CK_ULONG_PTR pulEncryptedDataLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_EncryptUpdate(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_EncryptFinal(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_DecryptInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_Decrypt(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pEncryptedData, CK_ULONG ulEncryptedDataLen, 
+                  CK_BYTE_PTR pData, CK_ULONG_PTR pulDataLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_DecryptUpdate(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_DecryptFinal(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_DigestInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism) {
+    // TODO: Revisar este código para copiarlo
+    return CKR_FUNCTION_NOT_SUPPORTED;
+#if 0
+
+    
+    SoftHSMInternal *softHSM = state.get();
+    CHECK_DEBUG_RETURN(softHSM == NULL, "C_DigestInit", "Library is not initialized",
+                       CKR_CRYPTOKI_NOT_INITIALIZED);
+    
+    SoftSession *session = softHSM->getSession(hSession);
+    
+    if(session == NULL_PTR) {
+
+      return CKR_SESSION_HANDLE_INVALID;
+    }
+    
+    if(session->digestInitialized) {
+
+      return CKR_OPERATION_ACTIVE;
+    }
+    
+    if(pMechanism == NULL_PTR) {
+
+      return CKR_ARGUMENTS_BAD;
+    }
+    
+    CK_ULONG mechSize = 0;
+    Botan::HashFunction *hashFunc = NULL_PTR;
+    
+    // Selects the correct hash algorithm.
+    switch(pMechanism->mechanism) {
+      case CKM_MD5:
+        mechSize = 16;
+        hashFunc = new Botan::MD5;
+        break;
+      case CKM_RIPEMD160:
+        mechSize = 20;
+        hashFunc = new Botan::RIPEMD_160;
+        break;
+      case CKM_SHA_1:
+        mechSize = 20;
+        hashFunc = new Botan::SHA_160;
+        break;
+      case CKM_SHA256:
+        mechSize = 32;
+        hashFunc = new Botan::SHA_256;
+        break;
+      case CKM_SHA384:
+        mechSize = 48;
+        hashFunc = new Botan::SHA_384;
+        break;
+      case CKM_SHA512:
+        mechSize = 64;
+        hashFunc = new Botan::SHA_512;
+        break;
+      default:
+
+        return CKR_MECHANISM_INVALID;
+        break;
+    }
+    
+    if(hashFunc == NULL_PTR) {
+
+      return CKR_DEVICE_MEMORY;
+    }
+    
+    // Creates the digester with given hash algorithm.
+    session->digestSize = mechSize;
+    try {
+      session->digestPipe = new Botan::Pipe(new Botan::Hash_Filter(hashFunc));
+    }
+    catch(std::exception& e) {
+      char errorMsg[1024];
+      snprintf(errorMsg, sizeof(errorMsg), "Could not create the digesting function: %s", e.what());
+      ERROR_MSG("C_DigestInit", errorMsg);
+      return CKR_GENERAL_ERROR;
+    }
+    
+    if(!session->digestPipe) {
+      ERROR_MSG("C_DigestInit", "Could not create the digesting function");
+      return CKR_DEVICE_MEMORY;
+    }
+    
+    session->digestPipe->start_msg();
+    session->digestInitialized = true;
+    
+
+    return CKR_OK;
+#endif    
+  }
+  
+  CK_RV C_Digest(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen,
+                 CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen) {
+    // TODO: Revisar este código para copiarlo
+    return CKR_FUNCTION_NOT_SUPPORTED;
+#if 0
+
+    
+    SoftHSMInternal *softHSM = state.get();
+    CHECK_DEBUG_RETURN(softHSM == NULL, "C_Digest", "Library is not initialized",
+                       CKR_CRYPTOKI_NOT_INITIALIZED);
+    
+    SoftSession *session = softHSM->getSession(hSession);
+    
+    if(session == NULL_PTR) {
+
+      return CKR_SESSION_HANDLE_INVALID;
+    }
+    
+    if(!session->digestInitialized) {
+
+      return CKR_OPERATION_NOT_INITIALIZED;
+    }
+    
+    if(pulDigestLen == NULL_PTR) {
+
+      return CKR_ARGUMENTS_BAD;
+    }
+    
+    if(pDigest == NULL_PTR) {
+      *pulDigestLen = session->digestSize;
+
+      return CKR_OK;
+    }
+    
+    if(*pulDigestLen < session->digestSize) {
+      *pulDigestLen = session->digestSize;
+
+      return CKR_BUFFER_TOO_SMALL;
+    }
+    
+    if(pData == NULL_PTR) {
+
+      return CKR_ARGUMENTS_BAD;
+    }
+    
+    try {
+      // Digest
+      session->digestPipe->write(pData, ulDataLen);
+      session->digestPipe->end_msg();
+      
+      // Returns the result
+      session->digestPipe->read(pDigest, session->digestSize);
+      *pulDigestLen = session->digestSize;
+    }
+    catch(std::exception& e) {
+      char errorMsg[1024];
+      snprintf(errorMsg, sizeof(errorMsg), "Could not digest the data: %s", e.what());
+      ERROR_MSG("C_Digest", errorMsg);
+      
+      // Finalizing
+      session->digestSize = 0;
+      delete session->digestPipe;
+      session->digestPipe = NULL_PTR;
+      session->digestInitialized = false;
+      
+      return CKR_GENERAL_ERROR;
+    }
+    
+    // Finalizing
+    session->digestSize = 0;
+    delete session->digestPipe;
+    session->digestPipe = NULL_PTR;
+    session->digestInitialized = false;
+    
+
+    return CKR_OK;
+#endif
+  }
+  
+  CK_RV C_DigestUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_DigestKey(CK_SESSION_HANDLE, CK_OBJECT_HANDLE) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_DigestFinal(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_SignRecoverInit(CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+
+  CK_RV C_SignRecover(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_VerifyInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_Verify(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature,
+                 CK_ULONG ulSignatureLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_VerifyUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_VerifyFinal(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSignature, CK_ULONG ulSignatureLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_VerifyRecoverInit(CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_VerifyRecover(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_DigestEncryptUpdate(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_DecryptDigestUpdate(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_SignEncryptUpdate(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_SignUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_SignFinal(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_DecryptVerifyUpdate(CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_GenerateKey(CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_ATTRIBUTE_PTR, CK_ULONG, CK_OBJECT_HANDLE_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_WrapKey(CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE, 
+                  CK_BYTE_PTR, CK_ULONG_PTR) 
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_UnwrapKey(CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_BYTE_PTR, CK_ULONG,
+                    CK_ATTRIBUTE_PTR, CK_ULONG, CK_OBJECT_HANDLE_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+                    
+  CK_RV C_DeriveKey(CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_ATTRIBUTE_PTR, 
+                    CK_ULONG, CK_OBJECT_HANDLE_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  CK_RV C_SeedRandom(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+  
+  // Returns some random data.
+  
+  CK_RV C_GenerateRandom(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+    // TODO: revisar esta implementación...
+#if 0
+    DEBUG_MSG("C_GenerateRandom", "Calling");
+    
+    SoftHSMInternal *softHSM = state.get();
+    CHECK_DEBUG_RETURN(softHSM == NULL, "C_GenerateRandom", "Library is not initialized",
+                       CKR_CRYPTOKI_NOT_INITIALIZED);
+    
+    SoftSession *session = softHSM->getSession(hSession);
+    
+    if(session == NULL_PTR) {
+      DEBUG_MSG("C_GenerateRandom", "Can not find the session");
+      return CKR_SESSION_HANDLE_INVALID;
+    }
+    
+    if(pRandomData == NULL_PTR) {
+      DEBUG_MSG("C_GenerateRandom", "pRandomData must not be a NULL_PTR");
+      return CKR_ARGUMENTS_BAD;
+    }
+    
+    session->rng->randomize(pRandomData, ulRandomLen);
+    
+    DEBUG_MSG("C_GenerateRandom", "OK");
+    return CKR_OK;
+#endif
+  }
+  
+  CK_RV C_GetFunctionStatus(CK_SESSION_HANDLE) {
+    return CKR_FUNCTION_NOT_PARALLEL;
+  }
+  
+  CK_RV C_CancelFunction(CK_SESSION_HANDLE) {
+    return CKR_FUNCTION_NOT_PARALLEL;
+  }
+  
+  CK_RV C_WaitForSlotEvent(CK_FLAGS, CK_SLOT_ID_PTR, CK_VOID_PTR) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
   }
 }
