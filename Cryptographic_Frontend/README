@@ -1,3 +1,4 @@
 Dependencias:
  - boost
  - rabbitmq-c
+ - botan
