@@ -38,6 +38,7 @@ public:
 
   void getSessionInfo(CK_SESSION_INFO_PTR pInfo) const;
   bool isReadOnly() const;
+  Slot & getCurrentSlot();
 
   void login(CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen);
   void logout();

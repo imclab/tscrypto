@@ -9,8 +9,10 @@
 
 #include <array>
 #include <vector>
+#include <set>
 #include <string>
 #include <memory>
+#include <iostream>
 
 #include "Session.h"
 #include "Slot.h"
@@ -19,10 +21,11 @@
 namespace tcbhsm
 {
 
+  /** La aplicacion maneja sesiones y slots, y la relacion entre ellos **/
 class Application
 {
 public:
-  Application();
+  Application(std::ostream& out = std::cerr);
 
   void errorLog(std::string message) const;
   const std::vector<SlotPtr> & getSlotList() const;
@@ -34,12 +37,15 @@ public:
                    CK_VOID_PTR pApplication, CK_NOTIFY Notify,
                    CK_SESSION_HANDLE_PTR phSession); // throws Exception
   void closeSession(CK_SESSION_HANDLE hSession); // throws Exception
+  void closeAllSessions(CK_SLOT_ID slotID); // throws Exception
 
 private:
-  std::ostream * out_;
+  std::ostream& out_;
 
   std::array<SessionPtr, MAX_SESSION_COUNT> sessions_;
   std::vector<SlotPtr> slots_;
+  
+  std::map<CK_SLOT_ID, std::set<CK_SESSION_HANDLE>> slotSessionsMap_;
 };
 
 

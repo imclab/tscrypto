@@ -117,7 +117,8 @@ extern "C" {
     C_CancelFunction,
     C_WaitForSlotEvent
   };
-extern CK_FUNCTION_LIST functionList;
+  
+  extern CK_FUNCTION_LIST functionList;
   
   CK_RV C_Initialize(CK_VOID_PTR pInitArgs)
   {
@@ -299,11 +300,7 @@ extern CK_FUNCTION_LIST functionList;
       return CKR_CRYPTOKI_NOT_INITIALIZED;
     
     try {
-      auto &sessions = app->getSlot(slotID).getSessions();
-      for(auto sessionHandler: sessions) {
-        app->closeSession(sessionHandler);
-      }
-      sessions.clear();
+      app->closeAllSessions(slotID);
     } catch(TcbError & e) {
       return error(e);
     }

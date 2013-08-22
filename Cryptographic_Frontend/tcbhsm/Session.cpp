@@ -122,6 +122,10 @@ unsigned int Session::count()
     return refCount_;
 }
 
+Slot & Session::getCurrentSlot() {
+  return currentSlot_;
+}
+
 void Session::getSessionInfo(CK_SESSION_INFO_PTR pInfo) const {
     if (pInfo != nullptr) {
         pInfo->slotID = currentSlot_.getId();
