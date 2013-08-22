@@ -523,6 +523,19 @@ extern CK_FUNCTION_LIST functionList;
     return CKR_OK;
   }
   
+  CK_RV C_GenerateRandom(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen) {
+    if (!appIsInited())
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    
+    try {
+      app->getSession(hSession).generateRandom(pRandomData, ulRandomLen);
+    } catch (TcbError &e) {
+      return error(e);
+    }
+    
+    return CKR_OK;
+  }
+  
   // NOTE: FUNCIONES NO IMPLEMENTADAS
   CK_RV C_GetMechanismList(CK_SLOT_ID slotID, CK_MECHANISM_TYPE_PTR pMechanismList, CK_ULONG_PTR pulCount) {
     return CKR_FUNCTION_NOT_SUPPORTED;
@@ -692,36 +705,6 @@ extern CK_FUNCTION_LIST functionList;
     return CKR_FUNCTION_NOT_SUPPORTED;
   }
   
-  // Returns some random data.
-  
-  CK_RV C_GenerateRandom(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen) {
-    return CKR_FUNCTION_NOT_SUPPORTED;
-    // TODO: revisar esta implementación...
-#if 0
-    DEBUG_MSG("C_GenerateRandom", "Calling");
-    
-    SoftHSMInternal *softHSM = state.get();
-    CHECK_DEBUG_RETURN(softHSM == NULL, "C_GenerateRandom", "Library is not initialized",
-                       CKR_CRYPTOKI_NOT_INITIALIZED);
-    
-    SoftSession *session = softHSM->getSession(hSession);
-    
-    if(session == NULL_PTR) {
-      DEBUG_MSG("C_GenerateRandom", "Can not find the session");
-      return CKR_SESSION_HANDLE_INVALID;
-    }
-    
-    if(pRandomData == NULL_PTR) {
-      DEBUG_MSG("C_GenerateRandom", "pRandomData must not be a NULL_PTR");
-      return CKR_ARGUMENTS_BAD;
-    }
-    
-    session->rng->randomize(pRandomData, ulRandomLen);
-    
-    DEBUG_MSG("C_GenerateRandom", "OK");
-    return CKR_OK;
-#endif
-  }
   
   CK_RV C_GetFunctionStatus(CK_SESSION_HANDLE) {
     return CKR_FUNCTION_NOT_PARALLEL;

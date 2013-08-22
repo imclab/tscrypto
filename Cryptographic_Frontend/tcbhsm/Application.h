@@ -40,7 +40,6 @@ private:
 
   std::array<SessionPtr, MAX_SESSION_COUNT> sessions_;
   std::vector<SlotPtr> slots_;
-
 };
 
 

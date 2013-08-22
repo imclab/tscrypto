@@ -14,6 +14,7 @@
 #include "Slot.h"
 
 #include <botan/pipe.h>
+#include <botan/auto_rng.h>
 
 #include <map>
 #include <memory>
@@ -49,6 +50,7 @@ public:
   void sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen);
   void digestInit(CK_MECHANISM_PTR pMechanism);
   void digest(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen);
+  void generateRandom(CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen);
 
   // Conexiones
   cf::Connection* createConnection(); // RAII connection encapsulada en un puntero. R-Value reference.
@@ -88,6 +90,9 @@ private:
   bool digestInitialized_ = false;
   DigestPipePtr digestPipe_;
   CK_ULONG digestSize_;
+  
+  // Random Number Generator
+  Botan::AutoSeeded_RNG rng;
 };
 
 using SessionPtr = std::unique_ptr<Session>;
