@@ -13,6 +13,8 @@
 #include "SessionObject.h"
 #include "Slot.h"
 
+#include <botan/pipe.h>
+
 #include <map>
 #include <memory>
 #include <utility>
@@ -22,6 +24,7 @@ namespace tcbhsm
 
 using ConnectionPtr = std::unique_ptr<cf::Connection>;
 using KeyPair = std::pair<CK_OBJECT_HANDLE, CK_OBJECT_HANDLE>; // (Privada, pública)
+using DigestPipePtr = std::unique_ptr<Botan::Pipe>;
 
 // Una sesion es ademas un container de objetos de session.
 class Session
@@ -40,11 +43,12 @@ public:
 
   // Funciones criptográficas
   KeyPair generateKeyPair(CK_MECHANISM_PTR pMechanism, 
-                                   CK_ATTRIBUTE_PTR pPublicKeyTemplate, CK_ULONG ulPublicKeyAttributeCount, 
-                                   CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount);
+                          CK_ATTRIBUTE_PTR pPublicKeyTemplate, CK_ULONG ulPublicKeyAttributeCount, 
+                          CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount);
   void signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey);
   void sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen);
-    
+  void digestInit(CK_MECHANISM_PTR pMechanism);
+  void digest(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen);
 
   // Conexiones
   cf::Connection* createConnection(); // RAII connection encapsulada en un puntero. R-Value reference.
@@ -79,7 +83,11 @@ private:
   
   // Firmado
   bool signInitialized_ = false;
-
+  
+  // Digest 
+  bool digestInitialized_ = false;
+  DigestPipePtr digestPipe_;
+  CK_ULONG digestSize_;
 };
 
 using SessionPtr = std::unique_ptr<Session>;

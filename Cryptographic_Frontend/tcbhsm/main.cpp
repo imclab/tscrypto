@@ -496,6 +496,33 @@ extern CK_FUNCTION_LIST functionList;
     return CKR_OK;
   }
   
+  CK_RV C_DigestInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism) {
+    if (!appIsInited())
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    
+    try {
+      app->getSession(hSession).digestInit(pMechanism);
+    } catch (TcbError &e) {
+      return error(e);
+    }
+    
+    return CKR_OK;
+  }
+  
+  CK_RV C_Digest(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen,
+                 CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen) {
+    if (!appIsInited())
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    
+    try {
+      app->getSession(hSession).digest(pData, ulDataLen, pDigest, pulDigestLen);
+    } catch (TcbError &e) {
+      return error(e);
+    }
+    
+    return CKR_OK;
+  }
+  
   // NOTE: FUNCIONES NO IMPLEMENTADAS
   CK_RV C_GetMechanismList(CK_SLOT_ID slotID, CK_MECHANISM_TYPE_PTR pMechanismList, CK_ULONG_PTR pulCount) {
     return CKR_FUNCTION_NOT_SUPPORTED;
@@ -571,176 +598,6 @@ extern CK_FUNCTION_LIST functionList;
     return CKR_FUNCTION_NOT_SUPPORTED;
   }
   
-  CK_RV C_DigestInit(CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism) {
-    // TODO: Revisar este código para copiarlo
-    return CKR_FUNCTION_NOT_SUPPORTED;
-#if 0
-
-    
-    SoftHSMInternal *softHSM = state.get();
-    CHECK_DEBUG_RETURN(softHSM == NULL, "C_DigestInit", "Library is not initialized",
-                       CKR_CRYPTOKI_NOT_INITIALIZED);
-    
-    SoftSession *session = softHSM->getSession(hSession);
-    
-    if(session == NULL_PTR) {
-
-      return CKR_SESSION_HANDLE_INVALID;
-    }
-    
-    if(session->digestInitialized) {
-
-      return CKR_OPERATION_ACTIVE;
-    }
-    
-    if(pMechanism == NULL_PTR) {
-
-      return CKR_ARGUMENTS_BAD;
-    }
-    
-    CK_ULONG mechSize = 0;
-    Botan::HashFunction *hashFunc = NULL_PTR;
-    
-    // Selects the correct hash algorithm.
-    switch(pMechanism->mechanism) {
-      case CKM_MD5:
-        mechSize = 16;
-        hashFunc = new Botan::MD5;
-        break;
-      case CKM_RIPEMD160:
-        mechSize = 20;
-        hashFunc = new Botan::RIPEMD_160;
-        break;
-      case CKM_SHA_1:
-        mechSize = 20;
-        hashFunc = new Botan::SHA_160;
-        break;
-      case CKM_SHA256:
-        mechSize = 32;
-        hashFunc = new Botan::SHA_256;
-        break;
-      case CKM_SHA384:
-        mechSize = 48;
-        hashFunc = new Botan::SHA_384;
-        break;
-      case CKM_SHA512:
-        mechSize = 64;
-        hashFunc = new Botan::SHA_512;
-        break;
-      default:
-
-        return CKR_MECHANISM_INVALID;
-        break;
-    }
-    
-    if(hashFunc == NULL_PTR) {
-
-      return CKR_DEVICE_MEMORY;
-    }
-    
-    // Creates the digester with given hash algorithm.
-    session->digestSize = mechSize;
-    try {
-      session->digestPipe = new Botan::Pipe(new Botan::Hash_Filter(hashFunc));
-    }
-    catch(std::exception& e) {
-      char errorMsg[1024];
-      snprintf(errorMsg, sizeof(errorMsg), "Could not create the digesting function: %s", e.what());
-      ERROR_MSG("C_DigestInit", errorMsg);
-      return CKR_GENERAL_ERROR;
-    }
-    
-    if(!session->digestPipe) {
-      ERROR_MSG("C_DigestInit", "Could not create the digesting function");
-      return CKR_DEVICE_MEMORY;
-    }
-    
-    session->digestPipe->start_msg();
-    session->digestInitialized = true;
-    
-
-    return CKR_OK;
-#endif    
-  }
-  
-  CK_RV C_Digest(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen,
-                 CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen) {
-    // TODO: Revisar este código para copiarlo
-    return CKR_FUNCTION_NOT_SUPPORTED;
-#if 0
-
-    
-    SoftHSMInternal *softHSM = state.get();
-    CHECK_DEBUG_RETURN(softHSM == NULL, "C_Digest", "Library is not initialized",
-                       CKR_CRYPTOKI_NOT_INITIALIZED);
-    
-    SoftSession *session = softHSM->getSession(hSession);
-    
-    if(session == NULL_PTR) {
-
-      return CKR_SESSION_HANDLE_INVALID;
-    }
-    
-    if(!session->digestInitialized) {
-
-      return CKR_OPERATION_NOT_INITIALIZED;
-    }
-    
-    if(pulDigestLen == NULL_PTR) {
-
-      return CKR_ARGUMENTS_BAD;
-    }
-    
-    if(pDigest == NULL_PTR) {
-      *pulDigestLen = session->digestSize;
-
-      return CKR_OK;
-    }
-    
-    if(*pulDigestLen < session->digestSize) {
-      *pulDigestLen = session->digestSize;
-
-      return CKR_BUFFER_TOO_SMALL;
-    }
-    
-    if(pData == NULL_PTR) {
-
-      return CKR_ARGUMENTS_BAD;
-    }
-    
-    try {
-      // Digest
-      session->digestPipe->write(pData, ulDataLen);
-      session->digestPipe->end_msg();
-      
-      // Returns the result
-      session->digestPipe->read(pDigest, session->digestSize);
-      *pulDigestLen = session->digestSize;
-    }
-    catch(std::exception& e) {
-      char errorMsg[1024];
-      snprintf(errorMsg, sizeof(errorMsg), "Could not digest the data: %s", e.what());
-      ERROR_MSG("C_Digest", errorMsg);
-      
-      // Finalizing
-      session->digestSize = 0;
-      delete session->digestPipe;
-      session->digestPipe = NULL_PTR;
-      session->digestInitialized = false;
-      
-      return CKR_GENERAL_ERROR;
-    }
-    
-    // Finalizing
-    session->digestSize = 0;
-    delete session->digestPipe;
-    session->digestPipe = NULL_PTR;
-    session->digestInitialized = false;
-    
-
-    return CKR_OK;
-#endif
-  }
   
   CK_RV C_DigestUpdate(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen) {
     return CKR_FUNCTION_NOT_SUPPORTED;

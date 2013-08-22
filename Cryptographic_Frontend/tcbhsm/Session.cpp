@@ -2,16 +2,25 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include "tcbhsm/Session.h"
+#include "Session.h"
+#include "TcbError.h"
+
 #include "cf/Method.hpp"
 #include "cf/GenerateKeyPairMethod.hpp"
 #include "cf/SignInitMethod.hpp"
 #include "cf/RabbitConnection.hpp"
 #include "cf/ResponseMessage.hpp"
 #include "cf/SignMethod.hpp"
-#include "TcbError.h"
 
 #include "base64/base64.h"
+
+#include <botan/init.h>
+#include <botan/md5.h>
+#include <botan/rmd160.h>
+#include <botan/sha160.h>
+#include <botan/sha2_32.h>
+#include <botan/sha2_64.h>
+#include <botan/filters.h>
 
 #include <algorithm>
 #include <cstdlib> // getenv
@@ -630,3 +639,108 @@ void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature
     throw TcbError("Session::sign", e.what(), CKR_GENERAL_ERROR);
   }
 }
+
+  void Session::digestInit(CK_MECHANISM_PTR pMechanism) {
+    if(digestInitialized_) {
+      throw TcbError("Session::digestInit", "Digest ya inicializado", CKR_OPERATION_ACTIVE);
+    }
+    
+    if(pMechanism == nullptr) {
+      throw TcbError("Session::digestInit", "pMechanism es un puntero nulo.", CKR_ARGUMENTS_BAD);
+    }
+    
+    CK_ULONG mechSize = 0;
+    Botan::HashFunction *hashFunc = nullptr;    
+   
+    switch(pMechanism->mechanism) {
+      case CKM_MD5:
+        mechSize = 16;
+        hashFunc = new Botan::MD5;
+        break;
+      case CKM_RIPEMD160:
+        mechSize = 20;
+        hashFunc = new Botan::RIPEMD_160;
+        break;
+      case CKM_SHA_1:
+        mechSize = 20;
+        hashFunc = new Botan::SHA_160;
+        break;
+      case CKM_SHA256:
+        mechSize = 32;
+        hashFunc = new Botan::SHA_256;
+        break;
+      case CKM_SHA384:
+        mechSize = 48;
+        hashFunc = new Botan::SHA_384;
+        break;
+      case CKM_SHA512:
+        mechSize = 64;
+        hashFunc = new Botan::SHA_512;
+        break;
+      default:
+
+        throw TcbError("Session::digestInit", "mecanismo invalido", CKR_MECHANISM_INVALID);
+        break;
+    }
+    
+    if(hashFunc == nullptr) {
+      throw TcbError("Session::digestInit", "NO QUEDA MEMORIA X_x", CKR_DEVICE_MEMORY);
+    }
+    
+    
+    digestSize_ = mechSize;
+    try {
+      digestPipe_.reset(new Botan::Pipe(new Botan::Hash_Filter(hashFunc)));
+    }
+    catch(std::exception& e) {
+      throw TcbError("Session::digestInit", e.what(), CKR_GENERAL_ERROR);
+    }
+    
+    digestPipe_->start_msg();
+    digestInitialized_ = true;    
+  }
+  
+  void Session::digest(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen) {
+    if(!digestInitialized_) {
+      throw TcbError("Session::digest", "Funcion no inicializada.", CKR_OPERATION_NOT_INITIALIZED);
+    }
+    
+    if(pulDigestLen == nullptr) {
+      throw TcbError("Session::digest", "pulDigestLen == nulllptr", CKR_ARGUMENTS_BAD);
+    }
+    
+    if(pDigest == nullptr) {
+      *pulDigestLen = digestSize_;
+      return;
+    }
+    
+    if(*pulDigestLen < digestSize_) {
+      *pulDigestLen = digestSize_;
+      throw TcbError("Session::digest", "pulDigestLen < digestSize", CKR_BUFFER_TOO_SMALL);
+    }
+    
+    if(pData == nullptr) {
+      throw TcbError("Session::digest", "pData == nullptr", CKR_ARGUMENTS_BAD);
+    }
+    
+    try {
+      // Digest
+      digestPipe_->write(pData, ulDataLen);
+      digestPipe_->end_msg();
+      
+      // Returns the result
+      digestPipe_->read(pDigest, digestSize_);
+      *pulDigestLen = digestSize_;
+    }
+    catch(std::exception& e) {
+      digestInitialized_ = false;
+      digestPipe_.reset();
+      digestSize_ = 0;
+      throw TcbError("Session::digest", e.what(), CKR_GENERAL_ERROR);
+    }
+    
+    digestInitialized_ = false;
+    digestPipe_.reset();
+    digestSize_ = 0;
+    
+  }

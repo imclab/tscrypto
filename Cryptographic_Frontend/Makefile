@@ -9,7 +9,7 @@ EXE = hsm test
 hsm_OBJS = main.o
 test_OBJS = test.o
 
-PKGCONFIG_LIBS = librabbitmq
+PKGCONFIG_LIBS = librabbitmq botan-1.10
 
 # Modularización...
 LIB_FILENAME = $(addprefix lib,$(addsuffix .so, $(LIB)))
