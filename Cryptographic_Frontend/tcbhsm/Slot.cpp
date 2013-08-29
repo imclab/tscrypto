@@ -52,3 +52,7 @@ Token & Slot::getToken() const
   else
     throw TcbError("El token no esta presente.", CKR_SLOT_ID_INVALID);
 }
+
+void Slot::initToken(std::string label, std::string pin) {
+  token_.reset(new Token(label, pin));
+}

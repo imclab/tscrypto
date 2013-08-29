@@ -128,9 +128,27 @@ extern "C" {
     if(appIsInited())
       return CKR_CRYPTOKI_ALREADY_INITIALIZED;
     
-    if(args != nullptr) {
-      return CKR_ARGUMENTS_BAD;
+    if (args != nullptr) {
+      if (args->pReserved != nullptr)
+        return CKR_ARGUMENTS_BAD;
+      
+      bool someButNotAll = 
+      !(args->CreateMutex && 
+      args->DestroyMutex && 
+      args->LockMutex &&
+      args->UnlockMutex)
+      
+      &&
+      
+      (args->CreateMutex ||
+      args->DestroyMutex ||
+      args->LockMutex ||
+      args->UnlockMutex);
+      
+      if (someButNotAll)
+        return CKR_ARGUMENTS_BAD;
     }
+    
     app.reset(new Application());
     
     return CKR_OK;
@@ -138,8 +156,59 @@ extern "C" {
   
   CK_RV C_Finalize(CK_VOID_PTR pReserved)
   {
+    if (pReserved != nullptr)
+      return CKR_ARGUMENTS_BAD;
+    if (!appIsInited())
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    
     app.reset(nullptr);
     return CKR_OK;
+  }
+  
+  CK_RV C_InitToken(CK_SLOT_ID slotID, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen, CK_UTF8CHAR_PTR pLabel) {
+    if (!appIsInited())
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    
+    if (!pPin) {
+      return CKR_ARGUMENTS_BAD;
+    }
+    
+    if (!pLabel) {
+      return CKR_ARGUMENTS_BAD;
+    }
+    
+    try {
+      std::string label ( reinterpret_cast<char*>(pLabel), 32 );
+      std::string pin ( reinterpret_cast<char*>(pPin), ulPinLen );
+      app->getSlot(slotID).initToken(label, pin);
+    } catch (TcbError & e) {
+      return error(e);
+    }
+    
+    return CKR_OK;
+  }
+  
+  CK_RV C_InitPIN(CK_SESSION_HANDLE hSession,CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) {
+   if (!appIsInited())
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    
+    if (!pPin) {
+      return CKR_ARGUMENTS_BAD;
+    }
+    
+    try {
+      std::string pin ( reinterpret_cast<char*>(pPin), ulPinLen );
+      app->getSession(hSession).getCurrentSlot().getToken().setUserPin(pin);
+    } catch (TcbError & e) {
+      return error(e);
+    }
+    
+    return CKR_OK;
+    
+  }
+  
+  CK_RV C_SetPIN(CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pOldPin, CK_ULONG ulOldLen, CK_UTF8CHAR_PTR pNewPin, CK_ULONG ulNewLen) {
+    return CKR_FUNCTION_NOT_SUPPORTED;
   }
   
   CK_RV C_GetInfo(CK_INFO_PTR pInfo) {
@@ -203,7 +272,11 @@ extern "C" {
       bufSize = slotList.size();
     }
     
-    if (pSlotList == NULL_PTR) {
+    if (pulCount == nullptr) {
+      return CKR_ARGUMENTS_BAD;
+    }
+      
+    if (pSlotList == nullptr) {
       *pulCount = bufSize;
       return CKR_OK;
     }
@@ -313,10 +386,7 @@ extern "C" {
       return CKR_CRYPTOKI_NOT_INITIALIZED;
     
     try {
-      if (pInfo != nullptr)
-        app->getSession(hSession).getSessionInfo(pInfo);
-      else
-        return CKR_ARGUMENTS_BAD;
+      app->getSession(hSession).getSessionInfo(pInfo);
     } catch(TcbError & e) {
       return error(e);
     }
@@ -539,18 +609,6 @@ extern "C" {
   }
   
   CK_RV C_GetMechanismInfo(CK_SLOT_ID slotID, CK_MECHANISM_TYPE type, CK_MECHANISM_INFO_PTR pInfo) {
-    return CKR_FUNCTION_NOT_SUPPORTED;
-  }
-  
-  CK_RV C_InitToken(CK_SLOT_ID slotID, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen, CK_UTF8CHAR_PTR pLabel) {
-    return CKR_FUNCTION_NOT_SUPPORTED;
-  }
-  
-  CK_RV C_InitPIN(CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) {
-   return CKR_FUNCTION_NOT_SUPPORTED; 
-  }
-  
-  CK_RV C_SetPIN(CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pOldPin, CK_ULONG ulOldLen, CK_UTF8CHAR_PTR pNewPin, CK_ULONG ulNewLen) {
     return CKR_FUNCTION_NOT_SUPPORTED;
   }
   

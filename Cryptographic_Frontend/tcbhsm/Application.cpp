@@ -7,17 +7,14 @@
 
 using namespace tcbhsm;
 
-// Obsoleta
-#if 0
-Application::Application()
-  : out_(std::cerr)
-{
-    // TODO: Revisar los Slots
-    // Por defecto solo 1.
-    SlotPtr slot0(new Slot(0));
-    slots_.push_back(std::move(slot0));
+namespace {
+  inline unsigned long toLong(CK_SESSION_HANDLE h) {
+    return static_cast<unsigned long>(h) - 1;
+  }
+  inline CK_SESSION_HANDLE toSessionHandle(unsigned long l) {
+    return static_cast<CK_SESSION_HANDLE>(l) + 1;
+  }
 }
-#endif 
 
 Application::Application(std::ostream& out)
   : out_(out)
@@ -36,12 +33,13 @@ void Application::errorLog(std::string message) const
 Session & Application::getSession(CK_SESSION_HANDLE session) const
 {
   try {
-    unsigned long i = static_cast<unsigned long>(session);
+    unsigned long i = toLong(session);
     Session & s = *(sessions_.at(i));
-    s.retain();
     return s;
   } catch(...) {
-    throw TcbError("Application::getSession : Mal indice de sesion.", CKR_SESSION_HANDLE_INVALID);
+    throw TcbError("Application::getSession", 
+                   "Mal indice de sesion.", 
+                   CKR_SESSION_HANDLE_INVALID);
   }
 }
 
@@ -52,15 +50,29 @@ const std::vector<SlotPtr> & Application::getSlotList() const
 
 Slot & Application::getSlot(CK_SLOT_ID id) const
 {
-  unsigned int i = (unsigned int) id;
-  return *(slots_.at(i));
+  unsigned int i = static_cast<unsigned int>(id);
+  try {
+    Slot &slot = *(slots_.at(i));
+    return slot;
+  } 
+  catch (std::out_of_range &e) {
+    throw TcbError("Application::getSlot", e.what(), CKR_SLOT_ID_INVALID);
+  }
 }
 
 void Application::openSession(CK_SLOT_ID slotID, CK_FLAGS flags,
                               CK_VOID_PTR pApplication, CK_NOTIFY notify,
                               CK_SESSION_HANDLE_PTR phSession)
-{
-  CK_SESSION_HANDLE i = 0;
+{  
+  if (flags == 0)
+    throw TcbError("Application::openSession" , "flags == 0", CKR_SESSION_PARALLEL_NOT_SUPPORTED);
+  
+  if (phSession == nullptr)
+    throw TcbError("Application::openSession", "phSession == nullptr", CKR_ARGUMENTS_BAD);
+  
+  // NOTE: CK_INVALID_HANDLE == 0
+  
+  unsigned long i = 0;
   
   Slot &slot = getSlot(slotID);
   for (SessionPtr& session: sessions_) {
@@ -69,7 +81,7 @@ void Application::openSession(CK_SLOT_ID slotID, CK_FLAGS flags,
     if (session == nullptr) {    
       session.reset(new Session(flags, pApplication, notify, slot));
       slotSessionsMap_[slotID].insert(i);
-      *phSession = i;
+      *phSession = toSessionHandle(i);
       return;
     }
     ++i;
@@ -80,7 +92,7 @@ void Application::openSession(CK_SLOT_ID slotID, CK_FLAGS flags,
 
 void Application::closeSession(CK_SESSION_HANDLE hSession) // throws
 {
-  unsigned int i = hSession;
+  unsigned long i = toLong(hSession);
   CK_SLOT_ID slotID = getSession(hSession).getCurrentSlot().getId();  
   // Se elimina la sesion con todo lo que tiene adentro
   try {
@@ -96,13 +108,13 @@ void Application::closeAllSessions(CK_SLOT_ID slotID)
   try {
     auto& slotSessions = slotSessionsMap_.at(slotID);
     for (auto session: slotSessions) {
-      closeSession(session);
+      closeSession(toSessionHandle(session));
     }
     
     // Para eliminar cualquier basura...
     slotSessions.clear();
     
   } catch(std::exception &e) {
-    throw TcbError("Application::closeAllSessions", e.what(), CKR_ARGUMENTS_BAD);
+    throw TcbError("Application::closeAllSessions", e.what(), CKR_SLOT_ID_INVALID);
   }
 }

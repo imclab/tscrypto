@@ -45,7 +45,7 @@ private:
   std::array<SessionPtr, MAX_SESSION_COUNT> sessions_;
   std::vector<SlotPtr> slots_;
   
-  std::map<CK_SLOT_ID, std::set<CK_SESSION_HANDLE>> slotSessionsMap_;
+  std::map<CK_SLOT_ID, std::set<unsigned long>> slotSessionsMap_;
 };
 
 

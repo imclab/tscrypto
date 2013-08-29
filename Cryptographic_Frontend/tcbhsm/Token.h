@@ -7,6 +7,7 @@
 
 #include "config.h"
 #include <string>
+#include <memory>
 
 #include "cryptoki.h"
 
@@ -21,6 +22,7 @@ public:
 
   Token(std::string label, std::string pin);
   void getInfo(CK_TOKEN_INFO_PTR pInfo) const;
+  void setUserPin(std::string pin);
   bool isInited() const;
   void login(CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen);
   void logout();
@@ -32,11 +34,15 @@ private:
   std::string soPin_;
   std::string label_;
   SecurityLevel securityLevel_;
+  bool loggedIn_;
 
 protected:
-  bool checkUserPin(const std::string & pin) const;
-  bool checkSecurityOfficerPin(const std::string & pin) const;
+  SecurityLevel checkUserPin(CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) const;
+  SecurityLevel checkSecurityOfficerPin(CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) const;
 };
+
+using TokenPtr = std::unique_ptr<Token>;
+
 }
 
 

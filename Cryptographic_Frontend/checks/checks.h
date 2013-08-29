@@ -26,6 +26,10 @@
  * IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#define NULL_PTR ((void*) 0)
+#define MIN_PIN_LEN 3
+#define MAX_PIN_LEN 10
+
 void usage();
 void inittoken();
 void runInitCheck(unsigned int counter);

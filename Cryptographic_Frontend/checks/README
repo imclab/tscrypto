@@ -1,5 +1,0 @@
-$Id: README 708 2009-05-11 12:56:51Z rb $
-
-This program will check all the PKCS#11 functions implemented by SoftHSM.
-It test many combinations of input data and checks that the correct
-responses are returned.

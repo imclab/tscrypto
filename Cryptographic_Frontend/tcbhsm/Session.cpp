@@ -82,7 +82,7 @@ namespace { // Funcion auxiliar
 }
 
 Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify, Slot & currentSlot)
-  : actualObjectHandle_(0), refCount_(1), flags_(flags), application_(pApplication)
+  : actualObjectHandle_(1), refCount_(1), flags_(flags), application_(pApplication)
   , notify_(notify), currentSlot_(currentSlot)
 {
 
@@ -132,7 +132,8 @@ void Session::getSessionInfo(CK_SESSION_INFO_PTR pInfo) const {
         pInfo->state = getState();
         pInfo->flags = getFlags();
         pInfo->ulDeviceError = 0;
-    }
+    } else 
+      throw TcbError("Session::getSessionInfo", "pInfo == nullptr", CKR_ARGUMENTS_BAD);
 }
 
 CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
