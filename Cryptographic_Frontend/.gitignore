@@ -3,5 +3,6 @@
 *.so
 hsm
 test
+checks
 *.kate-swp
 .kateproject*
