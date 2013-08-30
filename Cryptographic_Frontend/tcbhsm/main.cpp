@@ -425,16 +425,19 @@ extern "C" {
   CK_RV C_CreateObject (CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount, CK_OBJECT_HANDLE_PTR phObject) {
     if (!appIsInited())
       return CKR_CRYPTOKI_NOT_INITIALIZED;
-    if (phObject == nullptr)
-      return CKR_ARGUMENTS_BAD;
     
     try {
-      *phObject = app->getSession(hSession).createObject(pTemplate, ulCount);
+      Session &session = app->getSession(hSession);
+      
+      if (phObject == nullptr)
+        return CKR_ARGUMENTS_BAD;
+      
+      *phObject = session.createObject(pTemplate, ulCount);
     } catch (TcbError& e) {
       return error(e);
     }
     
-    return CKR_GENERAL_ERROR;
+    return CKR_OK;
   }
   
   CK_RV C_DestroyObject (CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject) {
@@ -447,15 +450,13 @@ extern "C" {
       return error(e);
     }
     
-    return CKR_GENERAL_ERROR;
+    return CKR_OK;
   }
   
   
   CK_RV C_FindObjectsInit(CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
     if (!appIsInited())
       return CKR_CRYPTOKI_NOT_INITIALIZED;
-    if (pTemplate == nullptr)
-      return CKR_ARGUMENTS_BAD;
     
     try {
       app->getSession(hSession).findObjectsInit(pTemplate, ulCount);
@@ -471,7 +472,12 @@ extern "C" {
       return CKR_CRYPTOKI_NOT_INITIALIZED;
     
     try {
-      std::vector<CK_OBJECT_HANDLE> handles (app->getSession(hSession).findObjects(ulMaxObjectCount));
+      Session & session = app->getSession(hSession);
+      
+      if (phObject == nullptr || pulObjectCount == nullptr)
+        return CKR_ARGUMENTS_BAD;
+      
+      std::vector<CK_OBJECT_HANDLE> handles (session.findObjects(ulMaxObjectCount));
       // handles tiene a lo mas ulMaxObjectCount elementos, por lo que no hay que verificar.
       int i = 0;
       for (auto& handle: handles) {
@@ -519,13 +525,16 @@ extern "C" {
     if (!appIsInited())
       return CKR_CRYPTOKI_NOT_INITIALIZED;
     
-    if (phPublicKey == nullptr || phPrivateKey == nullptr)
-      return CKR_ARGUMENTS_BAD;
-    
     try {
-      KeyPair keysHandle = app->getSession(hSession).generateKeyPair(pMechanism, 
+      Session& session = app->getSession(hSession);
+      
+      if (phPublicKey == nullptr || phPrivateKey == nullptr) // Si son nulos, no calculo la llave...
+        return CKR_ARGUMENTS_BAD;
+      
+      KeyPair keysHandle = session.generateKeyPair(pMechanism, 
                                                                      pPublicKeyTemplate, ulPublicKeyAttributeCount,
                                                                      pPrivateKeyTemplate, ulPrivateKeyAttributeCount);
+      
       *phPrivateKey = keysHandle.first;
       *phPublicKey = keysHandle.second;
       
@@ -583,6 +592,19 @@ extern "C" {
     
     try {
       app->getSession(hSession).digest(pData, ulDataLen, pDigest, pulDigestLen);
+    } catch (TcbError &e) {
+      return error(e);
+    }
+    
+    return CKR_OK;
+  }
+  
+  CK_RV C_SeedRandom(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen) {
+    if (!appIsInited())
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    
+    try {
+      app->getSession(hSession).seedRandom(pSeed, ulSeedLen);
     } catch (TcbError &e) {
       return error(e);
     }
@@ -754,12 +776,7 @@ extern "C" {
   CK_RV C_DeriveKey(CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_ATTRIBUTE_PTR, 
                     CK_ULONG, CK_OBJECT_HANDLE_PTR) {
     return CKR_FUNCTION_NOT_SUPPORTED;
-  }
-  
-  CK_RV C_SeedRandom(CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen) {
-    return CKR_FUNCTION_NOT_SUPPORTED;
-  }
-  
+  }  
   
   CK_RV C_GetFunctionStatus(CK_SESSION_HANDLE) {
     return CKR_FUNCTION_NOT_PARALLEL;

@@ -51,6 +51,7 @@ public:
   void sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen);
   void digestInit(CK_MECHANISM_PTR pMechanism);
   void digest(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen);
+  void seedRandom(CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen);
   void generateRandom(CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen);
 
   // Conexiones

@@ -30,53 +30,41 @@ using namespace tcbhsm;
 
 namespace { // Funcion auxiliar
 
-  CK_BBOOL userAuthorization(CK_STATE sessionState, CK_BBOOL isTokenObject, CK_BBOOL isPrivateObject, int userAction) {
+  bool userAuthorization(CK_STATE sessionState, CK_BBOOL isTokenObject, CK_BBOOL isPrivateObject, bool userAction) {
     switch(sessionState) {
       case CKS_RW_SO_FUNCTIONS:
-        if(isPrivateObject == CK_FALSE) {
-          return CK_TRUE;
-        } else {
-          return CK_FALSE;
-        }
+        return isPrivateObject == CK_FALSE;
         break;
+        
       case CKS_RW_USER_FUNCTIONS:
-        return CK_TRUE;
+        return true;
         break;
+        
       case CKS_RO_USER_FUNCTIONS:
         if(isTokenObject == CK_TRUE) {
-          if(userAction == 1) {
-            return CK_FALSE;
-          } else {
-            return CK_TRUE;
-          }
+          return userAction == false; // Es más explicito así
         } else {
           return true;
         }
         break;
+        
       case CKS_RW_PUBLIC_SESSION:
-        if(isPrivateObject == CK_FALSE) {
-          return CK_TRUE;
-        } else {
-          return CK_FALSE;
-        }
+        return isPrivateObject == CK_FALSE;
         break;
+        
       case CKS_RO_PUBLIC_SESSION:
         if(isPrivateObject == CK_FALSE) {
-          if(isTokenObject == CK_TRUE && userAction == 1) {
-            return CK_FALSE;
-          } else {
-            return CK_TRUE;
-          }
+          return (isTokenObject != CK_TRUE) || (userAction == false);
         } else {
-          return CK_FALSE;
+          return false;
         }
-
         break;
+        
       default:
         break;
     }
 
-    return CK_FALSE;
+    return false;
   }
 
 }
@@ -139,14 +127,17 @@ void Session::getSessionInfo(CK_SESSION_INFO_PTR pInfo) const {
 CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
   if (pTemplate == nullptr)
     throw TcbError("Session::createObject", "pTemplate es nullptr.", CKR_ARGUMENTS_BAD);
-
+  
   // Copiado de SoftHSM, valores por defecto:
   CK_BBOOL isToken = CK_FALSE;
   CK_BBOOL isPrivate = CK_TRUE;
+  CK_OBJECT_CLASS oClass = CKO_VENDOR_DEFINED;
+  CK_KEY_TYPE keyType = CKK_VENDOR_DEFINED;
+  
   
   // Recupera la opcion de si es un objeto distribuido o no...
   bool distributedObject = false;
-
+  
   // Extract object information
   for(CK_ULONG i = 0; i < ulCount; i++) {
     switch(pTemplate[i].type) {
@@ -155,31 +146,66 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
           isToken = *(CK_BBOOL*)pTemplate[i].pValue;
         }
         break;
+        
       case CKA_PRIVATE:
         if(pTemplate[i].ulValueLen == sizeof(CK_BBOOL)) {
           isPrivate = *(CK_BBOOL*)pTemplate[i].pValue;
         }
         break;
+        
+      case CKA_CLASS:
+        if(pTemplate[i].ulValueLen == sizeof(CK_OBJECT_CLASS)) {
+          oClass = *(CK_OBJECT_CLASS*)pTemplate[i].pValue;
+        }
+        break;
+        
+      case CKA_KEY_TYPE:
+        if(pTemplate[i].ulValueLen == sizeof(CK_KEY_TYPE)) {
+          keyType = *(CK_KEY_TYPE*)pTemplate[i].pValue;
+        }
+        break;
+        
       case CKA_VENDOR_DEFINED: // RabbitConnection :D
         if (pTemplate[i].ulValueLen > 0) {
           distributedObject = true;
         }
+        break;
+        
       default:
         break;
     }
   }
 
   if (isToken == CK_TRUE && this->isReadOnly())
-    throw TcbError("Session::createObject", "Only session objects can be created during a read-only session.", CKR_SESSION_READ_ONLY);
-
-  CK_BBOOL userAuth = userAuthorization(this->getState(), isToken, isPrivate, 1);
-  if(userAuth == CK_FALSE)
-    throw TcbError("Session::createObject", "User is not authorized", CKR_USER_NOT_LOGGED_IN);
-
-  CK_OBJECT_HANDLE oHandle = actualObjectHandle_++; // lol, por mientras.
-  objects_[oHandle].reset(new SessionObject(pTemplate, ulCount, distributedObject));
-
-  return oHandle;
+    throw TcbError("Session::createObject", "isToken == CK_TRUE && this->isReadOnly()", CKR_SESSION_READ_ONLY);
+  
+  if (!userAuthorization(getState(), isToken, isPrivate, true))
+    throw TcbError("Session::createObject", 
+                   "!userAuthorization(getState(), isToken, isPrivate, true)",
+                   CKR_USER_NOT_LOGGED_IN);
+    
+  switch(oClass) {
+    case CKO_PUBLIC_KEY:
+    case CKO_PRIVATE_KEY:
+      if(keyType == CKK_RSA) {
+        CK_OBJECT_HANDLE oHandle = actualObjectHandle_++; // lol, por mientras.
+        objects_[oHandle].reset(new SessionObject(pTemplate, ulCount, distributedObject));
+        return oHandle;
+      } else {
+        throw TcbError("Session::createObject", 
+                       "keyType != CKK_RSA",
+                       CKR_ATTRIBUTE_VALUE_INVALID);
+      }
+      
+      break;
+    default:
+      throw TcbError("Session::createObject", 
+                       "La clase del objeto no está soportada.",
+                       CKR_ATTRIBUTE_VALUE_INVALID);
+      break;
+  }
+  
+  // TODO: Verificar que los objetos sean validos.
 }
 
 void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
@@ -193,6 +219,11 @@ void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
 
 void Session::findObjectsInit(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
   // TODO: Verificar correctitud
+  if (findInitialized)
+    throw TcbError("Session::findObjectsInit", "findInitialized", CKR_OPERATION_ACTIVE);
+  if (pTemplate == nullptr)
+    throw TcbError("Session::findObjectsInit", "pTemplate == nullptr", CKR_ARGUMENTS_BAD);
+  
   if (ulCount == 0) {
     // Busco todos los objetos...
     for (auto& handleObjectPair: objects_) {
@@ -226,7 +257,10 @@ auto Session::findObjects(CK_ULONG maxObjectCount) -> std::vector<CK_OBJECT_HAND
 }
 
 void Session::findObjectsFinal() {
-  findInitialized = false;
+  if (!findInitialized)
+    throw TcbError("Session::findObjects", "No se inicio la busqueda.", CKR_OPERATION_NOT_INITIALIZED);
+  else 
+    findInitialized = false;
 }
 
 
@@ -235,7 +269,7 @@ SessionObject & Session::getObject(CK_OBJECT_HANDLE objectHandle) {
     SessionObject & object = *(objects_.at(objectHandle));
     return object;
   } catch (std::out_of_range &e) {
-    throw TcbError("Session::getObject", "Objeto no existe en la sesion.", CKR_ARGUMENTS_BAD);
+    throw TcbError("Session::getObject", "Objeto no existe en la sesion.", CKR_OBJECT_HANDLE_INVALID);
   }
 }
 
@@ -246,16 +280,22 @@ CK_STATE Session::getState() const {
   case Token::SecurityLevel::SECURITY_OFFICER:
     return CKS_RW_SO_FUNCTIONS;
   case Token::SecurityLevel::USER:
-    return CKS_RW_USER_FUNCTIONS;
+    if (isReadOnly())
+      return CKS_RO_USER_FUNCTIONS;
+    else 
+      return CKS_RW_USER_FUNCTIONS;
 
   default:
   case Token::SecurityLevel::PUBLIC:
-    return CKS_RW_PUBLIC_SESSION;
+    if (isReadOnly())
+      return CKS_RO_PUBLIC_SESSION;
+    else
+      return CKS_RW_PUBLIC_SESSION;
   }
 }
 
 bool Session::isReadOnly() const {
-  return false;
+  return (flags_ & CKF_RW_SESSION) != CKF_RW_SESSION;
 }
 
 CK_FLAGS Session::getFlags() const {
@@ -534,8 +574,9 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
   if (pMechanism == nullptr || pPublicKeyTemplate == nullptr || pPrivateKeyTemplate == nullptr) {
     throw TcbError("Session::generateKeyPair", "Argumentos nulos", CKR_ARGUMENTS_BAD);
   }
-
+  
   switch (pMechanism->mechanism) {
+    // case CKM_VENDOR_DEFINED:
     case CKM_RSA_PKCS_KEY_PAIR_GEN:
       try {
         ConnectionPtr connection(createConnection());
@@ -550,7 +591,11 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
           
         return KeyPair(privateKeyHandle, publicKeyHandle);
         
-      } catch (std::exception & e) {
+      } 
+      catch (TcbError & e) {
+        throw e;
+      }
+      catch (std::exception & e) {
         throw TcbError("Session::generateKeyPair", e.what(), CKR_GENERAL_ERROR);
       }
       break;
@@ -756,4 +801,13 @@ void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature
     }
     
     rng.randomize(pRandomData, ulRandomLen);
+  }
+  
+  void Session::seedRandom(CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen) {
+    if(pSeed == nullptr) {
+      throw TcbError("Session::seedRandom", "pSeed == nullptr", CKR_ARGUMENTS_BAD);
+    }
+    
+    rng.add_entropy(pSeed, ulSeedLen);
+    rng.reseed();
   }

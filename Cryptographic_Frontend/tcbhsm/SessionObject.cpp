@@ -100,6 +100,9 @@ void copyAttribute (CK_ATTRIBUTE const* src, CK_ATTRIBUTE* dst) {
 }
 
 void SessionObject::copyAttributes(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) const {
+  if (pTemplate == nullptr)
+    throw TcbError("SessionObject::copyAttributes", "pTemplate == nullptr", CKR_ARGUMENTS_BAD);
+    
   for(CK_ULONG i=0; i<ulCount; ++i) {
     CK_ATTRIBUTE* ptr = &(pTemplate[i]);
     copyAttribute(findAttribute(ptr), ptr);
