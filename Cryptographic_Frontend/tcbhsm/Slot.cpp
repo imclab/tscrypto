@@ -10,7 +10,7 @@
 using namespace tcbhsm;
 
 Slot::Slot(CK_SLOT_ID id)
-  : slotId_(id), token_(new Token("", "1234"))
+  : slotId_(id), token_(new Token("TCBHSM", "1234"))
 {
 
 }

@@ -23,6 +23,7 @@
 #include <botan/filters.h>
 
 #include <algorithm>
+#include <sstream>
 #include <cstdlib> // getenv
 
 
@@ -76,7 +77,7 @@ Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify, Slo
 
 }
 
-auto Session::createConnection() -> cf::Connection*
+cf::Connection* Session::createConnection()
 {
   // Ojo! La configuracion de la conexión esta hecha con variables de entorno...
   const char* hostname = std::getenv("TCB_HOSTNAME");
@@ -189,7 +190,7 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
     case CKO_PRIVATE_KEY:
       if(keyType == CKK_RSA) {
         CK_OBJECT_HANDLE oHandle = actualObjectHandle_++; // lol, por mientras.
-        objects_[oHandle].reset(new SessionObject(pTemplate, ulCount, distributedObject));
+        (objects_[oHandle]).reset(new SessionObject(pTemplate, ulCount, distributedObject));
         return oHandle;
       } else {
         throw TcbError("Session::createObject", 
@@ -567,6 +568,28 @@ namespace {
   
 }
 
+namespace {
+  long bytesToLong(CK_BYTE_PTR bytes, CK_ULONG n) {
+    if (0 > n || n > 8)
+      return 0;
+    
+    long value = 0;
+    for (int i = 0; i < n; i++)
+    {
+      value = (value << 8) + bytes[i];
+    }   
+    return value;
+  }
+  
+  template <class T>
+  inline std::string toString (const T& t)
+  {
+    std::stringstream ss;
+    ss << t;
+    return ss.str();
+  }
+}
+
 KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism, 
                                  CK_ATTRIBUTE_PTR pPublicKeyTemplate, CK_ULONG ulPublicKeyAttributeCount, 
                                  CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount) {
@@ -575,13 +598,43 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
     throw TcbError("Session::generateKeyPair", "Argumentos nulos", CKR_ARGUMENTS_BAD);
   }
   
+  // Se extrae la información relevante para crear la llave.
+  CK_ULONG modulusBits = 0;
+  std::string exponent = "65537";
+  
+  for(CK_ULONG i = 0; i < ulPublicKeyAttributeCount; i++) {
+    switch(pPublicKeyTemplate[i].type) {
+      case CKA_MODULUS_BITS:
+      {
+        if(pPublicKeyTemplate[i].ulValueLen != sizeof(CK_ULONG)) {
+          throw TcbError("Session::generateKeyPair", "pPublicKeyTemplate[i].ulValueLen != sizeof(CK_ULONG)", CKR_TEMPLATE_INCOMPLETE);
+        }
+        modulusBits = *static_cast<CK_ULONG*>(pPublicKeyTemplate[i].pValue);
+      }
+        break;
+      case CKA_PUBLIC_EXPONENT:
+      {
+        long e = bytesToLong(static_cast<CK_BYTE_PTR>(pPublicKeyTemplate[i].pValue), 
+                             static_cast<CK_ULONG>(pPublicKeyTemplate[i].ulValueLen));
+        exponent = toString(e);
+      }
+        break;
+      default:
+        break;
+    }
+  }
+  
+  if (modulusBits == 0) {
+    throw TcbError("Session::generateKeyPair", "modulusBits == \"\"", CKR_TEMPLATE_INCOMPLETE);
+  }
+  
   switch (pMechanism->mechanism) {
     // case CKM_VENDOR_DEFINED:
     case CKM_RSA_PKCS_KEY_PAIR_GEN:
       try {
-        ConnectionPtr connection(createConnection());
+        cf::ConnectionPtr connection(createConnection());
         
-        cf::GenerateKeyPairMethod method("RSA", 4096, "65537"); // Unico metodo aceptado :B...
+        cf::GenerateKeyPairMethod method("RSA", modulusBits, "65537"); // Unico metodo aceptado :B...
         method.execute(*connection);
         cf::ResponseMessagePtr response(method.getResponse());
         long long handler = response->getValue<long long>("handler");
@@ -609,7 +662,7 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
 
 void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
   try {
-    ConnectionPtr connection(createConnection());
+    cf::ConnectionPtr connection(createConnection());
     SessionObject &keyObject = getObject(hKey);
     CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
     const CK_ATTRIBUTE * handlerAttribute = keyObject.findAttribute(&tmpl);
@@ -626,6 +679,8 @@ void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
         mechanism = "SHA1withRSA";
         break;
       case CKM_RSA_PKCS:
+        mechanism = "RSA";
+        break;
       case CKM_RSA_X_509:
       case CKM_MD5_RSA_PKCS:
       case CKM_RIPEMD160_RSA_PKCS:
@@ -662,8 +717,7 @@ void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature
   }
   
   try {
-    ConnectionPtr connection(createConnection());
-    
+    cf::ConnectionPtr connection(createConnection());
     std::string encodedData (base64::encode(pData, ulDataLen));
     cf::SignMethod method (encodedData);
     method.execute (*connection);
@@ -673,6 +727,7 @@ void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature
     unsigned long responseSize = responseDecoded.size(); 
     
     if (*pulSignatureLen < responseSize) {
+      
       throw TcbError("Session::sign", "Buffer muy pequeño.", CKR_BUFFER_TOO_SMALL);
     }
     *pulSignatureLen = responseSize;

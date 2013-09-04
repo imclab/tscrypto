@@ -23,7 +23,6 @@
 namespace tcbhsm
 {
 
-using ConnectionPtr = std::unique_ptr<cf::Connection>;
 using KeyPair = std::pair<CK_OBJECT_HANDLE, CK_OBJECT_HANDLE>; // (Privada, pública)
 using DigestPipePtr = std::unique_ptr<Botan::Pipe>;
 
