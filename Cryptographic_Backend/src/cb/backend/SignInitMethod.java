@@ -6,6 +6,8 @@ import java.security.PrivateKey;
 
 import com.google.gson.Gson;
 
+import javax.crypto.NoSuchPaddingException;
+
 public class SignInitMethod implements Method {
 	public static class Args {
 		public String mechanism;
@@ -35,11 +37,11 @@ public class SignInitMethod implements Method {
 				signer.init(mechanism, pk);
 				return ResponseMessage.OKMessage(null);
 			} 
-			catch (InvalidKeyException | NoSuchAlgorithmException e) {
+			catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
 				return ResponseMessage.ErrorMessage(e.getLocalizedMessage());
-			}
+            }
 
-		} 
+        }
 		else {
 			return ResponseMessage.ErrorMessage("Llave no encontrada.");
 		}
