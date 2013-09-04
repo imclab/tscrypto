@@ -11,6 +11,7 @@ protected:
   virtual ResponseMessageStrategy getStrategy() const override;
 public:
   SignMethod(std::string data);
+  virtual ~SignMethod() = default;
 };
 
 }

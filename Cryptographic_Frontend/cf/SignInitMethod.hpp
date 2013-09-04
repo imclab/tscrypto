@@ -9,9 +9,10 @@ namespace cf
 class SignInitMethod : public Method
 {
 protected:
-  virtual ResponseMessageStrategy getStrategy() const override;
+    virtual ResponseMessageStrategy getStrategy() const override;
 public:
-  SignInitMethod(std::string mechanism, long long privateKeyHandler);
+    virtual ~SignInitMethod() = default;
+    SignInitMethod(std::string mechanism, long long privateKeyHandler);
 };
 
 }

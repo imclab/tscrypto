@@ -7,6 +7,7 @@
 #define Connection_H_
 
 #include <string>
+#include <memory>
 #include <exception>
 
 namespace cf
@@ -21,6 +22,7 @@ protected:
     virtual void send(const std::string &message) const = 0;
     virtual std::string receive() const = 0;
 public:
+    virtual ~Connection() = default;
 
     class BadResponseException : public ConnectionException
     {
@@ -42,6 +44,8 @@ public:
         return receive();
     }
 };
+
+using ConnectionPtr = std::unique_ptr<cf::Connection>;
 
 }
 

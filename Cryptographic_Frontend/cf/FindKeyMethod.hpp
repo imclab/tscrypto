@@ -11,7 +11,8 @@ private:
 protected:
   virtual ResponseMessageStrategy getStrategy() const override;
 public:
-  FindKeyMethod(long long handler);
+    virtual ~FindKeyMethod() = default;
+    FindKeyMethod(long long handler);
 };
 
 }

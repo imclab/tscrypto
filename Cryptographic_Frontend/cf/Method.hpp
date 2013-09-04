@@ -34,7 +34,7 @@ protected:
 public:
   virtual void execute(Connection const & connection); // throw (ConnectionException);
   virtual ResponseMessagePtr getResponse();
-  virtual ~Method() {}
+  virtual ~Method() = default;
 
 };
 

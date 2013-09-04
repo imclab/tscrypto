@@ -21,6 +21,7 @@ protected:
   virtual ResponseMessageStrategy getStrategy() const override;
 
 public:
+    virtual ~GenerateKeyPairMethod() = default;
   GenerateKeyPairMethod(std::string keyType, int keySize, std::string publicExponent);
 
 };
