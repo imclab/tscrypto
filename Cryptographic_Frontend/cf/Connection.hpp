@@ -22,8 +22,6 @@ protected:
     virtual void send(const std::string &message) const = 0;
     virtual std::string receive() const = 0;
 public:
-    virtual ~Connection() = default;
-
     class BadResponseException : public ConnectionException
     {
         const char *what() const throw() {
@@ -38,6 +36,8 @@ public:
         }
     };
 
+    virtual ~Connection() = default;
+    
     // Template method...
     virtual std::string executeRpc(const std::string &message) const { // throw (ConnectionException)
         send(message);

@@ -23,8 +23,9 @@ private:
 
   RabbitConnection & operator=(RabbitConnection const & rhs);
 protected:
-  RabbitConnection();
-  RabbitConnection(RabbitConnection const & rhs);
+  RabbitConnection() = delete;
+  RabbitConnection(RabbitConnection const & rhs) = delete;
+  RabbitConnection& operator=(RabbitConnection && rhs) = delete;
   virtual void send(const std::string & message) const;
   virtual std::string receive() const;
 
@@ -32,6 +33,7 @@ public:
   RabbitConnection(const std::string & host, int port, const std::string & exchange,
                    const std::string & routingKey, amqp_channel_t channel);
   virtual ~RabbitConnection();
+  
 };
 
 }

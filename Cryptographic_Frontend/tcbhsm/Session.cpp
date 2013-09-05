@@ -77,7 +77,7 @@ Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify, Slo
 
 }
 
-cf::Connection* Session::createConnection()
+cf::ConnectionPtr Session::createConnection()
 {
   // Ojo! La configuracion de la conexión esta hecha con variables de entorno...
   const char* hostname = std::getenv("TCB_HOSTNAME");
@@ -92,7 +92,7 @@ cf::Connection* Session::createConnection()
 
   int portNumber = std::stoi(port);
   
-  return new cf::RabbitConnection(hostname, portNumber, "", "rpc_queue", 1);
+  return cf::ConnectionPtr(new cf::RabbitConnection(hostname, portNumber, "", "rpc_queue", 1));
 }
 
 void Session::retain()
@@ -570,7 +570,7 @@ namespace {
 
 namespace {
   long bytesToLong(CK_BYTE_PTR bytes, CK_ULONG n) {
-    if (0 > n || n > 8)
+    if (n > 8)
       return 0;
     
     long value = 0;
@@ -632,7 +632,7 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
     // case CKM_VENDOR_DEFINED:
     case CKM_RSA_PKCS_KEY_PAIR_GEN:
       try {
-        cf::ConnectionPtr connection(createConnection());
+        cf::ConnectionPtr connection = createConnection();
         
         cf::GenerateKeyPairMethod method("RSA", modulusBits, "65537"); // Unico metodo aceptado :B...
         method.execute(*connection);
@@ -662,7 +662,7 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
 
 void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
   try {
-    cf::ConnectionPtr connection(createConnection());
+    cf::ConnectionPtr connection = createConnection();
     SessionObject &keyObject = getObject(hKey);
     CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
     const CK_ATTRIBUTE * handlerAttribute = keyObject.findAttribute(&tmpl);
@@ -717,7 +717,7 @@ void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature
   }
   
   try {
-    cf::ConnectionPtr connection(createConnection());
+    cf::ConnectionPtr connection = createConnection();
     std::string encodedData (base64::encode(pData, ulDataLen));
     cf::SignMethod method (encodedData);
     method.execute (*connection);

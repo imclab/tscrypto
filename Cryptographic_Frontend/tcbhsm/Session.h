@@ -54,7 +54,7 @@ public:
   void generateRandom(CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen);
 
   // Conexiones
-  cf::Connection* createConnection(); // RAII connection encapsulada en un puntero. R-Value reference.
+  cf::ConnectionPtr createConnection(); // RAII connection encapsulada en un puntero. R-Value reference.
 
   // Session Objects
   CK_OBJECT_HANDLE createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount); // throws exception
