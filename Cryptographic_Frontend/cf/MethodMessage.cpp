@@ -42,7 +42,8 @@ string MethodMessage::toJson()
 
   obj["args"] = args;
 
-  return obj.toStyledString();
+  Json::FastWriter writer;
+  return writer.write(obj);
 }
 
 }

@@ -15,18 +15,15 @@ cf::GetAttributeMethod::GetAttributeMethod(std::string attribute, int handler)
   addArgument(ArgumentPtr(new IntegerArgument("handler", handler)));
 }
 
-cf::ResponseMessageStrategy cf::GetAttributeMethod::getStrategy() const
-{
-  return [](std::string const & message) -> ResponseMessagePtr {
+cf::ResponseMessagePtr cf::GetAttributeMethod::parseResponse(const std::string & message) {
     Json::Value json;
     Json::Reader reader;
-
+    
     reader.parse(message, json);
     ResponseMessagePtr response(new ResponseMessage());
 
     response->addValue(ArgumentPtr( new StringArgument("attributeValue", json["attributeValue"].asString()) ));
 
     return std::move(response);
-  };
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;

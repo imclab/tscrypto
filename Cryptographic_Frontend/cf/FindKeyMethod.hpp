@@ -6,10 +6,9 @@ namespace cf
 
 class FindKeyMethod : public Method
 {
-protected:
-  virtual ResponseMessageStrategy getStrategy() const override;
 public:
     virtual ~FindKeyMethod() = default;
+    virtual ResponseMessagePtr parseResponse(const std::string & message) override;
     FindKeyMethod(long long handler);
 };
 

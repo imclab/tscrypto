@@ -19,14 +19,12 @@ int main()
     RabbitConnection connection("localhost", 5672, "", "rpc_queue", 1);
     Method * method = new cf::GenerateKeyPairMethod("RSA", 1024, "65537");
     method->execute(connection);   
-    cf::ResponseMessagePtr response(method->getResponse());
-    handler = response->getValue<long long>("handler");
+    handler = method->getResponse().getValue<long long>("handler");
     delete method;
 
     method = new cf::FindKeyMethod(handler);
     method->execute(connection);
-    response.reset(method->getResponse().release());
-    std::string pemPublicKey = response->getValue<std::string>("key");
+    std::string pemPublicKey = method->getResponse().getValue<std::string>("key");
     delete method;
 
     std::cout << pemPublicKey << std::endl;

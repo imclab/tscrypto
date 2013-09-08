@@ -9,12 +9,8 @@ cf::SignInitMethod::SignInitMethod(std::string mechanism, long long privateKeyHa
   addArgument(ArgumentPtr(new IntegerArgument("handler", privateKeyHandler)));
 }
 
-
-cf::ResponseMessageStrategy cf::SignInitMethod::getStrategy() const
-{
-  return [](std::string const & message) -> ResponseMessagePtr {
+cf::ResponseMessagePtr cf::SignInitMethod::parseResponse(const std::string & message) {
     ResponseMessagePtr response(new ResponseMessage());
     return std::move(response);
-  };
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;

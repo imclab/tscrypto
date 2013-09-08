@@ -11,12 +11,10 @@ namespace cf
 
 class GetAttributeMethod : public Method
 {
-protected:
-    
-  virtual ResponseMessageStrategy getStrategy() const override;
 public:
     virtual ~GetAttributeMethod() = default;
-  GetAttributeMethod(std::string attribute, int handler);
+    GetAttributeMethod(std::string attribute, int handler);
+    virtual ResponseMessagePtr parseResponse(const std::string & message) override;
 
 };
 

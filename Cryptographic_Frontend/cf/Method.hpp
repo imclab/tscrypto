@@ -14,30 +14,32 @@
 
 namespace cf
 {
-
-class ResponseMessage;
-class Connection;
-using ResponseMessagePtr = std::unique_ptr<ResponseMessage>;
-using ResponseMessageStrategy = std::function<ResponseMessagePtr(std::string const &)>;
-
-
-class Method   // Por ahora los metodos devuelven un string json...
-{
-private:
-  MethodMessage message_;
-  std::string response_;
-protected:
-  Method(const std::string & name);
-  void addArgument(ArgumentPtr argument);
-  virtual ResponseMessageStrategy getStrategy() const = 0;
-
-public:
-  virtual void execute(Connection const & connection); // throw (ConnectionException);
-  virtual ResponseMessagePtr getResponse();
-  virtual ~Method() = default;
-
-};
-
+    
+    class ResponseMessage;
+    class Connection;
+    using ResponseMessagePtr = std::unique_ptr<ResponseMessage>;
+    using ResponseMessageStrategy = std::function<ResponseMessagePtr(std::string const &)>;
+    
+    
+    class Method   // Por ahora los metodos devuelven un string json...
+    {
+    private:
+        MethodMessage message_;
+        std::string response_;
+        ResponseMessagePtr responseMessage_;
+    protected:    
+        
+        Method(const std::string & name);
+        void addArgument(ArgumentPtr argument);
+        virtual ResponseMessagePtr parseResponse(const std::string & message) = 0;
+        
+    public:
+        void execute(Connection const & connection); // throw (ConnectionException);
+        const ResponseMessage & getResponse();
+        virtual ~Method() = default;
+        
+    };
+    
 }
 
 #endif // Method_H_

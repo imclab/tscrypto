@@ -18,18 +18,15 @@ GenerateKeyPairMethod::GenerateKeyPairMethod(string keyType,
   addArgument(ArgumentPtr(new StringArgument("publicExponent", publicExponent)));
 }
 
-ResponseMessageStrategy GenerateKeyPairMethod::getStrategy() const
-{
-  return [](std::string const & message) -> ResponseMessagePtr {
+ResponseMessagePtr GenerateKeyPairMethod::parseResponse(const std::string & message) {
     Json::Value json;
     Json::Reader reader;
-
+    
     reader.parse(message, json);
-    ResponseMessagePtr response(new ResponseMessage());
 
+    ResponseMessagePtr response(new ResponseMessage());
     response->addValue(ArgumentPtr( new IntegerArgument("handler", json["handler"].asInt64()) ));
 
     return std::move(response);
-  };
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;

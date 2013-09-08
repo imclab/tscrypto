@@ -13,19 +13,16 @@
 
 namespace cf
 {
-
-class GenerateKeyPairMethod : public Method
-{
-
-protected:
-  virtual ResponseMessageStrategy getStrategy() const override;
-
-public:
-    virtual ~GenerateKeyPairMethod() = default;
-  GenerateKeyPairMethod(std::string keyType, int keySize, std::string publicExponent);
-
-};
-
+    
+    class GenerateKeyPairMethod : public Method
+    {
+    public:
+        virtual ~GenerateKeyPairMethod() = default;
+        GenerateKeyPairMethod(std::string keyType, int keySize, std::string publicExponent);
+        virtual ResponseMessagePtr parseResponse(const std::string & message) override;
+        
+    };
+    
 }
 
 #endif // GenerateKeyPairMethod_H_

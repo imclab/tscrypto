@@ -636,8 +636,8 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
         
         cf::GenerateKeyPairMethod method("RSA", modulusBits, "65537"); // Unico metodo aceptado :B...
         method.execute(*connection);
-        cf::ResponseMessagePtr response(method.getResponse());
-        long long handler = response->getValue<long long>("handler");
+        
+        long long handler = method.getResponse().getValue<long long>("handler");
         
         CK_OBJECT_HANDLE publicKeyHandle = createPublicKey(*this, pPublicKeyTemplate, ulPublicKeyAttributeCount, handler);
         CK_OBJECT_HANDLE privateKeyHandle = createPrivateKey(*this, pPrivateKeyTemplate, ulPrivateKeyAttributeCount, handler);
@@ -698,7 +698,7 @@ void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
     
     cf::SignInitMethod method(mechanism, handler);
     method.execute(*connection);
-    cf::ResponseMessagePtr response(method.getResponse());
+    method.getResponse();
     
     signInitialized_ = true;
   }
@@ -721,9 +721,10 @@ void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature
     std::string encodedData (base64::encode(pData, ulDataLen));
     cf::SignMethod method (encodedData);
     method.execute (*connection);
-    cf::ResponseMessagePtr response (method.getResponse());
     
-    std::string responseDecoded (base64::decode(response->getValue<std::string>("signedData")));
+    const std::string & signedData = method.getResponse().getValue<std::string>("signedData");
+    
+    std::string responseDecoded (base64::decode(signedData));
     unsigned long responseSize = responseDecoded.size(); 
     
     if (*pulSignatureLen < responseSize) {

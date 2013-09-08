@@ -8,23 +8,20 @@
 using namespace cf;
 
 SignMethod::SignMethod(std::string data)
-  : Method("Sign")
+: Method("Sign")
 {
-  addArgument(ArgumentPtr(new StringArgument("data", data)));
+    addArgument(ArgumentPtr(new StringArgument("data", data)));
 }
 
-ResponseMessageStrategy SignMethod::getStrategy() const
-{
-  return [](std::string const & message) -> ResponseMessagePtr {
+ResponseMessagePtr SignMethod::parseResponse(const std::string & message) {
     Json::Value json;
     Json::Reader reader;
-
+    
     reader.parse(message, json);
     ResponseMessagePtr response(new ResponseMessage());
     response->addValue( ArgumentPtr( new StringArgument("signedData", json["signedData"].asString())) );
-
+    
     return std::move(response);
-  };
 }
 
 
