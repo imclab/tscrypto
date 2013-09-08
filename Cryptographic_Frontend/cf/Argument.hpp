@@ -14,19 +14,20 @@ public:
     virtual const std::type_info & getTypeId() const = 0;    
 };
 
-bool is(const IArgument & argument, const std::type_info & type);
-
 template <typename T>
 class Argument : public IArgument
 {
 private:
     const std::string name_;
     const T value_;
-public:
     static constexpr const std::type_info & type = typeid(T);
+public:
+    static bool match(const IArgument & argument) {
+        return argument.getTypeId() == type;
+    }
     
     static const T & getValue(const IArgument & a) {
-        if (is(a, type))
+        if (match(a))
             return static_cast<const Argument<T> &>(a).getValue();
         
         throw std::logic_error("Type mismatch!");
