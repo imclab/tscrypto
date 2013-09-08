@@ -14,38 +14,6 @@ using std::stringstream;
 namespace cf
 {
 
-namespace
-{
-class ArgumentValueVisitor : public ArgumentVisitor
-{
-private:
-  Json::Value & obj_;
-
-public:
-  ArgumentValueVisitor(Json::Value & obj) : obj_(obj) {}
-  virtual ~ArgumentValueVisitor() {}
-
-  virtual void visit(Argument & arg);
-  virtual void visit(StringArgument & arg) override;
-  virtual void visit(IntegerArgument & arg) override;
-};
-
-void ArgumentValueVisitor::visit(Argument & arg)
-{
-}
-
-void ArgumentValueVisitor::visit(StringArgument & arg)
-{
-  obj_[arg.getName()] = arg.value();
-}
-
-void ArgumentValueVisitor::visit(IntegerArgument & arg)
-{
-  obj_[arg.getName()] = arg.value();
-}
-
-}
-
 MethodMessage::MethodMessage(const string & name)
 {
   name_ = name;
@@ -64,10 +32,14 @@ string MethodMessage::toJson()
   obj["method"] = Json::Value(name_);
 
   Json::Value args;
-  ArgumentValueVisitor visitor(args);
 
-  for (auto const & arg : argList_)
-    arg->accept(visitor);
+  for (const ArgumentPtr & arg : argList_) {
+      if (is(*arg, IntegerArgument::type)) {
+          args[arg->getName()] = IntegerArgument::getValue(*arg);
+      } else if (is(*arg, StringArgument::type)) {
+          args[arg->getName()] = StringArgument::getValue(*arg);
+      }
+  }
 
   obj["args"] = args;
 

@@ -1,18 +1,7 @@
-#include <string>
 #include "Argument.hpp"
 
-using namespace cf;
-
-Argument::Argument(const std::string & name)
-  : name_(name)
-{
-}
-
-Argument::~Argument() {}
-
-const std::string & Argument::getName() const
-{
-  return name_;
+bool cf::is(const IArgument & argument, const std::type_info & type) {
+  return argument.getTypeId() == type;
 }
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;

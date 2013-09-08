@@ -42,7 +42,7 @@ $(MODULES): force_look
 
 .PHONY:
 clean:
-	-$(RM) -f $(EXE) $(LIB_FILENAME)
+	-$(RM) -f $(EXE) $(LIB_FILENAME) $(OBJS)
 	-@for dir in $(MODULES); do (cd $$dir; $(MAKE) clean); done
 	
 force_look:

@@ -1,10 +1,5 @@
-#ifndef INTEGERARGUMENT_H_
-#define INTEGERARGUMENT_H_
-
-#include <string>
-
 #include "Argument.hpp"
-
+#if 0
 namespace cf
 {
 class IntegerArgument : public Argument

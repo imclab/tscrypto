@@ -1,8 +1,5 @@
-#ifndef STRINGARGUMENT_H_
-#define STRINGARGUMENT_H_
-
-#include <string>
 #include "Argument.hpp"
+#if 0
 namespace cf
 {
 

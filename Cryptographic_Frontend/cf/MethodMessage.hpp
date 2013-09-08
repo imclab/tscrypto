@@ -11,8 +11,8 @@ namespace cf
 // Ojo un ArgumentPtr es un unique_ptr, por lo
 // tanto hay que usar std::move para ser explicito
 // en quien es el dueño del puntero.
-class Argument;
-using ArgumentPtr = std::unique_ptr<Argument>;
+class IArgument;
+using ArgumentPtr = std::unique_ptr<IArgument>;
 
 class MethodMessage
 {
