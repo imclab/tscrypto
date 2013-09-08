@@ -24,5 +24,5 @@ ResponseMessagePtr FindKeyMethod::parseResponse(const std::string & message)
   ResponseMessagePtr response(new ResponseMessage());
   response->addValue(ArgumentPtr( new StringArgument("key", json["key"].asString()) ));
   
-  return std::move(response);
+  return response;
 }

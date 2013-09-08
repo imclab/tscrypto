@@ -24,6 +24,6 @@ cf::ResponseMessagePtr cf::GetAttributeMethod::parseResponse(const std::string &
 
     response->addValue(ArgumentPtr( new StringArgument("attributeValue", json["attributeValue"].asString()) ));
 
-    return std::move(response);
+    return response;
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;

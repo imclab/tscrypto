@@ -21,7 +21,7 @@ ResponseMessagePtr SignMethod::parseResponse(const std::string & message) {
     ResponseMessagePtr response(new ResponseMessage());
     response->addValue( ArgumentPtr( new StringArgument("signedData", json["signedData"].asString())) );
     
-    return std::move(response);
+    return response;
 }
 
 

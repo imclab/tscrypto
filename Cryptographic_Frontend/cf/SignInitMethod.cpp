@@ -10,7 +10,6 @@ cf::SignInitMethod::SignInitMethod(std::string mechanism, long long privateKeyHa
 }
 
 cf::ResponseMessagePtr cf::SignInitMethod::parseResponse(const std::string & message) {
-    ResponseMessagePtr response(new ResponseMessage());
-    return std::move(response);
+    return ResponseMessagePtr(new ResponseMessage());
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;

@@ -27,6 +27,6 @@ ResponseMessagePtr GenerateKeyPairMethod::parseResponse(const std::string & mess
     ResponseMessagePtr response(new ResponseMessage());
     response->addValue(ArgumentPtr( new IntegerArgument("handler", json["handler"].asInt64()) ));
 
-    return std::move(response);
+    return response;
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;
