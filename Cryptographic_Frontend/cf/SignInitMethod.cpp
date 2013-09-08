@@ -1,7 +1,6 @@
 #include "SignInitMethod.hpp"
 #include "ResponseMessage.hpp"
-#include "StringArgument.hpp"
-#include "IntegerArgument.hpp"
+#include "Argument.hpp"
 
 cf::SignInitMethod::SignInitMethod(std::string mechanism, long long privateKeyHandler)
   : Method("SignInit")

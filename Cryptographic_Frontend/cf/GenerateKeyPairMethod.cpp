@@ -1,7 +1,6 @@
 #include "GenerateKeyPairMethod.hpp"
 
-#include "StringArgument.hpp"
-#include "IntegerArgument.hpp"
+#include "Argument.hpp"
 #include "ResponseMessage.hpp"
 #include <json/json.h>
 

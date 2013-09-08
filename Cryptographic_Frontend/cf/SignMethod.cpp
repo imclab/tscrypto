@@ -1,6 +1,6 @@
 #include "SignMethod.hpp"
 
-#include "StringArgument.hpp"
+#include "Argument.hpp"
 #include "ResponseMessage.hpp"
 
 #include <json/json.h>

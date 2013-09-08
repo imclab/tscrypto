@@ -4,8 +4,7 @@
 #include <iostream>
 #include <json/json.h>
 #include "MethodMessage.hpp"
-#include "StringArgument.hpp"
-#include "IntegerArgument.hpp"
+#include "Argument.hpp"
 
 using std::string;
 using std::vector;
