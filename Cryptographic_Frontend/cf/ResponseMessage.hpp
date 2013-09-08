@@ -8,8 +8,9 @@
 #include <memory>
 #include <string>
 #include <map>
-#include <boost/any.hpp>
 #include <functional>
+
+#include "Argument.hpp"
 
 namespace cf
 {
@@ -17,25 +18,27 @@ namespace cf
 class ResponseMessage;
 using ResponseMessagePtr = std::unique_ptr<ResponseMessage>;
 using ResponseMessageStrategy = std::function<ResponseMessagePtr(std::string const &)>;
+using ArgumentPtr = std::unique_ptr<IArgument>;
 
 class ResponseMessage
 {
 private:
-  std::map<std::string, boost::any> values;
+  std::map<std::string, ArgumentPtr> values_;
 
 public:
   static ResponseMessagePtr responseMessageFactory(const std::string & message,
       ResponseMessageStrategy strategy);
 
   ResponseMessage();
-  ResponseMessage(ResponseMessage & rm);
-  ResponseMessage & operator=(ResponseMessage const & rm);
+  ResponseMessage(ResponseMessage & rm) = delete;
+  ResponseMessage & operator=(ResponseMessage const & rm) = delete;
 
-  void setValue(std::string name, boost::any value);
-  template <typename T> // Escondo la implementacion con Boost...
+  void setValue(std::string name, ArgumentPtr value);
+  
+  template <typename T> // Escondo la implementacion...
   T getValue(const std::string & name) {
-    boost::any value = values.at(name);
-    return boost::any_cast<T>(value);
+    const ArgumentPtr & value = values_.at(name);
+    return Argument<T>::getValue(*value);
   }
 };
 

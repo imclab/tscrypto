@@ -30,27 +30,12 @@ ResponseMessagePtr ResponseMessage::responseMessageFactory(const std::string & m
 }
 
 ResponseMessage::ResponseMessage()
-  : values()
 {
 }
 
-ResponseMessage & ResponseMessage::operator=(const ResponseMessage & rm)
+void ResponseMessage::setValue(std::string name, ArgumentPtr value)
 {
-  if (this == &rm)
-    return *this;
-
-  values = rm.values;
-  return *this;
-}
-
-ResponseMessage::ResponseMessage(ResponseMessage & rm)
-  : values(rm.values)
-{
-}
-
-void ResponseMessage::setValue(std::string name, boost::any value)
-{
-  values[name] = value;
+  values_[name] = std::move(value);
 }
 
 

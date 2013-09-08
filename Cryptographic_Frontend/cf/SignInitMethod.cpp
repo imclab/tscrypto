@@ -1,6 +1,5 @@
 #include "SignInitMethod.hpp"
 #include "ResponseMessage.hpp"
-
 #include "StringArgument.hpp"
 #include "IntegerArgument.hpp"
 

@@ -22,7 +22,7 @@ cf::ResponseMessageStrategy cf::FindKeyMethod::getStrategy() const
     reader.parse(message, json);
     ResponseMessagePtr response(new ResponseMessage());
 
-    response->setValue("key", json["key"].asString());
+    response->setValue("key", ArgumentPtr( new StringArgument("key", json["key"].asString()) ));
 
     return std::move(response);
   };
