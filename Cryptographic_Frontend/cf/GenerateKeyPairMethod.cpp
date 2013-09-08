@@ -8,10 +8,9 @@
 using namespace cf;
 using std::string;
 
-GenerateKeyPairMethod::GenerateKeyPairMethod(
-  string keyType,
-  int keySize,
-  string publicExponent)
+GenerateKeyPairMethod::GenerateKeyPairMethod(string keyType, 
+                                             int keySize, 
+                                             string publicExponent)
   : Method("GenerateKeyPair")
 {
   /* methodMessage es dueño de los argumentos */

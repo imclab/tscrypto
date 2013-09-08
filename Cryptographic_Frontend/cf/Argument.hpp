@@ -7,32 +7,28 @@
 namespace cf
 {
 
-class Argument;
 class ArgumentVisitor;
+class Argument
+{
+public:
+    Argument(const std::string & name);
+    virtual ~Argument();
+    virtual const std::string & getName() const;
+    virtual void accept(ArgumentVisitor & visitor) = 0;
+    
+protected:
+    const std::string name_;
+};
 
 // Que tipos de argumentos existen?
 class StringArgument;
 class IntegerArgument;
-
 class ArgumentVisitor
 {
 public:
   virtual void visit(Argument & arg) = 0;
   virtual void visit(StringArgument & arg) = 0;
   virtual void visit(IntegerArgument & arg) = 0;
-};
-
-class Argument
-{
-protected:
-  std::string name_;
-
-public:
-  Argument(const std::string & name);
-  virtual ~Argument();
-  virtual std::string getName();
-  virtual void accept(ArgumentVisitor & visitor) = 0;
-
 };
 
 }

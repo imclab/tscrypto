@@ -10,7 +10,7 @@ Argument::Argument(const std::string & name)
 
 Argument::~Argument() {}
 
-std::string Argument::getName()
+const std::string & Argument::getName() const
 {
   return name_;
 }

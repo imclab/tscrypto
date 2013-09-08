@@ -15,7 +15,7 @@ void StringArgument::accept(ArgumentVisitor & visitor)
   visitor.visit(*this);
 }
 
-std::string StringArgument::value()
+const std::string & StringArgument::value() const
 {
   return value_;
 }
