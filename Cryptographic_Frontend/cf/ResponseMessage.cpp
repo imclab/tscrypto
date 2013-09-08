@@ -34,10 +34,9 @@ ResponseMessage::ResponseMessage()
 {
 }
 
-void ResponseMessage::setValue(std::string name, ArgumentPtr value)
+void ResponseMessage::addValue(ArgumentPtr value)
 {
-  values_[name] = std::move(value);
+    values_[value->getName()] = std::move(value);
 }
-
 
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;

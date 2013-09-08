@@ -24,7 +24,7 @@ cf::ResponseMessageStrategy cf::GetAttributeMethod::getStrategy() const
     reader.parse(message, json);
     ResponseMessagePtr response(new ResponseMessage());
 
-    response->setValue("attributeValue", ArgumentPtr(new StringArgument("attributeValue", json["attributeValue"].asString())) );
+    response->addValue(ArgumentPtr( new StringArgument("attributeValue", json["attributeValue"].asString()) ));
 
     return std::move(response);
   };

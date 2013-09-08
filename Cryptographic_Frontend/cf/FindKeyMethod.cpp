@@ -14,7 +14,6 @@ cf::FindKeyMethod::FindKeyMethod(long long handler)
 
 cf::ResponseMessageStrategy cf::FindKeyMethod::getStrategy() const
 {
-  // Una verdadera clausura, captura todo el objeto =)...
   return [](std::string const & message) -> ResponseMessagePtr {
     Json::Value json;
     Json::Reader reader;
@@ -22,9 +21,8 @@ cf::ResponseMessageStrategy cf::FindKeyMethod::getStrategy() const
     reader.parse(message, json);
     ResponseMessagePtr response(new ResponseMessage());
 
-    response->setValue("key", ArgumentPtr( new StringArgument("key", json["key"].asString()) ));
+    response->addValue(ArgumentPtr( new StringArgument("key", json["key"].asString()) ));
 
     return std::move(response);
   };
 }
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;

@@ -21,7 +21,7 @@ ResponseMessageStrategy SignMethod::getStrategy() const
 
     reader.parse(message, json);
     ResponseMessagePtr response(new ResponseMessage());
-    response->setValue("signedData", ArgumentPtr( new StringArgument("signedData", json["signedData"].asString())) );
+    response->addValue( ArgumentPtr( new StringArgument("signedData", json["signedData"].asString())) );
 
     return std::move(response);
   };

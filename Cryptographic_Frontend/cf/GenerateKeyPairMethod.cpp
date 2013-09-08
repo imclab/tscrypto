@@ -27,7 +27,7 @@ ResponseMessageStrategy GenerateKeyPairMethod::getStrategy() const
     reader.parse(message, json);
     ResponseMessagePtr response(new ResponseMessage());
 
-    response->setValue("handler", ArgumentPtr( new IntegerArgument("handler", json["handler"].asInt64())) );
+    response->addValue(ArgumentPtr( new IntegerArgument("handler", json["handler"].asInt64()) ));
 
     return std::move(response);
   };

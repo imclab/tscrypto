@@ -14,34 +14,34 @@
 
 namespace cf
 {
-
-class ResponseMessage;
-using ResponseMessagePtr = std::unique_ptr<ResponseMessage>;
-using ResponseMessageStrategy = std::function<ResponseMessagePtr(std::string const &)>;
-using ArgumentPtr = std::unique_ptr<IArgument>;
-
-class ResponseMessage
-{
-private:
-  std::map<std::string, ArgumentPtr> values_;
-
-public:
-  static ResponseMessagePtr responseMessageFactory(const std::string & message,
-      ResponseMessageStrategy strategy);
-
-  ResponseMessage();
-  ResponseMessage(ResponseMessage & rm) = delete;
-  ResponseMessage & operator=(ResponseMessage const & rm) = delete;
-
-  void setValue(std::string name, ArgumentPtr value);
-  
-  template <typename T> // Escondo la implementacion...
-  T getValue(const std::string & name) {
-    const ArgumentPtr & value = values_.at(name);
-    return Argument<T>::getValue(*value);
-  }
-};
-
+    
+    class ResponseMessage;
+    using ResponseMessagePtr = std::unique_ptr<ResponseMessage>;
+    using ResponseMessageStrategy = std::function<ResponseMessagePtr(std::string const &)>;
+    using ArgumentPtr = std::unique_ptr<IArgument>;
+    
+    class ResponseMessage
+    {
+    private:
+        std::map<std::string, ArgumentPtr> values_;
+        
+    public:
+        static ResponseMessagePtr responseMessageFactory(const std::string & message,
+                                                         ResponseMessageStrategy strategy);
+        
+        ResponseMessage();
+        ResponseMessage(ResponseMessage & rm) = delete;
+        ResponseMessage & operator=(ResponseMessage const & rm) = delete;
+        
+        void addValue(ArgumentPtr value);
+        
+        template <typename T> // Escondo la implementacion...
+        T getValue(const std::string & name) {
+            return Argument<T>::getValue(*values_.at(name));
+        }
+        
+    };
+    
 }
 
 #endif // RESPONSEMESSAGE_H
