@@ -34,7 +34,7 @@ namespace cf
         virtual ResponseMessagePtr parseResponse(const std::string & message) = 0;
         
     public:
-        void execute(Connection const & connection); // throw (ConnectionException);
+        Method & execute(Connection const & connection); // throw (ConnectionException);
         const ResponseMessage & getResponse();
         virtual ~Method() = default;
         

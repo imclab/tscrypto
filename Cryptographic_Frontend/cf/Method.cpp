@@ -15,9 +15,10 @@ void cf::Method::addArgument(cf::ArgumentPtr argument)
     message_.addArgument(std::move(argument));
 }
 
-void cf::Method::execute(Connection const & connection) // throw (ConnectionException)
+cf::Method & cf::Method::execute(Connection const & connection) // throw (ConnectionException)
 {
     response_ = connection.executeRpc(message_.toJson());
+    return *this;
 }
 
 const cf::ResponseMessage & cf::Method::getResponse() {
