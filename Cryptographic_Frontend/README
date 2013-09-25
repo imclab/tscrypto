@@ -2,3 +2,35 @@ Dependencias:
  - boost
  - rabbitmq-c
  - botan
+
+ 
+Ejemplo de estructura de los mensajes:
+ 
+ - Para ejecutar el RPC:
+ 
+ -- {"args":{"handler":123456789},"method":"FindKey"}
+ -- {"args":{"keySize":1024,"keyType":"RSA","publicExponent":"65537"},"method":"GenerateKeyPair"}
+ -- {"args":{"attribute":"id","handler":123456789},"method":"GetAttribute"}
+ -- {"args":{"handler":123456789,"mechanism":"RSA"},"method":"SignInit"}
+ -- {"args":{"data":"Datos a firmar."},"method":"Sign"}
+
+ - Que se espera recibir:
+ - Metodos necesarios en este minuto:
+ -- GenerateKeyPair:
+ --- {"returnCode":"OK","value":{"handler":8099259082351407777}}
+ 
+ -- SignInit:
+ --- {"returnCode":"OK"}
+ 
+ -- Sign:
+ --- {"returnCode":"OK","value":{"signedData":"bbT+/PTQTPMXNnDHGyfW7wQF9Sc47I1N/B51qCVQr3hGXXXFhIjoa1RDMH1eYFHpjAPXD8FoU7S6hFnfWpjEk9DdGGPkrkFnT5inp9T8imUtue2UzI5rWXnPr6KqApE9elprxBavzNTF0QXAKGDoz4McmbdKV05IN8aVyBxi0/M\u003d"}}
+ ---- OJO, los datos firmados estan formateados en base64
+ 
+ - Metodos para el futuro:
+ -- FindKey:
+ --- {"returnCode":"OK","value":{"key":"-----BEGIN PUBLIC KEY-----\n ... -----END PUBLIC KEY-----\n"}}
+ ---- OJO, la llave esta en formato PEM
+ 
+ -- GetAttribute:
+ --- {"returnCode":"OK","value":{"attributeValue": VALOR_DEL_ATRIBUTO}}
+ 

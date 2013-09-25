@@ -39,7 +39,7 @@ public:
     virtual ~Connection() = default;
     
     // Template method...
-    virtual std::string executeRpc(const std::string &message) const { // throw (ConnectionException)
+    std::string executeRpc(const std::string &message) const { // throw (ConnectionException)
         send(message);
         return receive();
     }
