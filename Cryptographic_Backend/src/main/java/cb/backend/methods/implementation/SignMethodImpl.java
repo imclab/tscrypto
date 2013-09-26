@@ -1,7 +1,8 @@
-package cb.backend.methods;
+package cb.backend.methods.implementation;
 
 import cb.backend.ResponseMessage;
 import cb.backend.Signer;
+import cb.backend.methods.SignMethod;
 import com.google.gson.Gson;
 
 import javax.xml.bind.DatatypeConverter;

@@ -1,9 +1,10 @@
-package cb.backend.methods;
+package cb.backend.methods.implementation;
 
 import cb.backend.KeyStorage;
 import cb.backend.MapKeyStorage;
 import cb.backend.ResponseMessage;
 import cb.backend.Signer;
+import cb.backend.methods.SignInitMethod;
 
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;

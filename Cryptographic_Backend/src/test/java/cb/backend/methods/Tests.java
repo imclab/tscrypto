@@ -1,6 +1,7 @@
 package cb.backend.methods;
 
 import cb.backend.*;
+import cb.backend.methods.implementation.SimpleSignMethodFactory;
 import cb.dispatcher.*;
 import com.google.gson.Gson;
 
@@ -17,7 +18,7 @@ public class Tests {
 
         MethodsFactory mf = SimpleSignMethodFactory.getInstance();
 
-        method = new GenerateKeyPairMethodImpl(new GenerateKeyPairMethod.Args("RSA", 1024, "65537"));
+        method = mf.makeGenerateKeyPairMethod(new GenerateKeyPairMethod.Args("RSA", 1024, "65537"));
         rm = method.execute();
         System.out.println(gson.toJson(rm));
         if (!rm.getReturnCode().equals("OK"))

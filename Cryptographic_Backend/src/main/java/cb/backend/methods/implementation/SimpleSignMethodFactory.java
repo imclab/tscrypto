@@ -1,4 +1,6 @@
-package cb.backend.methods;
+package cb.backend.methods.implementation;
+
+import cb.backend.methods.*;
 
 public class SimpleSignMethodFactory implements MethodsFactory {
 

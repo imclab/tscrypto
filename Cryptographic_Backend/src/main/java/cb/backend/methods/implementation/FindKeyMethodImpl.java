@@ -1,8 +1,9 @@
-package cb.backend.methods;
+package cb.backend.methods.implementation;
 
 import cb.backend.KeyStorage;
 import cb.backend.MapKeyStorage;
 import cb.backend.ResponseMessage;
+import cb.backend.methods.FindKeyMethod;
 import com.google.gson.Gson;
 
 import javax.xml.bind.DatatypeConverter;

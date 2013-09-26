@@ -1,6 +1,7 @@
-package cb.backend.methods;
+package cb.backend.methods.implementation;
 
 import cb.backend.ResponseMessage;
+import cb.backend.methods.GenerateKeyPairMethod;
 import com.google.gson.Gson;
 
 import java.math.BigInteger;

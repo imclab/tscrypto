@@ -4,7 +4,7 @@ import java.io.IOException;
 
 import cb.backend.ResponseMessage;
 
-import cb.backend.methods.SimpleSignMethodFactory;
+import cb.backend.methods.implementation.SimpleSignMethodFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.rabbitmq.client.AMQP.BasicProperties;
