@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import cb.backend.ResponseMessage;
 
+import cb.backend.methods.SimpleSignMethodFactory;
 import com.google.gson.Gson;
 import com.google.gson.JsonSyntaxException;
 import com.rabbitmq.client.AMQP.BasicProperties;
@@ -15,13 +16,7 @@ import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 
 public class Backend {
-	
-	/**
-	 * @param args
-	 * @throws InterruptedException 
-	 * @throws ConsumerCancelledException 
-	 * @throws ShutdownSignalException 
-	 */
+
 	public static void main(String[] args) 
 			throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
 		String queueName = "";
@@ -72,7 +67,9 @@ public class Backend {
 		}
 		
 		System.err.println("Esperando solicitudes...");
-		while (true) {
+
+        //noinspection InfiniteLoopStatement
+        while (true) {
 			QueueingConsumer.Delivery delivery = consumer.nextDelivery();
 			BasicProperties props = delivery.getProperties();
 			BasicProperties replyProps = new BasicProperties()
@@ -92,8 +89,8 @@ public class Backend {
 				continue;
 			}
 			System.err.println("Ejecutando " + mmessage.getMethod() + "...");
-			MethodDispatcher dispatcher = new MethodDispatcher(mmessage);
-			String response = dispatcher.dipatch();
+			MethodDispatcher dispatcher = new MethodDispatcher(mmessage, SimpleSignMethodFactory.getInstance());
+			String response = dispatcher.dispatch();
 			try {
 				System.err.println("Enviando " + response + "...");
 				channel.basicPublish("", props.getReplyTo(), replyProps, response.getBytes());
