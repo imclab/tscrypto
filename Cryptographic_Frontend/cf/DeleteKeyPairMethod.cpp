@@ -1,15 +1,14 @@
-#include "SignInitMethod.hpp"
+#include "DeleteKeyPairMethod.hpp"
 #include "ResponseMessage.hpp"
 #include "Argument.hpp"
 
-cf::SignInitMethod::SignInitMethod(std::string mechanism, long long privateKeyHandler)
-  : Method("SignInit")
+cf::DeleteKeyPairMethod::DeleteKeyPairMethod(long long handler)
+  : Method("DeleteKeyPair")
 {
-  addArgument(ArgumentPtr(new StringArgument("mechanism", mechanism)));
-  addArgument(ArgumentPtr(new IntegerArgument("handler", privateKeyHandler)));
+  addArgument(ArgumentPtr(new IntegerArgument("handler", handler)));
 }
 
-cf::ResponseMessagePtr cf::SignInitMethod::parseResponse(const std::string & message) {
+cf::ResponseMessagePtr cf::DeleteKeyPairMethod::parseResponse(const std::string & message) {
     return ResponseMessagePtr(new ResponseMessage());
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;

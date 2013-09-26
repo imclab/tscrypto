@@ -14,10 +14,10 @@ public class MethodDispatcher {
     public MethodDispatcher(MethodMessage methodMsg, MethodsFactory methodsFactory) {
         Gson gson = new Gson();
         switch (methodMsg.getMethod()) {
-            case "DeleteKeyMethod":
+            case "DeleteKeyPair":
             {
-                DeleteKeyMethod.Args args;
-                args = gson.fromJson(methodMsg.getArgs(), DeleteKeyMethod.Args.class);
+                DeleteKeyPairMethod.Args args;
+                args = gson.fromJson(methodMsg.getArgs(), DeleteKeyPairMethod.Args.class);
                 method = methodsFactory.makeDeleteKeyMethod(args);
 
                 break;

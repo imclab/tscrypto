@@ -7,6 +7,7 @@
 
 #include "cf/Method.hpp"
 #include "cf/GenerateKeyPairMethod.hpp"
+#include "cf/DeleteKeyPairMethod.hpp"
 #include "cf/SignInitMethod.hpp"
 #include "cf/RabbitConnection.hpp"
 #include "cf/ResponseMessage.hpp"
@@ -75,6 +76,31 @@ Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify, Slo
   , notify_(notify), currentSlot_(currentSlot)
 {
 
+}
+
+Session::~Session() {  
+  for (auto& objectPair: objects_) {
+    SessionObjectPtr& object = objectPair.second;
+    
+    CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
+    const CK_ATTRIBUTE * handlerAttribute = object->findAttribute(&tmpl);
+    if (handlerAttribute != nullptr) {
+      long long handler = *(long long*)handlerAttribute->pValue;
+      cf::ConnectionPtr connection = createConnection();
+      cf::DeleteKeyPairMethod method(handler);
+      
+      try {
+        method.execute(*connection).getResponse();
+      } 
+      catch (std::runtime_error& e) {
+        // throw TcbError("Session::~Session", e.what(), CKR_GENERAL_ERROR);
+      }
+      
+    }
+    
+  }
+  
+  
 }
 
 cf::ConnectionPtr Session::createConnection()
@@ -212,6 +238,21 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
 void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
   auto it = objects_.find(hObject);
   if (it != objects_.end()) {
+    
+    // Verifico que el objeto no sea una llave, y si lo es, la elimino del TCB.
+    CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
+    const CK_ATTRIBUTE * handlerAttribute = it->second->findAttribute(&tmpl);
+    if (handlerAttribute != nullptr) {
+      long long handler = *(long long*)handlerAttribute->pValue;
+      cf::ConnectionPtr connection = createConnection();
+      cf::DeleteKeyPairMethod method(handler);
+      try {
+        method.execute(*connection).getResponse();
+      } catch (std::exception& e) {
+        throw TcbError("Session::destroyObject", e.what(), CKR_GENERAL_ERROR);
+      }
+    }
+    
     objects_.erase(it);
   } else {
     throw TcbError("Session::destroyObject", "Objeto no encontrado.", CKR_OBJECT_HANDLE_INVALID);
@@ -700,7 +741,7 @@ void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
     signInitialized_ = true;
   }
   catch (TcbError &e) {
-    throw e;
+    throw;
   }
   catch (std::exception &e) {
     throw TcbError("Session::signInit", e.what(), CKR_GENERAL_ERROR);

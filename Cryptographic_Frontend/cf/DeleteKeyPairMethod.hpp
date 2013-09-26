@@ -1,20 +1,20 @@
-#ifndef SIGNINITMETHOD_H
-#define SIGNINITMETHOD_H
+#ifndef DELETEKEYPAIRMETHOD_H
+#define DELETEKEYPAIRMETHOD_H
 
 #include "Method.hpp"
 
 namespace cf
 {
 
-class SignInitMethod : public Method
+class DeleteKeyPairMethod : public Method
 {
 public:
-    virtual ~SignInitMethod() = default;
-    SignInitMethod(std::string mechanism, long long privateKeyHandler);
+    virtual ~DeleteKeyPairMethod() = default;
+    DeleteKeyPairMethod(long long handler);
     virtual ResponseMessagePtr parseResponse(const std::string & message) override;
 };
 
 }
 
-#endif // SIGNINITMETHOD_H
+#endif // DELETEKEYPAIRMETHOD_H
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on;

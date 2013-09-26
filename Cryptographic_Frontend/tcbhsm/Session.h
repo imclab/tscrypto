@@ -31,6 +31,7 @@ class Session
 {
 public:
   Session(CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify, Slot & currentSlot);
+  ~Session();
 
   CK_STATE getState() const;
   CK_FLAGS getFlags() const;

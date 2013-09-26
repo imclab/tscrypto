@@ -40,7 +40,7 @@ public class Tests {
         if (!rm.getReturnCode().equals("OK"))
             return;
 
-        method = mf.makeDeleteKeyMethod(new DeleteKeyMethod.Args(handler));
+        method = mf.makeDeleteKeyMethod(new DeleteKeyPairMethod.Args(handler));
         rm = method.execute();
         System.out.println(gson.toJson(rm));
     }

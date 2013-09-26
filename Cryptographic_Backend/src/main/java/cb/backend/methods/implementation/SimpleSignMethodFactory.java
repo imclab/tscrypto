@@ -14,8 +14,8 @@ public class SimpleSignMethodFactory implements MethodsFactory {
 
     }
     @Override
-    public DeleteKeyMethod makeDeleteKeyMethod(DeleteKeyMethod.Args args) {
-        return new DeleteKeyMethodImpl(args);
+    public DeleteKeyPairMethod makeDeleteKeyMethod(DeleteKeyPairMethod.Args args) {
+        return new DeleteKeyPairMethodImpl(args);
     }
 
     @Override
