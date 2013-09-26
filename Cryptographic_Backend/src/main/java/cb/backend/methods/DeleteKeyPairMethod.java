@@ -2,7 +2,7 @@ package cb.backend.methods;
 
 import cb.backend.Method;
 
-public abstract class DeleteKeyMethod implements Method {
+public abstract class DeleteKeyPairMethod implements Method {
     public static class Args {
         final long handler;
 
@@ -13,7 +13,7 @@ public abstract class DeleteKeyMethod implements Method {
 
     protected final long handler;
 
-    public DeleteKeyMethod(Args args) {
+    public DeleteKeyPairMethod(Args args) {
         this.handler = args.handler;
     }
 

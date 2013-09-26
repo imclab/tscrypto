@@ -3,10 +3,10 @@ package cb.backend.methods.implementation;
 import cb.backend.KeyStorage;
 import cb.backend.MapKeyStorage;
 import cb.backend.ResponseMessage;
-import cb.backend.methods.DeleteKeyMethod;
+import cb.backend.methods.DeleteKeyPairMethod;
 
-class DeleteKeyMethodImpl extends DeleteKeyMethod {
-    public DeleteKeyMethodImpl(Args args) {
+class DeleteKeyPairMethodImpl extends DeleteKeyPairMethod {
+    public DeleteKeyPairMethodImpl(Args args) {
         super(args);
     }
 
