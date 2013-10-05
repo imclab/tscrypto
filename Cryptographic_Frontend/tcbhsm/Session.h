@@ -17,6 +17,7 @@
 #include <botan/auto_rng.h>
 
 #include <map>
+#include <set>
 #include <memory>
 #include <utility>
 
@@ -79,6 +80,10 @@ private:
   const CK_NOTIFY notify_;
   Slot & currentSlot_;
 
+  
+  // Almacenaje de llaves
+  std::set<std::string> keySet;
+  
   // Busqueda de Objetos
   bool findInitialized = false;
   std::vector<CK_OBJECT_HANDLE> foundObjects;

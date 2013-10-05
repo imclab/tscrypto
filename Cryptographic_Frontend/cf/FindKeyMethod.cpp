@@ -8,10 +8,10 @@
 
 using namespace cf;
 
-FindKeyMethod::FindKeyMethod(long long handler)
+FindKeyMethod::FindKeyMethod(std::string handler)
   : Method("FindKey")
 {
-  addArgument(ArgumentPtr(new IntegerArgument("handler", handler)));
+  addArgument(ArgumentPtr(new StringArgument("handler", handler)));
 }
 
 ResponseMessagePtr FindKeyMethod::parseResponse(const std::string & message)

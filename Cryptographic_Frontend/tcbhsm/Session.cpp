@@ -75,7 +75,6 @@ Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify, Slo
   : actualObjectHandle_(1), refCount_(1), flags_(flags), application_(pApplication)
   , notify_(notify), currentSlot_(currentSlot)
 {
-
 }
 
 Session::~Session() {  
@@ -85,7 +84,7 @@ Session::~Session() {
     CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
     const CK_ATTRIBUTE * handlerAttribute = object->findAttribute(&tmpl);
     if (handlerAttribute != nullptr) {
-      long long handler = *(long long*)handlerAttribute->pValue;
+      std::string handler = *(std::string *)handlerAttribute->pValue;
       cf::ConnectionPtr connection = createConnection();
       cf::DeleteKeyPairMethod method(handler);
       
@@ -243,7 +242,7 @@ void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
     CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
     const CK_ATTRIBUTE * handlerAttribute = it->second->findAttribute(&tmpl);
     if (handlerAttribute != nullptr) {
-      long long handler = *(long long*)handlerAttribute->pValue;
+      std::string handler = *(std::string *)handlerAttribute->pValue;
       cf::ConnectionPtr connection = createConnection();
       cf::DeleteKeyPairMethod method(handler);
       try {
@@ -251,6 +250,7 @@ void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
       } catch (std::exception& e) {
         throw TcbError("Session::destroyObject", e.what(), CKR_GENERAL_ERROR);
       }
+      keySet.erase(handler);
     }
     
     objects_.erase(it);
@@ -362,7 +362,7 @@ namespace {
   CK_OBJECT_HANDLE createPublicKey(Session &session, 
                                    CK_ATTRIBUTE_PTR pPublicKeyTemplate, 
                                    CK_ULONG ulPublicKeyAttributeCount,
-                                   long long rabbitHandler) {
+                                   std::string const * rabbitHandler) {
     // NOTE: Esto está mas o menos copiado de SoftHSM...
     CK_OBJECT_CLASS oClass = CKO_PUBLIC_KEY; 
     CK_KEY_TYPE keyType = CKK_RSA;
@@ -396,7 +396,7 @@ namespace {
     // i.e. si está ocupado se ocupa rabbit :P.
     CK_ATTRIBUTE aValue = { 
       .type=CKA_VENDOR_DEFINED, 
-      .pValue=&rabbitHandler, 
+      .pValue=(void*)rabbitHandler, 
       .ulValueLen=sizeof(rabbitHandler) 
     };
     
@@ -478,7 +478,7 @@ namespace {
     CK_OBJECT_HANDLE createPrivateKey(Session &session, 
                                       CK_ATTRIBUTE_PTR pPrivateKeyTemplate, 
                                    CK_ULONG ulPrivateKeyAttributeCount,
-                                   long long rabbitHandler) {
+                                   std::string const * rabbitHandler) {
     CK_OBJECT_CLASS oClass = CKO_PRIVATE_KEY;
     CK_KEY_TYPE keyType = CKK_RSA;
     CK_MECHANISM_TYPE mechType = CKM_RSA_PKCS_KEY_PAIR_GEN;
@@ -518,7 +518,7 @@ namespace {
     // i.e. si está ocupado se ocupa rabbit :P.
     CK_ATTRIBUTE aValue = { 
       .type=CKA_VENDOR_DEFINED, 
-      .pValue=&rabbitHandler, 
+      .pValue=(void*)rabbitHandler, 
       .ulValueLen=sizeof(rabbitHandler) 
     };
     
@@ -675,8 +675,9 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
       try {
         cf::ConnectionPtr connection = createConnection();
         
-        cf::GenerateKeyPairMethod method("RSA", modulusBits, "65537"); // Unico metodo aceptado :B...       
-        long long handler = method.execute(*connection).getResponse().getValue<long long>("handler");
+        cf::GenerateKeyPairMethod method("RSA", modulusBits, exponent); // Unico metodo aceptado :B...       
+        std::string uuidHandler = method.execute(*connection).getResponse().getValue<std::string>("handler");
+        std::string const * handler = &(*(keySet.insert(uuidHandler).first));
         
         CK_OBJECT_HANDLE publicKeyHandle = createPublicKey(*this, pPublicKeyTemplate, ulPublicKeyAttributeCount, handler);
         CK_OBJECT_HANDLE privateKeyHandle = createPrivateKey(*this, pPrivateKeyTemplate, ulPrivateKeyAttributeCount, handler);
@@ -710,15 +711,15 @@ void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
       throw TcbError("Session::signInit", "El object handle no contiene ninguna llave", CKR_ARGUMENTS_BAD);
     }
     
-    long long handler = *(long long*)handlerAttribute->pValue;
+    std::string handler = *(std::string *)handlerAttribute->pValue;
     
     std::string mechanism;
     switch(pMechanism->mechanism) {
       case CKM_SHA1_RSA_PKCS:
-        mechanism = "SHA1withRSA";
+        mechanism = "Sha1WithRSA";
         break;
       case CKM_RSA_PKCS:
-        mechanism = "RSA";
+        mechanism = "NONEWithRSA";
         break;
       case CKM_RSA_X_509:
       case CKM_MD5_RSA_PKCS:

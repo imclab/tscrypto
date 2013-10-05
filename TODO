@@ -1,0 +1,3 @@
+- Hacer que el SD cree un KeyPair y que la meta a las distintas colas.
+- Hacer que el Node lea de una nueva cola, para pasarle las llaves.
+- Implementar GenerateKeyPair, SignInit y Sign.

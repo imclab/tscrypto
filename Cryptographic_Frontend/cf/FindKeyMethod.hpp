@@ -9,7 +9,7 @@ class FindKeyMethod : public Method
 public:
     virtual ~FindKeyMethod() = default;
     virtual ResponseMessagePtr parseResponse(const std::string & message) override;
-    FindKeyMethod(long long handler);
+    FindKeyMethod(std::string handler);
 };
 
 }

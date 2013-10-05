@@ -2,6 +2,7 @@
 #define DELETEKEYPAIRMETHOD_H
 
 #include "Method.hpp"
+#include <string>
 
 namespace cf
 {
@@ -10,7 +11,7 @@ class DeleteKeyPairMethod : public Method
 {
 public:
     virtual ~DeleteKeyPairMethod() = default;
-    DeleteKeyPairMethod(long long handler);
+    DeleteKeyPairMethod(std::string handler);
     virtual ResponseMessagePtr parseResponse(const std::string & message) override;
 };
 

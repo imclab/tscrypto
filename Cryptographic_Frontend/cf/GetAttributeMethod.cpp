@@ -8,11 +8,11 @@
 
 #include <json/json.h>
 
-cf::GetAttributeMethod::GetAttributeMethod(std::string attribute, int handler)
+cf::GetAttributeMethod::GetAttributeMethod(std::string attribute, std::string handler)
   : Method("GetAttribute")
 {
   addArgument(ArgumentPtr(new StringArgument("attribute", attribute)));
-  addArgument(ArgumentPtr(new IntegerArgument("handler", handler)));
+  addArgument(ArgumentPtr(new StringArgument("handler", handler)));
 }
 
 cf::ResponseMessagePtr cf::GetAttributeMethod::parseResponse(const std::string & message) {

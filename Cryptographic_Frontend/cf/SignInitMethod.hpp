@@ -10,7 +10,7 @@ class SignInitMethod : public Method
 {
 public:
     virtual ~SignInitMethod() = default;
-    SignInitMethod(std::string mechanism, long long privateKeyHandler);
+    SignInitMethod(std::string mechanism, std::string privateKeyHandler);
     virtual ResponseMessagePtr parseResponse(const std::string & message) override;
 };
 

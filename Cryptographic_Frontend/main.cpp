@@ -32,7 +32,7 @@ public:
 int main()
 {
     
-    long long handler = 123456789;
+    std::string handler = "123456789";
     DumpConnection connection(std::cout);
     
     cf::FindKeyMethod fk(handler);

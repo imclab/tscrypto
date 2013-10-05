@@ -13,7 +13,7 @@ class GetAttributeMethod : public Method
 {
 public:
     virtual ~GetAttributeMethod() = default;
-    GetAttributeMethod(std::string attribute, int handler);
+    GetAttributeMethod(std::string attribute, std::string handler);
     virtual ResponseMessagePtr parseResponse(const std::string & message) override;
 
 };
