@@ -14,7 +14,7 @@ public class ResponseMessage {
 	}
 
 	private final String returnCode;
-	private final JsonElement value;
+	private final Object value;
 	
 	public static ResponseMessage ErrorMessage(String rc) {
 		return new ResponseMessage(rc, null);
@@ -24,26 +24,21 @@ public class ResponseMessage {
         return new ResponseMessage("OK", null);
     }
 
-	public static ResponseMessage OKMessage(String v) {
-		return new ResponseMessage("OK", v);
-	}
-
-    public static ResponseMessage OKMessageWithObject(Object v) {
-        Gson gson = new Gson();
-        return new ResponseMessage("OK", gson.toJson(v));
+    public static ResponseMessage OKMessage(Object v) {
+        return new ResponseMessage("OK", v);
     }
 	
-	private ResponseMessage(String rc, String v) {
-		JsonParser parser = new JsonParser();
+	private ResponseMessage(String rc, Object v) {
 		returnCode = rc;
-		value = v == null? null : parser.parse(v);
+		value = v;
 	}
 	public String getReturnCode() {
 		return returnCode;
 	}
 	
 	public String getValue() {
-		return value.toString();
+        Gson gson = new Gson();
+		return gson.toJson(value);
 	}
 	
 }

@@ -15,6 +15,6 @@ class DeleteKeyPairMethodImpl extends DeleteKeyPairMethod {
     @Override
     public ResponseMessage execute() {
         keyManager.removeKey(this.handler);
-        return ResponseMessage.OKMessage(null);
+        return ResponseMessage.OKMessage();
     }
 }

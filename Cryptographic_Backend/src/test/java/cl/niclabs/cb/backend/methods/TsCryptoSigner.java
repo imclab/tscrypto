@@ -75,8 +75,7 @@ public class TsCryptoSigner {
                 + " } "
                 + "}";
 
-        MethodDispatcher md = new MethodDispatcher(s, new TsCryptoMethodFactory(connection, config));
-        String ret = md.dispatch();
+        String ret = MethodDispatcher.dispatch(s, new TsCryptoMethodFactory(connection, config));
         System.out.println(ret);
     }
 }

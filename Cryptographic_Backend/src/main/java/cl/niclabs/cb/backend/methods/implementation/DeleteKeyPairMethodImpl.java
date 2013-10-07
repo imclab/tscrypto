@@ -13,7 +13,7 @@ class DeleteKeyPairMethodImpl extends DeleteKeyPairMethod {
         KeyStorage keyStorage = MapKeyStorage.getInstance();
         try {
             keyStorage.deleteKeyPair(handler);
-            return ResponseMessage.OKMessage(null);
+            return ResponseMessage.OKMessage();
         } catch (Exception e) {
             return ResponseMessage.ErrorMessage(e.getMessage());
         }

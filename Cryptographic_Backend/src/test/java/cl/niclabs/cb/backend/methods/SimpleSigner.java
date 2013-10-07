@@ -6,6 +6,7 @@ import cl.niclabs.cb.dispatcher.*;
 import com.google.gson.Gson;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -54,6 +55,7 @@ public class SimpleSigner {
         Assert.assertEquals(rm.getReturnCode(), "OK");
     }
 
+    @Ignore
     @Test
     public void methodDispatcherTest() {
         String s = "{ \"method\":\"GenerateKeyPair\", "
@@ -66,8 +68,7 @@ public class SimpleSigner {
                 + " } "
                 + "}";
 
-        MethodDispatcher md = new MethodDispatcher(s, SimpleSignMethodFactory.getInstance());
-        String ret = md.dispatch();
+        String ret = MethodDispatcher.dispatch(s, SimpleSignMethodFactory.getInstance());
         System.out.println(ret);
     }
 }

@@ -17,7 +17,7 @@ class SignMethodImpl extends SignMethod {
         try {
             byte[] signature = signer.sign(this.data);
             ReturnValue rv = new ReturnValue(DatatypeConverter.printBase64Binary(signature));
-            return ResponseMessage.OKMessageWithObject(rv);
+            return ResponseMessage.OKMessage(rv);
 
         } catch (Exception e) {
             return ResponseMessage.ErrorMessage(e.getLocalizedMessage());

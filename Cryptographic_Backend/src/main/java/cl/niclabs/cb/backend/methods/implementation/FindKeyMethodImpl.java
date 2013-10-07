@@ -2,7 +2,6 @@ package cl.niclabs.cb.backend.methods.implementation;
 
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.FindKeyMethod;
-import com.google.gson.Gson;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.PublicKey;
@@ -14,7 +13,6 @@ class FindKeyMethodImpl extends FindKeyMethod {
 
     @Override
     public ResponseMessage execute() {
-        Gson gson = new Gson();
         KeyStorage ks = MapKeyStorage.getInstance();
         PublicKey pk;
         try {
@@ -35,7 +33,6 @@ class FindKeyMethodImpl extends FindKeyMethod {
             }
         }
         key += "-----END PUBLIC KEY-----\n";
-        ReturnValue rv = new ReturnValue(key);
-        return ResponseMessage.OKMessage(gson.toJson(rv));
+        return ResponseMessage.OKMessage(new ReturnValue(key));
     }
 }

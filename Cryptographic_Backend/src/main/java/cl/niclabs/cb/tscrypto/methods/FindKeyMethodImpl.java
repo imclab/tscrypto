@@ -37,6 +37,6 @@ class FindKeyMethodImpl extends FindKeyMethod {
         }
         key += "-----END PUBLIC KEY-----\n";
 
-        return ResponseMessage.OKMessageWithObject(new ReturnValue(key));
+        return ResponseMessage.OKMessage(new ReturnValue(key));
     }
 }

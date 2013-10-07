@@ -10,16 +10,10 @@ import com.google.gson.GsonBuilder;
 
 public class MethodDispatcher {
 
-    private final Method method;
-
-    public MethodDispatcher(String methodJson, MethodFactory factory) {
+    public static String dispatch(String json, MethodFactory factory) {
         Gson gson = MethodMessageParser.createGson(factory);
-        method = gson.fromJson(methodJson, Method.class);
+        Method method = gson.fromJson(json, Method.class);
+        return gson.toJson(method.execute());
     }
 
-    public String dispatch() {
-        Gson gson = new Gson();
-        ResponseMessage rm = method.execute();
-        return gson.toJson(rm);
-    }
 }

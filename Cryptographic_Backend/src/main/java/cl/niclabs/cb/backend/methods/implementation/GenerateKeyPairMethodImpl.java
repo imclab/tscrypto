@@ -2,7 +2,6 @@ package cl.niclabs.cb.backend.methods.implementation;
 
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.GenerateKeyPairMethod;
-import com.google.gson.Gson;
 
 import java.math.BigInteger;
 import java.security.*;
@@ -19,7 +18,6 @@ class GenerateKeyPairMethodImpl extends GenerateKeyPairMethod {
 
     @Override
     public ResponseMessage execute() {
-      Gson gson = new Gson();
 
       try {
         KeyPairGenerator kpg = KeyPairGenerator.getInstance(keyType);
@@ -32,10 +30,7 @@ class GenerateKeyPairMethodImpl extends GenerateKeyPairMethod {
         KeyPair pair = kpg.generateKeyPair();
         String handler = ks.storeKeyPair(keyType, keySize, pair);
 
-        // Defino el return value, para ser luego serializado en json.
-        ReturnValue rv = new ReturnValue(handler);
-
-        return ResponseMessage.OKMessage(gson.toJson(rv));
+        return ResponseMessage.OKMessage(new ReturnValue(handler));
       } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
         return ResponseMessage.ErrorMessage(e.getLocalizedMessage());
       }

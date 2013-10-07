@@ -22,7 +22,7 @@ class SignInitMethodImpl extends SignInitMethod {
             Signer signer = Signer.getInstance();
             try {
                 signer.init(mechanism, pk);
-                return ResponseMessage.OKMessage(null);
+                return ResponseMessage.OKMessage();
             }
             catch (InvalidKeyException | NoSuchAlgorithmException | NoSuchPaddingException e) {
                 return ResponseMessage.ErrorMessage(e.getLocalizedMessage());

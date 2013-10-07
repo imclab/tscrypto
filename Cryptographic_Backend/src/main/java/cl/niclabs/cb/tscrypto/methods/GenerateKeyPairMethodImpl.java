@@ -27,7 +27,7 @@ public class GenerateKeyPairMethodImpl extends GenerateKeyPairMethod {
             String handler = keyInfo.getKeyMetaInfo().getAlias();
             keyDispatcher.dispatch(keyInfo);
             keyManager.addKey(keyInfo);
-            return ResponseMessage.OKMessageWithObject(new ReturnValue(handler));
+            return ResponseMessage.OKMessage(new ReturnValue(handler));
         } catch (IOException e) {
             return ResponseMessage.ErrorMessage(e.getMessage());
         }

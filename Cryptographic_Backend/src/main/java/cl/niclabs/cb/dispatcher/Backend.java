@@ -51,8 +51,8 @@ public class Backend {
 
             String message = new String(delivery.getBody());
             System.out.println(message);
-            MethodDispatcher dispatcher = new MethodDispatcher(message, methodFactory);
-            String response = dispatcher.dispatch();
+
+            String response = MethodDispatcher.dispatch(message, methodFactory);
             try {
                 System.out.println("Enviando " + response + "...");
                 channel.basicPublish("", props.getReplyTo(), replyProps, response.getBytes());

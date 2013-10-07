@@ -47,8 +47,9 @@ public class TsCryptoBackend {
 
             String message = new String(delivery.getBody());
             System.err.println(message);
-            MethodDispatcher dispatcher = new MethodDispatcher(message, methodFactory);
-            String response = dispatcher.dispatch();
+
+            String response = MethodDispatcher.dispatch(message, methodFactory);
+
             try {
                 System.err.println("Enviando " + response + "...");
                 channel.basicPublish("", props.getReplyTo(), replyProps, response.getBytes());
