@@ -10,7 +10,7 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
 class GenerateKeyPairMethodImpl extends GenerateKeyPairMethod {
-    protected final KeyStorage ks;
+    private final KeyStorage ks;
 
     public GenerateKeyPairMethodImpl(Args args) {
         super(args);

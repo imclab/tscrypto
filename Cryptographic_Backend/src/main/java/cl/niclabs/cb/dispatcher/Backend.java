@@ -2,12 +2,9 @@ package cl.niclabs.cb.dispatcher;
 
 import java.io.IOException;
 
-import cl.niclabs.cb.backend.ResponseMessage;
-
 import cl.niclabs.cb.backend.methods.MethodFactory;
 import cl.niclabs.cb.backend.methods.implementation.SimpleSignMethodFactory;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
+
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
@@ -20,8 +17,6 @@ public class Backend {
 
     private static void run(String queueName, String hostName, MethodFactory methodFactory)
             throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
-
-        Gson gson = new Gson();
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(hostName);
         Connection connection;
@@ -37,13 +32,13 @@ public class Backend {
             channel.basicConsume(queueName, false, consumer);
         }
         catch (IOException e) {
-            System.err.println("No se puede conectar al servidor...");
-            System.err.println(e.getLocalizedMessage());
+            System.out.println("No se puede conectar al servidor...");
+            System.out.println(e.getLocalizedMessage());
             System.exit(1);
-            return; // Mañas de java :).
+            return;
         }
 
-        System.err.println("Esperando solicitudes...");
+        System.out.println("Esperando solicitudes...");
 
         //noinspection InfiniteLoopStatement
         while (true) {
@@ -55,27 +50,17 @@ public class Backend {
                     .build();
 
             String message = new String(delivery.getBody());
-            System.err.println(message);
-            MethodMessage mmessage;
-            try {
-                mmessage = gson.fromJson(message, MethodMessage.class);
-            }
-            catch (JsonSyntaxException e) {
-                ResponseMessage.ErrorMessage(e.getLocalizedMessage());
-                System.err.println(e.getLocalizedMessage());
-                continue;
-            }
-            System.err.println("Ejecutando " + mmessage.getMethod() + "...");
-            MethodDispatcher dispatcher = new MethodDispatcher(mmessage, methodFactory);
+            System.out.println(message);
+            MethodDispatcher dispatcher = new MethodDispatcher(message, methodFactory);
             String response = dispatcher.dispatch();
             try {
-                System.err.println("Enviando " + response + "...");
+                System.out.println("Enviando " + response + "...");
                 channel.basicPublish("", props.getReplyTo(), replyProps, response.getBytes());
                 channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
             }
             catch (Exception e) {
-                System.err.println("No se pudo enviar mensaje al servidor...");
-                System.err.println(e.getLocalizedMessage());
+                System.out.println("No se pudo enviar mensaje al servidor...");
+                System.out.println(e.getLocalizedMessage());
             }
         }
     }

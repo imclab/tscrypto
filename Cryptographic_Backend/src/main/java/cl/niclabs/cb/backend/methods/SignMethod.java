@@ -21,7 +21,7 @@ public abstract class SignMethod implements Method {
       }
   }
 
-  protected byte[] data;
+  protected final byte[] data;
 
   public SignMethod(Args args) {
     data = DatatypeConverter.parseBase64Binary(args.data);

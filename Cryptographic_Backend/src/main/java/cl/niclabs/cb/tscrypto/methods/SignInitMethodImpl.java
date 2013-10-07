@@ -4,7 +4,7 @@ import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.SignInitMethod;
 
 class SignInitMethodImpl extends SignInitMethod {
-    private Signer signer;
+    private final Signer signer;
 
     public SignInitMethodImpl(Args args, Signer signer) {
         super(args);

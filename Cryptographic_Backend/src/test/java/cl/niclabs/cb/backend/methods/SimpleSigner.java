@@ -15,7 +15,7 @@ import javax.xml.bind.DatatypeConverter;
 
 @RunWith(JUnit4.class)
 public class SimpleSigner {
-    Gson gson;
+    private Gson gson;
 
     @Before
     public void setUp() throws Exception {
@@ -66,9 +66,7 @@ public class SimpleSigner {
                 + " } "
                 + "}";
 
-        MethodMessage mm = gson.fromJson(s, MethodMessage.class);
-        System.out.println(mm.getArgs());
-        MethodDispatcher md = new MethodDispatcher(mm, SimpleSignMethodFactory.getInstance());
+        MethodDispatcher md = new MethodDispatcher(s, SimpleSignMethodFactory.getInstance());
         String ret = md.dispatch();
         System.out.println(ret);
     }

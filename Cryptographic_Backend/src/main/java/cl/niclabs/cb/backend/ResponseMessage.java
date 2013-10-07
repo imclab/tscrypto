@@ -13,8 +13,8 @@ public class ResponseMessage {
 				+ "]";
 	}
 
-	private String returnCode;
-	private JsonElement value;
+	private final String returnCode;
+	private final JsonElement value;
 	
 	public static ResponseMessage ErrorMessage(String rc) {
 		return new ResponseMessage(rc, null);

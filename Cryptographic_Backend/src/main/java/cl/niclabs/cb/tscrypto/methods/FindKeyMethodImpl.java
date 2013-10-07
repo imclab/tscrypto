@@ -8,7 +8,7 @@ import javax.xml.bind.DatatypeConverter;
 import java.security.PublicKey;
 
 class FindKeyMethodImpl extends FindKeyMethod {
-    KeyManager keyManager;
+    private final KeyManager keyManager;
 
     public FindKeyMethodImpl(Args args, KeyManager keyManager) {
         super(args);

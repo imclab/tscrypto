@@ -16,7 +16,7 @@ import javax.xml.bind.DatatypeConverter;
 public class MapKeyStorage implements KeyStorage {
 
     final static private KeyStorage instance = new MapKeyStorage();
-    HashMap<String, String[]> store = new HashMap<>();
+    private final HashMap<String, String[]> store = new HashMap<>();
 
     public static KeyStorage getInstance() {
         return instance;
@@ -52,8 +52,7 @@ public class MapKeyStorage implements KeyStorage {
     }
 
     @Override
-    public PrivateKey getPrivateKey(String _handler) {
-        String handler = _handler;
+    public PrivateKey getPrivateKey(String handler) {
         byte[] byteKey = DatatypeConverter.parseBase64Binary(store.get(handler)[3]);
         PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(byteKey);
 
@@ -67,8 +66,7 @@ public class MapKeyStorage implements KeyStorage {
     }
 
     @Override
-    public PublicKey getPublicKey(String _handler) {
-        String handler = _handler;
+    public PublicKey getPublicKey(String handler) {
         byte[] byteKey = DatatypeConverter.parseBase64Binary(store.get(handler)[2]);
         X509EncodedKeySpec spec = new X509EncodedKeySpec(byteKey);
 

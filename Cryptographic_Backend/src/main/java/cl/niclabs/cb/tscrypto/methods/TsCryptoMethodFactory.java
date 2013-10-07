@@ -14,11 +14,9 @@ import com.rabbitmq.client.Connection;
 import java.io.IOException;
 
 public class TsCryptoMethodFactory implements MethodFactory {
-    private KeyManager keyManager;
-    private Connection connection;
-    private SDConfig config;
+    private final KeyManager keyManager;
 
-    private RequestManager requestManager;
+    private final RequestManager requestManager;
 
     private ResultsCollector resultsCollector;
     private Dispatcher dispatcher;
@@ -29,8 +27,6 @@ public class TsCryptoMethodFactory implements MethodFactory {
     private Signer signer;
 
     public TsCryptoMethodFactory(Connection connection, SDConfig config) throws IOException {
-        this.connection = connection;
-        this.config = config;
 
         keyManager = new KeyManager();
         requestManager = RequestManager.getInstance();
@@ -76,5 +72,13 @@ public class TsCryptoMethodFactory implements MethodFactory {
     @Override
     public SignMethod makeSignMethod(SignMethod.Args args) {
         return new SignMethodImpl(args, signer);
+    }
+
+    public ResultsCollector getResultsCollector() {
+        return resultsCollector;
+    }
+
+    public KeyManagementCollector getKeyManagementCollector() {
+        return keyManagementCollector;
     }
 }

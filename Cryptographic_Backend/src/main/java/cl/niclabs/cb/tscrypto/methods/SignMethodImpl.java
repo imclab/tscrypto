@@ -6,7 +6,7 @@ import cl.niclabs.cb.backend.methods.SignMethod;
 import javax.xml.bind.DatatypeConverter;
 
 class SignMethodImpl extends SignMethod {
-    Signer signer;
+    private final Signer signer;
     public SignMethodImpl(Args args, Signer signer) {
         super(args);
         this.signer = signer;

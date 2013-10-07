@@ -3,13 +3,9 @@ package cl.niclabs.cb.tscrypto;
 import cl.inria.tscrypto.common.utils.TSConnection;
 import cl.inria.tscrypto.sigDealer.SDConfig;
 
-import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.MethodFactory;
 import cl.niclabs.cb.dispatcher.MethodDispatcher;
-import cl.niclabs.cb.dispatcher.MethodMessage;
 import cl.niclabs.cb.tscrypto.methods.TsCryptoMethodFactory;
-import com.google.gson.Gson;
-import com.google.gson.JsonSyntaxException;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
@@ -17,8 +13,6 @@ import java.io.IOException;
 public class TsCryptoBackend {
     private static void run(String queueName, String hostName, MethodFactory methodFactory)
             throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
-
-        Gson gson = new Gson();
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(hostName);
         Connection connection;
@@ -53,17 +47,7 @@ public class TsCryptoBackend {
 
             String message = new String(delivery.getBody());
             System.err.println(message);
-            MethodMessage mmessage;
-            try {
-                mmessage = gson.fromJson(message, MethodMessage.class);
-            }
-            catch (JsonSyntaxException e) {
-                ResponseMessage.ErrorMessage(e.getLocalizedMessage());
-                System.err.println(e.getLocalizedMessage());
-                continue;
-            }
-            System.err.println("Ejecutando " + mmessage.getMethod() + "...");
-            MethodDispatcher dispatcher = new MethodDispatcher(mmessage, methodFactory);
+            MethodDispatcher dispatcher = new MethodDispatcher(message, methodFactory);
             String response = dispatcher.dispatch();
             try {
                 System.err.println("Enviando " + response + "...");

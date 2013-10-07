@@ -7,20 +7,20 @@ import cl.inria.tscrypto.sigDealer.RequestManager;
 
 import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Hashtable;
+import java.util.Map;
 
 public class Signer {
 
-    private KeyManager keyManager;
+    private final KeyManager keyManager;
     private String algorithm;
     private String privateKeyHandler;
-    private RequestManager requestManager;
+    private final RequestManager requestManager;
 
-    public final static Set<String> algorithms = new HashSet<>();
+    private final static Map<String, String> algorithms = new Hashtable<>();
     static {
-        algorithms.add("Sha1WithRSA");
-        algorithms.add("NONEWithRSA");
+        algorithms.put("Sha1WithRSA", "Sha1");
+        algorithms.put("NONEWithRSA", "NONE");
     }
 
     public Signer(KeyManager keyManager, RequestManager requestManager) {
@@ -35,7 +35,7 @@ public class Signer {
 
         this.algorithm = algorithm;
 
-        if (!algorithms.contains(algorithm)) {
+        if (!algorithms.containsKey(algorithm)) {
             throw new NoSuchAlgorithmException("No such algorithm: " + algorithm);
         }
 
@@ -43,17 +43,11 @@ public class Signer {
 	}
 	
 	public byte[] sign (byte[] data) throws Exception {
-        String hashAlgorithm;
-        switch(algorithm) {
-            case "NONEWithRSA":
-                hashAlgorithm = "NONE";
-                break;
-            case "Sha1WithRSA":
-                hashAlgorithm = "Sha1";
-                break;
-            default:
-                throw new Exception("Signer no iniciado.");
+        if(!algorithms.containsKey(algorithm)) {
+            throw new Exception("Signer no iniciado.");
         }
+
+        String hashAlgorithm = algorithms.get(algorithm);
 
         requestManager.addKey(keyManager.getKeyInfo(privateKeyHandler));
         Ticket ticket = requestManager.sign(hashAlgorithm, data, privateKeyHandler);
@@ -63,6 +57,7 @@ public class Signer {
         BigInteger signature = request.getSignature();
 
         while (signature == null) {
+            //noinspection SynchronizationOnLocalVariableOrMethodParameter
             synchronized (request) { // Double-checked locking... // TODO: Review if it's necessary
                 while (signature == null) {
                     System.out.println("Waiting for signature ticket " + ticket.getId());
@@ -72,6 +67,8 @@ public class Signer {
             }
         }
         requestManager.removeKey(privateKeyHandler);
+        algorithm = "";
+        privateKeyHandler = "";
 
         return signature.toByteArray();
 
