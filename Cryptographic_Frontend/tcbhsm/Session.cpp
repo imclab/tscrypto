@@ -88,6 +88,7 @@ Session::~Session() {
     const CK_ATTRIBUTE * handlerAttribute = object->findAttribute(&tmpl);
     if (handlerAttribute != nullptr) {
       // If a keypair is stored, then each the public and the private key will be deleted.
+      // Neitherless is only one instance is stored in the backend :P.
       std::string handler = *(std::string *)handlerAttribute->pValue;
       cf::ConnectionPtr connection = createConnection();
       cf::DeleteKeyPairMethod method(handler);
