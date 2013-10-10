@@ -215,14 +215,19 @@ void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
     const CK_ATTRIBUTE * handlerAttribute = it->second->findAttribute(&tmpl);
     if (handlerAttribute != nullptr) {
       std::string handler = *(std::string *)handlerAttribute->pValue;
-      cf::ConnectionPtr connection = createConnection();
-      cf::DeleteKeyPairMethod method(handler);
-      try {
-        method.execute(*connection).getResponse();
-      } catch (std::exception& e) {
-        throw TcbError("Session::destroyObject", e.what(), CKR_GENERAL_ERROR);
+      
+      // If I've removed the alias before, then I don't have to delete it
+      // remotely...
+      if(token.removeKeyAlias(handler)) {
+        cf::ConnectionPtr connection = createConnection();
+        cf::DeleteKeyPairMethod method(handler);
+        try {
+          method.execute(*connection).getResponse();
+        } catch (std::exception& e) {
+          throw TcbError("Session::destroyObject", e.what(), CKR_GENERAL_ERROR);
+        }
       }
-      token.removeKeyAlias(handler);
+      
     }
     
     objectContainer.erase(it);

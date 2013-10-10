@@ -50,7 +50,7 @@ namespace tcbhsm
     CK_OBJECT_HANDLE addTokenObject(CryptoObject * object);
     CK_OBJECT_HANDLE addSessionObject(CryptoObject * object);
     std::string const * addKeyAlias(std::string alias);
-    void removeKeyAlias(std::string alias);    
+    bool removeKeyAlias(std::string alias);    
     void destroySessionObjects(cf::Connection const & connection);    
     CryptoObject & getObject(CK_OBJECT_HANDLE handle);
     std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getObjects(CK_OBJECT_HANDLE handle);

@@ -19,6 +19,8 @@ loggedIn_(false), actualTokenObjectHandle_(0), actualSessionObjectHandle_(0)
     label_ = label;
   else
     throw TcbError("Token::Token", "Etiqueta con mas de 32 caracteres", CKR_ARGUMENTS_BAD);
+  
+  // TODO: Deserialize Token Objects
 }
 
 Token::~Token() {
@@ -177,8 +179,8 @@ std::string const * Token::addKeyAlias(std::string alias) {
   return &(*(keySet_.insert(alias).first));
 }
 
-void Token::removeKeyAlias(std::string alias) {
-  keySet_.erase(alias);
+bool Token::removeKeyAlias(std::string alias) {
+  return keySet_.erase(alias) > 0;
 }
 
 void Token::destroySessionObjects(cf::Connection const & connection) {

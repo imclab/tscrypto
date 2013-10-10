@@ -2,7 +2,12 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include "tcbhsm.h"
+#include "Application.h"
+#include "Configuration.h"
+#include "Session.h"
+#include "Slot.h"
+#include "Token.h"
+#include "TcbError.h"
 
 #include <cstdlib> // getenv
 #include <ostream>
