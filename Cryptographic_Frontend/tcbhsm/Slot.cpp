@@ -9,12 +9,6 @@
 
 using namespace tcbhsm;
 
-Slot::Slot(CK_SLOT_ID id)
-  : slotId_(id), token_(new Token("TCBHSM", "1234", "1234"))
-{
-
-}
-
 Slot::Slot(CK_SLOT_ID id, TokenPtr token)
   : slotId_(id), token_(std::move(token))
 {

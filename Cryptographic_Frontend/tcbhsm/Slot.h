@@ -20,7 +20,6 @@ namespace tcbhsm
 class Slot
 {
 public:
-  Slot(CK_SLOT_ID id);
   Slot(CK_SLOT_ID id, TokenPtr token);
   
   CK_SLOT_ID getId() const;
