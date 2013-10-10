@@ -1,3 +1,4 @@
-- Hacer que el SD cree un KeyPair y que la meta a las distintas colas.
-- Hacer que el Node lea de una nueva cola, para pasarle las llaves.
-- Implementar GenerateKeyPair, SignInit y Sign.
+En el frontend:
+
+- Guardar todas las opciones en un archivo de configuracion (json nomás)
+- Tanto Session cómo Token deberían ser containers de objetos (SessionObject's)

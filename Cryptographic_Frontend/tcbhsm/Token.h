@@ -21,6 +21,7 @@ public:
   };
 
   Token(std::string label, std::string pin);
+  Token(std::string label, std::string userPin, std::string soPin);
   void getInfo(CK_TOKEN_INFO_PTR pInfo) const;
   void setUserPin(std::string pin);
   bool isInited() const;

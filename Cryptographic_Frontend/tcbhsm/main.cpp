@@ -148,8 +148,12 @@ extern "C" {
       if (someButNotAll)
         return CKR_ARGUMENTS_BAD;
     }
-    
-    app.reset(new Application());
+    try {
+      app.reset(new Application());
+    } catch (TcbError & e) {
+      std::cerr << e.what() << std::endl;
+      return e.getErrorCode();
+    }
     
     return CKR_OK;
   }

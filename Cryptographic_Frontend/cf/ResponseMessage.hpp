@@ -17,6 +17,7 @@ namespace cf
     
     class ResponseMessage;
     using ResponseMessagePtr = std::unique_ptr<ResponseMessage>;
+    // TODO: review if this is necessary.
     using ResponseMessageStrategy = std::function<ResponseMessagePtr(std::string const &)>;
     using ArgumentPtr = std::unique_ptr<IArgument>;
     

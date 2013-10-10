@@ -25,7 +25,7 @@
 
 #include <algorithm>
 #include <sstream>
-#include <cstdlib> // getenv
+
 
 
 using namespace tcbhsm;
@@ -71,10 +71,13 @@ namespace { // Funcion auxiliar
 
 }
 
-Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify, Slot & currentSlot)
-  : actualObjectHandle_(1), refCount_(1), flags_(flags), application_(pApplication)
-  , notify_(notify), currentSlot_(currentSlot)
+Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, 
+                 CK_NOTIFY notify, Slot & currentSlot, 
+                 Configuration const & configuration)
+: actualObjectHandle_(1), refCount_(1), flags_(flags), application_(pApplication)
+, notify_(notify), currentSlot_(currentSlot), configuration_(configuration)
 {
+    
 }
 
 Session::~Session() {  
@@ -84,6 +87,7 @@ Session::~Session() {
     CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
     const CK_ATTRIBUTE * handlerAttribute = object->findAttribute(&tmpl);
     if (handlerAttribute != nullptr) {
+      // If a keypair is stored, then each the public and the private key will be deleted.
       std::string handler = *(std::string *)handlerAttribute->pValue;
       cf::ConnectionPtr connection = createConnection();
       cf::DeleteKeyPairMethod method(handler);
@@ -104,20 +108,15 @@ Session::~Session() {
 
 cf::ConnectionPtr Session::createConnection()
 {
-  // Ojo! La configuracion de la conexión esta hecha con variables de entorno...
-  const char* hostname = std::getenv("TCB_HOSTNAME");
-  const char* port = std::getenv("TCB_PORT");
-
-  if (hostname == nullptr) {
-    hostname = "localhost";
-  }
-  if (port == nullptr) {
-    port = "5672";
-  }
+  auto const & rabbitMqConf = configuration_.getRabbitMqConf();
+  
+  char const * hostname = rabbitMqConf.hostname.c_str();
+  char const * port = rabbitMqConf.port.c_str();
+  char const * rpcQueue = rabbitMqConf.rpcQueue.c_str();
 
   int portNumber = std::stoi(port);
   
-  return cf::ConnectionPtr(new cf::RabbitConnection(hostname, portNumber, "", "rpc_queue", 1));
+  return cf::ConnectionPtr(new cf::RabbitConnection(hostname, portNumber, "", rpcQueue, 1));
 }
 
 void Session::retain()
@@ -210,11 +209,15 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
                    "!userAuthorization(getState(), isToken, isPrivate, true)",
                    CKR_USER_NOT_LOGGED_IN);
     
+  // TODO: Guardar en algún lado más el objeto si CKA_TOKEN == true
+    
+    
   switch(oClass) {
     case CKO_PUBLIC_KEY:
     case CKO_PRIVATE_KEY:
       if(keyType == CKK_RSA) {
-        CK_OBJECT_HANDLE oHandle = actualObjectHandle_++; // lol, por mientras.
+        // TODO: Buscar una manera más robusta de manejar ésto...
+        CK_OBJECT_HANDLE oHandle = actualObjectHandle_++;
         (objects_[oHandle]).reset(new SessionObject(pTemplate, ulCount, distributedObject));
         return oHandle;
       } else {
@@ -396,7 +399,8 @@ namespace {
     // i.e. si está ocupado se ocupa rabbit :P.
     CK_ATTRIBUTE aValue = { 
       .type=CKA_VENDOR_DEFINED, 
-      .pValue=(void*)rabbitHandler, 
+      .pValue=(void*)(rabbitHandler), 
+      // Guardo el puntero, el objeto ya está guardado en el set...
       .ulValueLen=sizeof(rabbitHandler) 
     };
     
@@ -518,7 +522,7 @@ namespace {
     // i.e. si está ocupado se ocupa rabbit :P.
     CK_ATTRIBUTE aValue = { 
       .type=CKA_VENDOR_DEFINED, 
-      .pValue=(void*)rabbitHandler, 
+      .pValue=(void*)(rabbitHandler), 
       .ulValueLen=sizeof(rabbitHandler) 
     };
     
@@ -615,7 +619,7 @@ namespace {
       return 0;
     
     long value = 0;
-    for (int i = 0; i < n; i++)
+    for (CK_ULONG i = 0; i < n; i++)
     {
       value = (value << 8) + bytes[i];
     }   

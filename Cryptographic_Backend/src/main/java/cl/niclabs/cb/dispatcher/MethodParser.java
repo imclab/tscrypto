@@ -6,17 +6,17 @@ import com.google.gson.*;
 
 import java.lang.reflect.Type;
 
-public class MethodMessageParser implements JsonDeserializer<Method> {
+public class MethodParser implements JsonDeserializer<Method> {
 
     private final MethodFactory methodFactory;
 
-    public MethodMessageParser(MethodFactory methodFactory) {
+    public MethodParser(MethodFactory methodFactory) {
         this.methodFactory = methodFactory;
     }
 
     public static Gson createGson(MethodFactory factory) {
         GsonBuilder gsonBuilder = new GsonBuilder();
-        gsonBuilder.registerTypeAdapter(Method.class, new MethodMessageParser(factory));
+        gsonBuilder.registerTypeAdapter(Method.class, new MethodParser(factory));
         return gsonBuilder.create();
     }
 
@@ -28,7 +28,7 @@ public class MethodMessageParser implements JsonDeserializer<Method> {
         switch (method) {
             case "DeleteKeyPair":
             {
-                DeleteKeyPairMethod.Args args = context.deserialize(argsJsonElement, DeleteKeyPairMethod.class);
+                DeleteKeyPairMethod.Args args = context.deserialize(argsJsonElement, DeleteKeyPairMethod.Args.class);
                 return methodFactory.makeDeleteKeyMethod(args);
             }
             case "GenerateKeyPair":

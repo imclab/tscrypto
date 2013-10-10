@@ -1,6 +1,6 @@
-CC  = @echo "[CC] $@."; clang
-CXX = @echo "[CXX] $@."; clang++
-LD  = @echo "[LD] $@."; clang++
+CC  = @echo "[CC] $@."; gcc
+CXX = @echo "[CXX] $@."; g++
+LD  = @echo "[LD] $@."; g++
 AR  = @echo "[AR] $@."; ar
 RANLIB  = @echo "[RANLIB] $@."; ranlib
 RM  = rm

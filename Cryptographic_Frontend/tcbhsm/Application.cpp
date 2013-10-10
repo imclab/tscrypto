@@ -3,7 +3,10 @@
  */
 
 #include "Application.h"
+#include "Token.h"
 #include "TcbError.h"
+
+#include <cstdlib> // getenv
 
 using namespace tcbhsm;
 
@@ -17,12 +20,26 @@ namespace {
 }
 
 Application::Application(std::ostream& out)
-  : out_(out)
+: out_(out)
 {
-    // TODO: Revisar los Slots
-    // Por defecto solo 1.
-    SlotPtr slot0(new Slot(0));
-    slots_.push_back(std::move(slot0));
+  
+  // First, read and setup the configuration.
+  char const * configPath = std::getenv("TCB_CONFIG_FILE");
+  if (configPath == nullptr) {
+    throw TcbError("Application::Application", 
+                   "TCB_CONFIG_FILE environment variable hasn't setted yet", 
+                   CKR_DEVICE_ERROR);    
+  }  
+  configuration_.reset(new Configuration(std::string(configPath)));
+  
+  // By design, we will have one slot per configured token.  
+  int i = 0;
+  for (auto const & slotConf: configuration_->getSlotConf()) {
+    TokenPtr token( new Token(slotConf.label, slotConf.userPin, slotConf.soPin) );    
+    SlotPtr slot(new Slot(i, std::move(token)));
+    slots_.push_back(std::move(slot));    
+  }  
+  
 }
 
 void Application::errorLog(std::string message) const
@@ -79,14 +96,14 @@ void Application::openSession(CK_SLOT_ID slotID, CK_FLAGS flags,
     // De entre todos los espacios para hacer sesiones
     // se busca el que esté vacío.
     if (session == nullptr) {    
-      session.reset(new Session(flags, pApplication, notify, slot));
+      session.reset(new Session(flags, pApplication, notify, slot, *configuration_));
       slotSessionsMap_[slotID].insert(i);
       *phSession = toSessionHandle(i);
       return;
     }
     ++i;
   }
-
+  
   throw TcbError("Application::openSession", "No se pueden abrir mas sesiones", CKR_GENERAL_ERROR);
 }
 
@@ -117,4 +134,8 @@ void Application::closeAllSessions(CK_SLOT_ID slotID)
   } catch(std::exception &e) {
     throw TcbError("Application::closeAllSessions", e.what(), CKR_SLOT_ID_INVALID);
   }
+}
+
+Configuration const & Application::getConfiguration() const { // throws exception
+  return *configuration_;
 }

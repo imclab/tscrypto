@@ -10,6 +10,7 @@
 #include "cf/Connection.hpp"
 #include "cryptoki.h"
 
+#include "Configuration.h"
 #include "SessionObject.h"
 #include "Slot.h"
 
@@ -31,7 +32,10 @@ using DigestPipePtr = std::unique_ptr<Botan::Pipe>;
 class Session
 {
 public:
-  Session(CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify, Slot & currentSlot);
+  Session(CK_FLAGS flags, CK_VOID_PTR pApplication, 
+          CK_NOTIFY notify, Slot & currentSlot, 
+          Configuration const & configuration);
+  
   ~Session();
 
   CK_STATE getState() const;
@@ -72,6 +76,7 @@ public:
   unsigned int count();
 
 private:
+  // 
   CK_OBJECT_HANDLE actualObjectHandle_;
   std::map<CK_OBJECT_HANDLE, SessionObjectPtr> objects_;
   unsigned int refCount_;
@@ -79,6 +84,8 @@ private:
   const CK_VOID_PTR application_;
   const CK_NOTIFY notify_;
   Slot & currentSlot_;
+  // Configuration
+  Configuration const & configuration_;
 
   
   // Almacenaje de llaves
