@@ -7,9 +7,6 @@
 
 #include "config.h"
 
-#include "cf/Connection.hpp"
-#include "CryptoObject.h"
-
 #include <map>
 #include <set>
 #include <string>
@@ -17,8 +14,17 @@
 
 #include "cryptoki.h"
 
+namespace cf {
+  class Connection;
+  using ConnectionPtr = std::unique_ptr<Connection>;
+}
+
 namespace tcbhsm
 {
+  class Session;
+  class CryptoObject;
+  using CryptoObjectPtr = std::unique_ptr<CryptoObject>;
+  
   // Tokens are (unlimited) containers of crypto objects...
   class Token
   {
@@ -29,6 +35,10 @@ namespace tcbhsm
     
     Token(std::string label, std::string userPin, std::string soPin);
     ~Token();
+    
+    // Basic operations
+    void addSession(Session const * const session);
+    void removeSession(Session const * const session);
     void getInfo(CK_TOKEN_INFO_PTR pInfo) const;
     void setUserPin(std::string pin);
     bool isInited() const;
@@ -40,10 +50,8 @@ namespace tcbhsm
     CK_OBJECT_HANDLE addTokenObject(CryptoObject * object);
     CK_OBJECT_HANDLE addSessionObject(CryptoObject * object);
     std::string const * addKeyAlias(std::string alias);
-    void removeKeyAlias(std::string alias);
-    
-    void destroySessionObjects(cf::Connection const & connection);
-    
+    void removeKeyAlias(std::string alias);    
+    void destroySessionObjects(cf::Connection const & connection);    
     CryptoObject & getObject(CK_OBJECT_HANDLE handle);
     std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getObjects(CK_OBJECT_HANDLE handle);
     std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getTokenObjects();
@@ -65,13 +73,12 @@ namespace tcbhsm
     std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> sessionObjects_;
     
     std::set<std::string> keySet_;
+    std::set<Session const *> sessionSet_;
     
   protected:
     SecurityLevel checkUserPin(CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) const;
     SecurityLevel checkSecurityOfficerPin(CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) const;
   };
-  
-  using TokenPtr = std::unique_ptr<Token>;
   
 }
 

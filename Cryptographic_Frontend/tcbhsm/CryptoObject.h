@@ -13,7 +13,6 @@ namespace tcbhsm
 
 class CryptoObject
 {
-  // TODO: Agregar manera de saber que es un objeto almacenado de manera distribuida. IE. es una llave RSA.
 private:
   std::vector<CK_ATTRIBUTE> attributes_;
   bool isDistributed_;
@@ -28,7 +27,6 @@ public:
   bool isDistributed() const;
 };
 
-using CryptoObjectPtr = std::unique_ptr<CryptoObject>;
 }
 
 #endif // TCBHSM_SESSIONOBJECT_H

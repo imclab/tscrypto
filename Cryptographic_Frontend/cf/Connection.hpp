@@ -45,8 +45,6 @@ public:
     }
 };
 
-using ConnectionPtr = std::unique_ptr<cf::Connection>;
-
 }
 
 #endif // Connection_H_

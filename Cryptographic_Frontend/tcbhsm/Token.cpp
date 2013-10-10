@@ -2,8 +2,8 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include "Token.h"
-#include "TcbError.h"
+#include "tcbhsm.h"
+
 #include "cf/DeleteKeyPairMethod.hpp"
 #include "cf/ResponseMessage.hpp"
 
@@ -11,7 +11,7 @@
 
 using namespace tcbhsm;
 
-Token::Token(std::string label, std::string userPin, std::string soPin)
+Token::Token(std::string label, std::string userPin, std::string soPin) 
 : userPin_(userPin), soPin_(soPin), securityLevel_(SecurityLevel::PUBLIC), 
 loggedIn_(false), actualTokenObjectHandle_(0), actualSessionObjectHandle_(0)
 {
@@ -23,6 +23,14 @@ loggedIn_(false), actualTokenObjectHandle_(0), actualSessionObjectHandle_(0)
 
 Token::~Token() {
   //TODO: Serialize Token Objects
+}
+
+void Token::addSession(Session const * const session) {
+  sessionSet_.insert(session);
+}
+  
+void Token::removeSession(Session const * const session) {
+  sessionSet_.erase(session);
 }
 
 void Token::getInfo(CK_TOKEN_INFO_PTR pInfo) const
@@ -39,7 +47,6 @@ void Token::getInfo(CK_TOKEN_INFO_PTR pInfo) const
     memcpy(pInfo->label, label, 32);
   }
   
-  // Copiado descaradamente de SoftHSM
   memset(pInfo->manufacturerID, ' ', 32);
   memset(pInfo->model, ' ', 16);
   memset(pInfo->serialNumber, ' ', 16);
@@ -50,9 +57,9 @@ void Token::getInfo(CK_TOKEN_INFO_PTR pInfo) const
   
   pInfo->flags = tokenFlags_;
   pInfo->ulMaxSessionCount = MAX_SESSION_COUNT;
-  pInfo->ulSessionCount = 1; // TODO!
+  pInfo->ulSessionCount = sessionSet_.size();
   pInfo->ulMaxRwSessionCount = MAX_SESSION_COUNT;
-  pInfo->ulRwSessionCount = 1; // TODO!
+  pInfo->ulRwSessionCount = sessionSet_.size(); // TODO!
   pInfo->ulMaxPinLen = MAX_PIN_LEN;
   pInfo->ulMinPinLen = MIN_PIN_LEN;
   pInfo->ulTotalPublicMemory = CK_UNAVAILABLE_INFORMATION;

@@ -10,22 +10,27 @@
 #include <array>
 #include <vector>
 #include <set>
+#include <map>
 #include <string>
 #include <memory>
-#include <iostream>
+#include <iosfwd>
 
-#include "Configuration.h"
-#include "Session.h"
-#include "Slot.h"
 #include "cryptoki.h"
 
 namespace tcbhsm
 {  
+  class Slot;
+  class Session;
+  class Configuration;
+  
+  using SlotPtr = std::unique_ptr<Slot>;  
+  using SessionPtr = std::unique_ptr<Session>;
+  
   /** La aplicacion maneja sesiones y slots, y la relacion entre ellos **/
   class Application
   {
   public:
-    Application(std::ostream& out = std::cerr);
+    Application(std::ostream& out);
     
     void errorLog(std::string message) const;
     const std::vector<SlotPtr> & getSlotList() const;

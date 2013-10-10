@@ -2,16 +2,12 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#ifndef SESSION_H
-#define SESSION_H
+#ifndef TCBHSM_SESSION_H
+#define TCBHSM_SESSION_H
 
 #include "config.h"
 
-#include "cf/Connection.hpp"
 #include "cryptoki.h"
-
-#include "Configuration.h"
-#include "Slot.h"
 
 #include <botan/pipe.h>
 #include <botan/auto_rng.h>
@@ -19,11 +15,20 @@
 #include <memory>
 #include <utility>
 
+namespace cf {
+  class Connection;
+  using ConnectionPtr = std::unique_ptr<Connection>;
+}
+
 namespace tcbhsm
 {
 
 using KeyPair = std::pair<CK_OBJECT_HANDLE, CK_OBJECT_HANDLE>; // (Private, Public)
 using DigestPipePtr = std::unique_ptr<Botan::Pipe>;
+
+class Configuration;
+class Slot;
+class CryptoObject;
 
 // Sessions are enclosed in operations with objects, Tokens on containing objects.
 class Session
@@ -98,7 +103,6 @@ private:
   Botan::AutoSeeded_RNG rng;
 };
 
-using SessionPtr = std::unique_ptr<Session>;
 }
 
-#endif // SESSION_H
+#endif // TCBHSM_SESSION_H

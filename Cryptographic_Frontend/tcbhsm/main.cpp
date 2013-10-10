@@ -6,15 +6,13 @@
 #include <cf/SignMethod.hpp>
 #include <cf/Method.hpp>
 
-#include "Session.h"
-#include "Application.h"
-#include "Token.h"
-#include "TcbError.h"
+#include "tcbhsm.h"
 
 #include <functional>
 #include <algorithm>
 #include <string>
 #include <memory>
+#include <iostream>
 
 
 using namespace tcbhsm;
@@ -149,7 +147,7 @@ extern "C" {
         return CKR_ARGUMENTS_BAD;
     }
     try {
-      app.reset(new Application());
+      app.reset(new Application(std::cerr));
     } catch (TcbError & e) {
       std::cerr << e.what() << std::endl;
       return e.getErrorCode();

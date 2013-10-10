@@ -2,11 +2,10 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include "Application.h"
-#include "Token.h"
-#include "TcbError.h"
+#include "tcbhsm.h"
 
 #include <cstdlib> // getenv
+#include <ostream>
 
 using namespace tcbhsm;
 

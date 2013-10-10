@@ -2,9 +2,8 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include "Slot.h"
+#include "tcbhsm.h"
 
-#include "TcbError.h"
 #include <cstring> // memset, memcpy
 // TODO: Replace memset and memcpy with std::fill and std::copy...
 

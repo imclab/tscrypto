@@ -1,5 +1,4 @@
-#include "Configuration.h"
-#include "TcbError.h"
+#include "tcbhsm.h"
 
 #include <fstream>
 #include <cerrno>

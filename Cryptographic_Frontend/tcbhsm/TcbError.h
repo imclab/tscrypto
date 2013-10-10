@@ -6,7 +6,6 @@
 #include <exception>
 #include <string>
 
-
 namespace tcbhsm {
 class TcbError : public std::exception
 {

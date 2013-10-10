@@ -2,8 +2,7 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include "Session.h"
-#include "TcbError.h"
+#include "tcbhsm.h"
 
 #include "cf/Method.hpp"
 #include "cf/GenerateKeyPairMethod.hpp"
@@ -25,8 +24,6 @@
 
 #include <algorithm>
 #include <sstream>
-
-
 
 using namespace tcbhsm;
 
@@ -77,12 +74,13 @@ Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication,
 : flags_(flags), application_(pApplication)
 , notify_(notify), currentSlot_(currentSlot), configuration_(configuration)
 {
-    
+  currentSlot_.getToken().addSession(this);    
 }
 
 Session::~Session() {  
   cf::ConnectionPtr conn(createConnection());
   currentSlot_.getToken().destroySessionObjects(*conn);
+  currentSlot_.getToken().removeSession(this);
 }
 
 cf::ConnectionPtr Session::createConnection()

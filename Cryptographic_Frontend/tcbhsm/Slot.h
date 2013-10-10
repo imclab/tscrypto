@@ -10,11 +10,14 @@
 #include <vector>
 #include <memory>
 
-#include "Token.h"
 #include "cryptoki.h"
 
 namespace tcbhsm
 {
+  
+class Token;
+
+using TokenPtr = std::unique_ptr<Token>;
 
 /// Clase que representa un espacio para un token en el HSM
 class Slot
@@ -32,8 +35,6 @@ private:
   CK_SLOT_ID slotId_;
   TokenPtr token_; // Esto por la posibilidad de no estar presente :)
 };
-
-using SlotPtr = std::unique_ptr<Slot>;
 }
 
 #endif // TCBHSM_SLOT_H

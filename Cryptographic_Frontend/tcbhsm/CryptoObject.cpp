@@ -1,5 +1,4 @@
-#include "CryptoObject.h"
-#include "TcbError.h"
+#include "tcbhsm.h"
 
 #include <cstdlib>
 #include <cstring>
