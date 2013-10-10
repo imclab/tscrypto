@@ -1,5 +1,5 @@
-/*
- * @autor Francisco Cifuentes <francisco@niclabs.cl>
+/**
+ * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
 #include "Application.h"
@@ -33,6 +33,7 @@ Application::Application(std::ostream& out)
   configuration_.reset(new Configuration(std::string(configPath)));
   
   // By design, we will have one slot per configured token.  
+  // The tokens are owned by the slots.
   int i = 0;
   for (auto const & slotConf: configuration_->getSlotConf()) {
     TokenPtr token( new Token(slotConf.label, slotConf.userPin, slotConf.soPin) );    

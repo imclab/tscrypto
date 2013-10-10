@@ -1,4 +1,4 @@
-#include "SessionObject.h"
+#include "CryptoObject.h"
 #include "TcbError.h"
 
 #include <cstdlib>
@@ -6,7 +6,7 @@
 
 using namespace tcbhsm;
 
-SessionObject::SessionObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount) : isDistributed_(false) {
+CryptoObject::CryptoObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount) : isDistributed_(false) {
   CK_ATTRIBUTE att;
   auto end = pAttributes + ulCount;
   for (auto it = pAttributes; it != end; ++it) {
@@ -19,7 +19,7 @@ SessionObject::SessionObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount) : i
   }
 }
 
-SessionObject::SessionObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount, bool distributed) : isDistributed_(distributed) {
+CryptoObject::CryptoObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount, bool distributed) : isDistributed_(distributed) {
   CK_ATTRIBUTE att;
   auto end = pAttributes + ulCount;
   for (auto it = pAttributes; it != end; ++it) {
@@ -32,7 +32,7 @@ SessionObject::SessionObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount, boo
   }
 }
 
-SessionObject::~SessionObject() {
+CryptoObject::~CryptoObject() {
   for (auto &attribute: attributes_) {
     std::free(attribute.pValue);
   }
@@ -45,7 +45,7 @@ namespace {
   }
 }
 
-bool SessionObject::match(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) const {
+bool CryptoObject::match(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) const {
 
   // Busqueda por fuerza bruta, no se me ocurre una mejor estructura de dato
   // necesito saber mejor las restricciones de un objeto.
@@ -64,7 +64,7 @@ bool SessionObject::match(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) const {
   return true;
 }
 
-const CK_ATTRIBUTE* SessionObject::findAttribute (CK_ATTRIBUTE* tmpl) const {
+const CK_ATTRIBUTE* CryptoObject::findAttribute (CK_ATTRIBUTE* tmpl) const {
   for(auto& attribute: attributes_) {
     if (attribute.type == tmpl->type)
       return &attribute;
@@ -99,9 +99,9 @@ void copyAttribute (CK_ATTRIBUTE const* src, CK_ATTRIBUTE* dst) {
 
 }
 
-void SessionObject::copyAttributes(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) const {
+void CryptoObject::copyAttributes(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) const {
   if (pTemplate == nullptr)
-    throw TcbError("SessionObject::copyAttributes", "pTemplate == nullptr", CKR_ARGUMENTS_BAD);
+    throw TcbError("CryptoObject::copyAttributes", "pTemplate == nullptr", CKR_ARGUMENTS_BAD);
     
   for(CK_ULONG i=0; i<ulCount; ++i) {
     CK_ATTRIBUTE* ptr = &(pTemplate[i]);
@@ -109,11 +109,11 @@ void SessionObject::copyAttributes(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount)
     if (src != nullptr)
       copyAttribute(src, ptr);
     else 
-      throw TcbError("SessionObject::copyAttributes", "src == nullptr", CKR_ARGUMENTS_BAD);
+      throw TcbError("CryptoObject::copyAttributes", "src == nullptr", CKR_ARGUMENTS_BAD);
   }
 }
 
-bool SessionObject::isDistributed() const {
+bool CryptoObject::isDistributed() const {
   return isDistributed_;
 }
 

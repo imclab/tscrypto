@@ -1,5 +1,5 @@
 /**
- * @autor Francisco Cifuentes <francisco@niclabs.cl>
+ * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
 #ifndef TCBHSM_APPLICATION_H

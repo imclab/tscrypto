@@ -82,7 +82,7 @@ Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication,
 
 Session::~Session() {  
   for (auto& objectPair: objects_) {
-    SessionObjectPtr& object = objectPair.second;
+    CryptoObjectPtr& object = objectPair.second;
     
     CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
     const CK_ATTRIBUTE * handlerAttribute = object->findAttribute(&tmpl);
@@ -203,7 +203,7 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
       if(keyType == CKK_RSA) {
         // TODO: Buscar una manera más robusta de manejar ésto...
         CK_OBJECT_HANDLE oHandle = actualObjectHandle_++;
-        (objects_[oHandle]).reset(new SessionObject(pTemplate, ulCount, distributedObject));
+        (objects_[oHandle]).reset(new CryptoObject(pTemplate, ulCount, distributedObject));
         return oHandle;
       } else {
         throw TcbError("Session::createObject", 
@@ -294,9 +294,9 @@ void Session::findObjectsFinal() {
 }
 
 
-SessionObject & Session::getObject(CK_OBJECT_HANDLE objectHandle) {
+CryptoObject & Session::getObject(CK_OBJECT_HANDLE objectHandle) {
   try {
-    SessionObject & object = *(objects_.at(objectHandle));
+    CryptoObject & object = *(objects_.at(objectHandle));
     return object;
   } catch (std::out_of_range &e) {
     throw TcbError("Session::getObject", "Objeto no existe en la sesion.", CKR_OBJECT_HANDLE_INVALID);
@@ -692,7 +692,7 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
 void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
   try {
     cf::ConnectionPtr connection = createConnection();
-    SessionObject &keyObject = getObject(hKey);
+    CryptoObject &keyObject = getObject(hKey);
     CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
     const CK_ATTRIBUTE * handlerAttribute = keyObject.findAttribute(&tmpl);
     
