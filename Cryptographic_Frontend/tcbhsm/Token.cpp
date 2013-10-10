@@ -4,14 +4,16 @@
 
 #include "Token.h"
 #include "TcbError.h"
+#include "cf/DeleteKeyPairMethod.hpp"
+#include "cf/ResponseMessage.hpp"
 
 #include <cstring>
 
 using namespace tcbhsm;
 
 Token::Token(std::string label, std::string userPin, std::string soPin)
-  : userPin_(userPin), soPin_(soPin), securityLevel_(SecurityLevel::PUBLIC), 
-  loggedIn_(false)
+: userPin_(userPin), soPin_(soPin), securityLevel_(SecurityLevel::PUBLIC), 
+loggedIn_(false), actualTokenObjectHandle_(0), actualSessionObjectHandle_(0)
 {
   if (label.size() <= 32)
     label_ = label;
@@ -19,11 +21,15 @@ Token::Token(std::string label, std::string userPin, std::string soPin)
     throw TcbError("Token::Token", "Etiqueta con mas de 32 caracteres", CKR_ARGUMENTS_BAD);
 }
 
+Token::~Token() {
+  //TODO: Serialize Token Objects
+}
+
 void Token::getInfo(CK_TOKEN_INFO_PTR pInfo) const
 {
   if (!pInfo)
     throw TcbError("Token::Token", "Puntero nulo pasado a getInfo.", CKR_ARGUMENTS_BAD);
-
+  
   if (label_.empty()) {
     memset(pInfo->label, ' ', 32);
   } else {
@@ -32,16 +38,16 @@ void Token::getInfo(CK_TOKEN_INFO_PTR pInfo) const
     memcpy(label, label_.c_str(), label_.size());
     memcpy(pInfo->label, label, 32);
   }
-
+  
   // Copiado descaradamente de SoftHSM
   memset(pInfo->manufacturerID, ' ', 32);
   memset(pInfo->model, ' ', 16);
   memset(pInfo->serialNumber, ' ', 16);
-
+  
   memcpy(pInfo->manufacturerID, "NicLabs", 7);
   memcpy(pInfo->model, "tcbhsm", 6);
   memcpy(pInfo->serialNumber, "1", 1);
-
+  
   pInfo->flags = tokenFlags_;
   pInfo->ulMaxSessionCount = MAX_SESSION_COUNT;
   pInfo->ulSessionCount = 1; // TODO!
@@ -57,7 +63,7 @@ void Token::getInfo(CK_TOKEN_INFO_PTR pInfo) const
   pInfo->hardwareVersion.minor = VERSION_MINOR;
   pInfo->firmwareVersion.major = VERSION_MAJOR;
   pInfo->firmwareVersion.minor = VERSION_MINOR;
-
+  
   time_t rawtime;
   time(&rawtime);
   char dateTime[17];
@@ -98,8 +104,8 @@ Token::SecurityLevel Token::checkSecurityOfficerPin(CK_UTF8CHAR_PTR pPin, CK_ULO
 void Token::login(CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) {
   if (loggedIn_) {
     if ((userType == CKU_USER && securityLevel_ == SecurityLevel::SECURITY_OFFICER)
-        || 
-        (userType == CKU_SO && securityLevel_ == SecurityLevel::USER))
+      || 
+      (userType == CKU_SO && securityLevel_ == SecurityLevel::USER))
     {
       
       throw TcbError("Token::login", 
@@ -144,4 +150,85 @@ void Token::login(CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen
 void Token::logout() {
   securityLevel_ = SecurityLevel::PUBLIC;
   loggedIn_ = false;
+}
+
+CK_OBJECT_HANDLE Token::addTokenObject(CryptoObject * object) {
+  actualTokenObjectHandle_++;
+  CK_OBJECT_HANDLE handle = actualTokenObjectHandle_;
+  (tokenObjects_[handle]).reset(object);
+  return handle;
+}
+
+CK_OBJECT_HANDLE Token::addSessionObject(CryptoObject * object) {
+  actualSessionObjectHandle_--;
+  CK_OBJECT_HANDLE handle = actualSessionObjectHandle_;
+  (sessionObjects_[handle]).reset(object);
+  return handle;
+}
+
+std::string const * Token::addKeyAlias(std::string alias) {
+  return &(*(keySet_.insert(alias).first));
+}
+
+void Token::removeKeyAlias(std::string alias) {
+  keySet_.erase(alias);
+}
+
+void Token::destroySessionObjects(cf::Connection const & connection) {
+  for (auto& objectPair: sessionObjects_) {
+    CryptoObjectPtr& object = objectPair.second;
+    
+    CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
+    const CK_ATTRIBUTE * handlerAttribute = object->findAttribute(&tmpl);
+    if (handlerAttribute != nullptr) {
+      // If a keypair is stored, then each the public and the private key will be deleted.
+      // Neitherless is only one instance is stored in the backend :P.
+      std::string handler = *(std::string *)handlerAttribute->pValue;
+      cf::DeleteKeyPairMethod method(handler);      
+      try {
+        method.execute(connection).getResponse();
+      } 
+      catch (std::runtime_error& e) {
+        // throw TcbError("Session::~Session", e.what(), CKR_GENERAL_ERROR);
+      }
+      
+    }    
+  }
+  
+  for (auto& objectPair: tokenObjects_) {
+    CryptoObjectPtr& object = objectPair.second;
+    
+    CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
+    const CK_ATTRIBUTE * handlerAttribute = object->findAttribute(&tmpl);
+    if (handlerAttribute != nullptr) {
+      // If a keypair is stored, then each the public and the private key will be deleted.
+      // Neitherless is only one instance is stored in the backend :P.
+      std::string handler = *(std::string *)handlerAttribute->pValue;
+      cf::DeleteKeyPairMethod method(handler);
+      
+      try {
+        method.execute(connection).getResponse();
+      } 
+      catch (std::runtime_error& e) {
+        // throw TcbError("Session::~Session", e.what(), CKR_GENERAL_ERROR);
+      }
+      
+    }    
+  }
+}
+
+CryptoObject & Token::getObject(CK_OBJECT_HANDLE handle) {
+  return handle > 0? *(tokenObjects_.at(handle)) : *(sessionObjects_.at(handle));
+}
+
+std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & Token::getObjects(CK_OBJECT_HANDLE handle) {  
+  return handle > 0? tokenObjects_ : sessionObjects_;
+}
+
+std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & Token::getTokenObjects() {
+  return tokenObjects_;
+}
+
+std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & Token::getSessionObjects() {
+  return sessionObjects_;
 }

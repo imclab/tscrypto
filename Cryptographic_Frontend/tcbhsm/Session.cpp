@@ -74,37 +74,15 @@ namespace { // Funcion auxiliar
 Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, 
                  CK_NOTIFY notify, Slot & currentSlot, 
                  Configuration const & configuration)
-: actualObjectHandle_(1), refCount_(1), flags_(flags), application_(pApplication)
+: refCount_(1), flags_(flags), application_(pApplication)
 , notify_(notify), currentSlot_(currentSlot), configuration_(configuration)
 {
     
 }
 
 Session::~Session() {  
-  for (auto& objectPair: objects_) {
-    CryptoObjectPtr& object = objectPair.second;
-    
-    CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
-    const CK_ATTRIBUTE * handlerAttribute = object->findAttribute(&tmpl);
-    if (handlerAttribute != nullptr) {
-      // If a keypair is stored, then each the public and the private key will be deleted.
-      // Neitherless is only one instance is stored in the backend :P.
-      std::string handler = *(std::string *)handlerAttribute->pValue;
-      cf::ConnectionPtr connection = createConnection();
-      cf::DeleteKeyPairMethod method(handler);
-      
-      try {
-        method.execute(*connection).getResponse();
-      } 
-      catch (std::runtime_error& e) {
-        // throw TcbError("Session::~Session", e.what(), CKR_GENERAL_ERROR);
-      }
-      
-    }
-    
-  }
-  
-  
+  cf::ConnectionPtr conn(createConnection());
+  currentSlot_.getToken().destroySessionObjects(*conn);
 }
 
 cf::ConnectionPtr Session::createConnection()
@@ -201,10 +179,15 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
     case CKO_PUBLIC_KEY:
     case CKO_PRIVATE_KEY:
       if(keyType == CKK_RSA) {
-        // TODO: Buscar una manera más robusta de manejar ésto...
-        CK_OBJECT_HANDLE oHandle = actualObjectHandle_++;
-        (objects_[oHandle]).reset(new CryptoObject(pTemplate, ulCount, distributedObject));
-        return oHandle;
+        Token & token = getCurrentSlot().getToken();
+        CryptoObject * object = new CryptoObject(pTemplate, ulCount, distributedObject);
+        
+        if(isToken == CK_TRUE) {
+          return token.addTokenObject(object);
+        } else {
+          return token.addSessionObject(object);
+        }
+        
       } else {
         throw TcbError("Session::createObject", 
                        "keyType != CKK_RSA",
@@ -223,8 +206,11 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
 }
 
 void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
-  auto it = objects_.find(hObject);
-  if (it != objects_.end()) {
+  Token & token = getCurrentSlot().getToken();
+  auto & objectContainer = token.getObjects(hObject);
+  
+  auto it = objectContainer.find(hObject);  
+  if (it != objectContainer.end()) {
     
     // Verifico que el objeto no sea una llave, y si lo es, la elimino del TCB.
     CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
@@ -238,10 +224,10 @@ void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
       } catch (std::exception& e) {
         throw TcbError("Session::destroyObject", e.what(), CKR_GENERAL_ERROR);
       }
-      keySet.erase(handler);
+      token.removeKeyAlias(handler);
     }
     
-    objects_.erase(it);
+    objectContainer.erase(it);
   } else {
     throw TcbError("Session::destroyObject", "Objeto no encontrado.", CKR_OBJECT_HANDLE_INVALID);
   }
@@ -254,13 +240,25 @@ void Session::findObjectsInit(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
   if (pTemplate == nullptr)
     throw TcbError("Session::findObjectsInit", "pTemplate == nullptr", CKR_ARGUMENTS_BAD);
   
+  Token & token = getCurrentSlot().getToken();
+  
   if (ulCount == 0) {
     // Busco todos los objetos...
-    for (auto& handleObjectPair: objects_) {
+    for (auto& handleObjectPair: token.getTokenObjects()) {
+      foundObjects.push_back(handleObjectPair.first);
+    }
+    
+    for (auto& handleObjectPair: token.getSessionObjects()) {
       foundObjects.push_back(handleObjectPair.first);
     }
   } else {
-    for (auto& handleObjectPair: objects_) {
+    for (auto& handleObjectPair: token.getTokenObjects()) {
+      if (handleObjectPair.second->match(pTemplate, ulCount)) {
+        foundObjects.push_back(handleObjectPair.first);
+      }
+    }
+    
+    for (auto& handleObjectPair: token.getSessionObjects()) {
       if (handleObjectPair.second->match(pTemplate, ulCount)) {
         foundObjects.push_back(handleObjectPair.first);
       }
@@ -296,8 +294,7 @@ void Session::findObjectsFinal() {
 
 CryptoObject & Session::getObject(CK_OBJECT_HANDLE objectHandle) {
   try {
-    CryptoObject & object = *(objects_.at(objectHandle));
-    return object;
+    return getCurrentSlot().getToken().getObject(objectHandle);
   } catch (std::out_of_range &e) {
     throw TcbError("Session::getObject", "Objeto no existe en la sesion.", CKR_OBJECT_HANDLE_INVALID);
   }
@@ -666,7 +663,8 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
         
         cf::GenerateKeyPairMethod method("RSA", modulusBits, exponent); // Unico metodo aceptado :B...       
         std::string uuidHandler = method.execute(*connection).getResponse().getValue<std::string>("handler");
-        std::string const * handler = &(*(keySet.insert(uuidHandler).first));
+        
+        std::string const * handler = getCurrentSlot().getToken().addKeyAlias(uuidHandler);
         
         CK_OBJECT_HANDLE publicKeyHandle = createPublicKey(*this, pPublicKeyTemplate, ulPublicKeyAttributeCount, handler);
         CK_OBJECT_HANDLE privateKeyHandle = createPrivateKey(*this, pPrivateKeyTemplate, ulPrivateKeyAttributeCount, handler);

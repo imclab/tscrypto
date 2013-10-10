@@ -11,14 +11,11 @@
 #include "cryptoki.h"
 
 #include "Configuration.h"
-#include "CryptoObject.h"
 #include "Slot.h"
 
 #include <botan/pipe.h>
 #include <botan/auto_rng.h>
 
-#include <map>
-#include <set>
 #include <memory>
 #include <utility>
 
@@ -28,7 +25,7 @@ namespace tcbhsm
 using KeyPair = std::pair<CK_OBJECT_HANDLE, CK_OBJECT_HANDLE>; // (Private, Public)
 using DigestPipePtr = std::unique_ptr<Botan::Pipe>;
 
-// A session is itself a Object container.
+// Sessions are enclosed in operations with objects, Tokens on containing objects.
 class Session
 {
 public:
@@ -67,6 +64,8 @@ public:
   cf::ConnectionPtr createConnection(); // RAII connection in a std::unique_ptr
 
   // Session Objects
+  
+  // This operations have to be replicated in some way on Token.
   CK_OBJECT_HANDLE createObject(CK_ATTRIBUTE_PTR pTemplate, 
                                 CK_ULONG ulCount); // throws exception
   void destroyObject(CK_OBJECT_HANDLE hObject); // throws exception
@@ -76,8 +75,6 @@ public:
   CryptoObject & getObject(CK_OBJECT_HANDLE objectHandle); // throws exception
 
 private:
-  CK_OBJECT_HANDLE actualObjectHandle_;
-  std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> objects_;
   unsigned int refCount_;
   const CK_FLAGS flags_;
   const CK_VOID_PTR application_;
@@ -86,9 +83,6 @@ private:
   
   // Configuration
   Configuration const & configuration_;
-  
-  // Key Storage
-  std::set<std::string> keySet;
   
   // Object Search
   bool findInitialized = false;
