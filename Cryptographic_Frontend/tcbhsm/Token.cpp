@@ -9,16 +9,6 @@
 
 using namespace tcbhsm;
 
-Token::Token(std::string label, std::string pin)
-  : userPin_(pin), soPin_(pin), securityLevel_(SecurityLevel::PUBLIC), 
-  loggedIn_(false)
-{
-  if (label.size() <= 32)
-    label_ = label;
-  else
-    throw TcbError("Token::Token", "Etiqueta con mas de 32 caracteres", CKR_ARGUMENTS_BAD);
-}
-
 Token::Token(std::string label, std::string userPin, std::string soPin)
   : userPin_(userPin), soPin_(soPin), securityLevel_(SecurityLevel::PUBLIC), 
   loggedIn_(false)

@@ -10,7 +10,7 @@
 using namespace tcbhsm;
 
 Slot::Slot(CK_SLOT_ID id)
-  : slotId_(id), token_(new Token("TCBHSM", "1234"))
+  : slotId_(id), token_(new Token("TCBHSM", "1234", "1234"))
 {
 
 }
@@ -60,5 +60,5 @@ Token & Slot::getToken() const
 }
 
 void Slot::initToken(std::string label, std::string pin) {
-  token_.reset(new Token(label, pin));
+  token_.reset(new Token(label, pin, pin));
 }
