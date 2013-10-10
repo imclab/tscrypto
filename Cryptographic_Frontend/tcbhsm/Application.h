@@ -30,7 +30,6 @@ namespace tcbhsm
     void errorLog(std::string message) const;
     const std::vector<SlotPtr> & getSlotList() const;
     Slot & getSlot(CK_SLOT_ID id) const; // throws exception
-    // No olvidar hacer un .release justo antes de dejar de ocuparlo
     Session & getSession(CK_SESSION_HANDLE session) const; // throws exception
     
     void openSession(CK_SLOT_ID slotID, CK_FLAGS flags,

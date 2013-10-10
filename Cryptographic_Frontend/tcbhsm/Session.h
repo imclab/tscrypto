@@ -70,11 +70,6 @@ public:
   void findObjectsFinal();
   SessionObject & getObject(CK_OBJECT_HANDLE objectHandle); // throws exception
 
-  // Reference counting;
-  void retain();
-  void release();
-  unsigned int count();
-
 private:
   // 
   CK_OBJECT_HANDLE actualObjectHandle_;

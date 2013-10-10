@@ -120,22 +120,6 @@ cf::ConnectionPtr Session::createConnection()
   return cf::ConnectionPtr(new cf::RabbitConnection(hostname, portNumber, "", rpcQueue, 1));
 }
 
-void Session::retain()
-{
-    ++refCount_;
-}
-
-void Session::release()
-{
-    if (refCount_ > 0)
-        --refCount_;
-}
-
-unsigned int Session::count()
-{
-    return refCount_;
-}
-
 Slot & Session::getCurrentSlot() {
   return currentSlot_;
 }
