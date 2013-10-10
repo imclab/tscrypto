@@ -36,6 +36,7 @@ namespace tcbhsm
     void logout();
     SecurityLevel getSecurityLevel() const;
     
+    // Container operations
     CK_OBJECT_HANDLE addTokenObject(CryptoObject * object);
     CK_OBJECT_HANDLE addSessionObject(CryptoObject * object);
     std::string const * addKeyAlias(std::string alias);

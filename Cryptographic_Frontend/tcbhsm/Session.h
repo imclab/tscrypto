@@ -63,9 +63,6 @@ public:
   // Conexiones
   cf::ConnectionPtr createConnection(); // RAII connection in a std::unique_ptr
 
-  // Session Objects
-  
-  // This operations have to be replicated in some way on Token.
   CK_OBJECT_HANDLE createObject(CK_ATTRIBUTE_PTR pTemplate, 
                                 CK_ULONG ulCount); // throws exception
   void destroyObject(CK_OBJECT_HANDLE hObject); // throws exception
@@ -75,7 +72,6 @@ public:
   CryptoObject & getObject(CK_OBJECT_HANDLE objectHandle); // throws exception
 
 private:
-  unsigned int refCount_;
   const CK_FLAGS flags_;
   const CK_VOID_PTR application_;
   const CK_NOTIFY notify_;

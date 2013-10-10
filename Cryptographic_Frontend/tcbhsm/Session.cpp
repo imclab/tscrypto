@@ -74,7 +74,7 @@ namespace { // Funcion auxiliar
 Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, 
                  CK_NOTIFY notify, Slot & currentSlot, 
                  Configuration const & configuration)
-: refCount_(1), flags_(flags), application_(pApplication)
+: flags_(flags), application_(pApplication)
 , notify_(notify), currentSlot_(currentSlot), configuration_(configuration)
 {
     
