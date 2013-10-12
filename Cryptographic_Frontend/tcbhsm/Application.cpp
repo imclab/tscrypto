@@ -4,13 +4,18 @@
 
 #include "Application.h"
 #include "Configuration.h"
+#include "CryptoObject.h"
+#include "Database.h"
 #include "Session.h"
 #include "Slot.h"
 #include "Token.h"
 #include "TcbError.h"
 
+#include <base64/base64.h>
+
 #include <cstdlib> // getenv
 #include <ostream>
+#include <iostream>
 
 using namespace tcbhsm;
 
@@ -25,8 +30,7 @@ namespace {
 
 Application::Application(std::ostream& out)
 : out_(out)
-{
-  
+{ 
   // First, read and setup the configuration.
   char const * configPath = std::getenv("TCB_CONFIG_FILE");
   if (configPath == nullptr) {
@@ -45,6 +49,39 @@ Application::Application(std::ostream& out)
     slots_.push_back(std::move(slot));    
   }  
   
+}
+
+class DebugDatabase : public Database {
+public:
+  virtual void saveToken(Token & token) override {
+    std::cout << "{ \"label\" : \"" << token.getLabel() << "\", \"objects\" : [ ";
+    for(auto const& objectPair: token.getTokenObjects()) {
+      // objectPair : std::pair<CK_OBJECT_HANDLE, CryptoObjectPtr>
+      std::cout << "{ \"handle\" : " << objectPair.first << " , ";
+      std::cout << " \"attributes\" : [ ";
+      for(auto const& attr: objectPair.second->getAttributes()) {              
+        std::cout << "{ \"type\" : " << attr.type << " ,";
+        std::cout << " \"value\" : \"";              
+        std::cout << base64::encode((unsigned char*) attr.pValue, attr.ulValueLen);
+        std::cout << "\"}, ";
+      }
+      std::cout << " ] }, ";            
+    }
+    std::cout << " ] }" << std::endl;
+      
+  }
+  
+  virtual TokenPtr getToken(std::string const & label) override {
+    TokenPtr p;
+    return p;
+  }
+};
+
+Application::~Application() {
+  DebugDatabase db;
+  for(auto const& slotPtr: slots_) {
+    db.saveToken(slotPtr->getToken());
+  }
 }
 
 void Application::errorLog(std::string message) const

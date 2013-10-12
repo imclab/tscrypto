@@ -24,7 +24,6 @@ loggedIn_(false), actualTokenObjectHandle_(0), actualSessionObjectHandle_(0)
 }
 
 Token::~Token() {
-  //TODO: Serialize Token Objects
 }
 
 void Token::addSession(Session const * const session) {
@@ -175,55 +174,8 @@ CK_OBJECT_HANDLE Token::addSessionObject(CryptoObject * object) {
   return handle;
 }
 
-std::string const * Token::addKeyAlias(std::string alias) {
-  return &(*(keySet_.insert(alias).first));
-}
-
-bool Token::removeKeyAlias(std::string alias) {
-  return keySet_.erase(alias) > 0;
-}
-
-void Token::destroySessionObjects(cf::Connection const & connection) {
-  for (auto& objectPair: sessionObjects_) {
-    CryptoObjectPtr& object = objectPair.second;
-    
-    CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
-    const CK_ATTRIBUTE * handlerAttribute = object->findAttribute(&tmpl);
-    if (handlerAttribute != nullptr) {
-      // If a keypair is stored, then each the public and the private key will be deleted.
-      // Neitherless is only one instance is stored in the backend :P.
-      std::string handler = *(std::string *)handlerAttribute->pValue;
-      cf::DeleteKeyPairMethod method(handler);      
-      try {
-        method.execute(connection).getResponse();
-      } 
-      catch (std::runtime_error& e) {
-        // throw TcbError("Session::~Session", e.what(), CKR_GENERAL_ERROR);
-      }
-      
-    }    
-  }
-  
-  for (auto& objectPair: tokenObjects_) {
-    CryptoObjectPtr& object = objectPair.second;
-    
-    CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
-    const CK_ATTRIBUTE * handlerAttribute = object->findAttribute(&tmpl);
-    if (handlerAttribute != nullptr) {
-      // If a keypair is stored, then each the public and the private key will be deleted.
-      // Neitherless is only one instance is stored in the backend :P.
-      std::string handler = *(std::string *)handlerAttribute->pValue;
-      cf::DeleteKeyPairMethod method(handler);
-      
-      try {
-        method.execute(connection).getResponse();
-      } 
-      catch (std::runtime_error& e) {
-        // throw TcbError("Session::~Session", e.what(), CKR_GENERAL_ERROR);
-      }
-      
-    }    
-  }
+std::string Token::getLabel() const {
+  return label_;
 }
 
 CryptoObject & Token::getObject(CK_OBJECT_HANDLE handle) {

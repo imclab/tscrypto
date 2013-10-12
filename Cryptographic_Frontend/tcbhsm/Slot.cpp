@@ -15,6 +15,10 @@ Slot::Slot(CK_SLOT_ID id, TokenPtr token)
   
 }
 
+Slot::~Slot() {
+  
+}
+
 CK_SLOT_ID Slot::getId() const
 {
   return slotId_;

@@ -45,13 +45,11 @@ namespace tcbhsm
     void login(CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen);
     void logout();
     SecurityLevel getSecurityLevel() const;
+    std::string getLabel() const;
     
     // Container operations
     CK_OBJECT_HANDLE addTokenObject(CryptoObject * object);
-    CK_OBJECT_HANDLE addSessionObject(CryptoObject * object);
-    std::string const * addKeyAlias(std::string alias);
-    bool removeKeyAlias(std::string alias);    
-    void destroySessionObjects(cf::Connection const & connection);    
+    CK_OBJECT_HANDLE addSessionObject(CryptoObject * object);  
     CryptoObject & getObject(CK_OBJECT_HANDLE handle);
     std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getObjects(CK_OBJECT_HANDLE handle);
     std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getTokenObjects();
@@ -72,7 +70,6 @@ namespace tcbhsm
     std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> tokenObjects_;
     std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> sessionObjects_;
     
-    std::set<std::string> keySet_;
     std::set<Session const *> sessionSet_;
     
   protected:

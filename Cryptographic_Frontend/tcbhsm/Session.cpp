@@ -79,8 +79,33 @@ Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication,
 
 Session::~Session() {  
   cf::ConnectionPtr conn(createConnection());
-  currentSlot_.getToken().destroySessionObjects(*conn);
-  currentSlot_.getToken().removeSession(this);
+  Token & token = getCurrentSlot().getToken();
+  
+  for (auto& objectPair: token.getSessionObjects()) {
+    CryptoObjectPtr& object = objectPair.second;
+    
+    CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
+    const CK_ATTRIBUTE * handlerAttribute = object->findAttribute(&tmpl);
+    if (handlerAttribute != nullptr) {
+      
+      // If a keypair is stored, then each the public and the private key will be deleted.
+      // Neitherless if it's only one instance stored in the backend :P.
+      
+      std::string handler(reinterpret_cast<char *>(handlerAttribute->pValue),
+                          handlerAttribute->ulValueLen);
+      cf::DeleteKeyPairMethod method(handler);      
+      try {
+        method.execute(*conn).getResponse();
+      } 
+      catch (std::runtime_error& e) {
+        // throw TcbError("Session::~Session", e.what(), CKR_GENERAL_ERROR);
+      }
+      
+    }
+  }
+  
+  token.getSessionObjects().clear();
+  token.removeSession(this);
 }
 
 cf::ConnectionPtr Session::createConnection()
@@ -214,19 +239,18 @@ void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
     CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
     const CK_ATTRIBUTE * handlerAttribute = it->second->findAttribute(&tmpl);
     if (handlerAttribute != nullptr) {
-      std::string handler = *(std::string *)handlerAttribute->pValue;
+      std::string handler((char *)handlerAttribute->pValue,
+                          handlerAttribute->ulValueLen);
       
-      // If I've removed the alias before, then I don't have to delete it
-      // remotely...
-      if(token.removeKeyAlias(handler)) {
-        cf::ConnectionPtr connection = createConnection();
-        cf::DeleteKeyPairMethod method(handler);
-        try {
-          method.execute(*connection).getResponse();
-        } catch (std::exception& e) {
-          throw TcbError("Session::destroyObject", e.what(), CKR_GENERAL_ERROR);
-        }
+      
+      cf::ConnectionPtr connection = createConnection();
+      cf::DeleteKeyPairMethod method(handler);
+      try {
+        method.execute(*connection).getResponse();
+      } catch (std::exception& e) {
+        throw TcbError("Session::destroyObject", e.what(), CKR_GENERAL_ERROR);
       }
+    
       
     }
     
@@ -382,11 +406,12 @@ namespace {
     
     // NOTE: CKA_VENDOR_DEFINED = CKA_RABBIT_HANDLER :D.
     // i.e. si está ocupado se ocupa rabbit :P.
+        
     CK_ATTRIBUTE aValue = { 
       .type=CKA_VENDOR_DEFINED, 
-      .pValue=(void*)(rabbitHandler), 
+      .pValue=reinterpret_cast<void*>(const_cast<char *>(rabbitHandler->c_str())), 
       // Guardo el puntero, el objeto ya está guardado en el set...
-      .ulValueLen=sizeof(rabbitHandler) 
+      .ulValueLen=rabbitHandler->size()
     };
     
     // Se sobre escriben los datos...
@@ -507,8 +532,8 @@ namespace {
     // i.e. si está ocupado se ocupa rabbit :P.
     CK_ATTRIBUTE aValue = { 
       .type=CKA_VENDOR_DEFINED, 
-      .pValue=(void*)(rabbitHandler), 
-      .ulValueLen=sizeof(rabbitHandler) 
+      .pValue=reinterpret_cast<void*>(const_cast<char *>(rabbitHandler->c_str())), 
+      .ulValueLen=rabbitHandler->size()
     };
     
     // Se sobre escriben los datos...
@@ -665,12 +690,14 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
         cf::ConnectionPtr connection = createConnection();
         
         cf::GenerateKeyPairMethod method("RSA", modulusBits, exponent); // Unico metodo aceptado :B...       
-        std::string uuidHandler = method.execute(*connection).getResponse().getValue<std::string>("handler");
+        std::string uuidHandler = method.execute(*connection).getResponse().getValue<std::string>("handler");       
         
-        std::string const * handler = getCurrentSlot().getToken().addKeyAlias(uuidHandler);
-        
-        CK_OBJECT_HANDLE publicKeyHandle = createPublicKey(*this, pPublicKeyTemplate, ulPublicKeyAttributeCount, handler);
-        CK_OBJECT_HANDLE privateKeyHandle = createPrivateKey(*this, pPrivateKeyTemplate, ulPrivateKeyAttributeCount, handler);
+        CK_OBJECT_HANDLE publicKeyHandle = createPublicKey(*this, pPublicKeyTemplate, 
+                                                           ulPublicKeyAttributeCount, 
+                                                           &uuidHandler);
+        CK_OBJECT_HANDLE privateKeyHandle = createPrivateKey(*this, pPrivateKeyTemplate, 
+                                                             ulPrivateKeyAttributeCount, 
+                                                             &uuidHandler);
           
         return KeyPair(privateKeyHandle, publicKeyHandle);
         
@@ -701,7 +728,8 @@ void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
       throw TcbError("Session::signInit", "El object handle no contiene ninguna llave", CKR_ARGUMENTS_BAD);
     }
     
-    std::string handler = *(std::string *)handlerAttribute->pValue;
+    std::string handler(reinterpret_cast<char *>(handlerAttribute->pValue),
+                        handlerAttribute->ulValueLen); 
     
     std::string mechanism;
     switch(pMechanism->mechanism) {

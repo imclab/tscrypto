@@ -190,7 +190,7 @@ create_key_pair(CK_SESSION_HANDLE session)
      CK_MECHANISM mechanism = {
           CKM_RSA_PKCS_KEY_PAIR_GEN, NULL_PTR, 0
      };
-     CK_ULONG modulusBits = 4096;
+     CK_ULONG modulusBits = 1024;
      CK_BYTE publicExponent[] = { 1, 0, 1 };
      CK_BYTE subject[] = LABEL;
      CK_BYTE id[] = ID;

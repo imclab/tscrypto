@@ -24,7 +24,7 @@ class Slot
 {
 public:
   Slot(CK_SLOT_ID id, TokenPtr token);
-  
+  ~Slot();
   CK_SLOT_ID getId() const;
   void getInfo(CK_SLOT_INFO_PTR pInfo) const; // throws exception
   void initToken(std::string label, std::string pin);

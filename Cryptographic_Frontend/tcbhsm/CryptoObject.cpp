@@ -3,6 +3,9 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <json/json.h>
+#include <base64/base64.h>
+
 using namespace tcbhsm;
 
 CryptoObject::CryptoObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount) : isDistributed_(false) {
@@ -116,3 +119,6 @@ bool CryptoObject::isDistributed() const {
   return isDistributed_;
 }
 
+std::vector<CK_ATTRIBUTE> const & CryptoObject::getAttributes() const {
+  return attributes_;
+}

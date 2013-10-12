@@ -1,4 +1,3 @@
 En el frontend:
 
-- Guardar todas las opciones en un archivo de configuracion (json nomás)
-- Tanto Session cómo Token deberían ser containers de objetos (SessionObject's)
+- Serializar los CrytoObjects de alguna manera...

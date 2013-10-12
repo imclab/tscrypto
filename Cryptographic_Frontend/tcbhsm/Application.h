@@ -31,6 +31,7 @@ namespace tcbhsm
   {
   public:
     Application(std::ostream& out);
+    ~Application();
     
     void errorLog(std::string message) const;
     const std::vector<SlotPtr> & getSlotList() const;
