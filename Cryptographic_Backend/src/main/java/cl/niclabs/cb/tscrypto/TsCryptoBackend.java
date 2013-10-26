@@ -11,16 +11,16 @@ import com.rabbitmq.client.*;
 import java.io.IOException;
 
 public class TsCryptoBackend {
-    private static void run(String queueName, String hostName, MethodFactory methodFactory)
-            throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(hostName);
-        Connection connection;
+    private static void run(SDConfig config)
+            throws ShutdownSignalException, ConsumerCancelledException, InterruptedException, IOException {
+        String queueName = config.getRpcQueue();
+        Connection connection = TSConnection.getConnection(config.getRabbitMQConfig());
+
+        MethodFactory methodFactory = new TsCryptoMethodFactory(connection, config);
         Channel channel;
         QueueingConsumer consumer;
 
         try {
-            connection = factory.newConnection();
             channel = connection.createChannel();
             channel.queueDeclare(queueName, false, false, false, null);
             channel.basicQos(1);
@@ -64,33 +64,6 @@ public class TsCryptoBackend {
 
     public static void main(String[] args)
             throws ShutdownSignalException, ConsumerCancelledException, InterruptedException, IOException {
-        String queueName = "";
-        String hostName = "";
-
-        // Manejo de argumentos...
-        switch (args.length) {
-            case 0:
-                hostName = "localhost";
-                queueName = "rpc_queue";
-                break;
-
-            case 1:
-                hostName = args[0];
-                queueName = "rpc_queue";
-                break;
-
-            case 2:
-                hostName = args[0];
-                queueName = args[1];
-                break;
-
-            default:
-                System.err.println("Muchos argumentos.");
-                System.exit(1);
-        }
-
-        SDConfig config = new SDConfig();
-        Connection connection = TSConnection.getConnection(config.getRabbitMQConfig());
-        run(queueName, hostName, new TsCryptoMethodFactory(connection, config));
+        run(new SDConfig());
     }
 }
