@@ -13,7 +13,7 @@ using namespace tcbhsm;
 
 Token::Token(std::string label, std::string userPin, std::string soPin) 
 : userPin_(userPin), soPin_(soPin), securityLevel_(SecurityLevel::PUBLIC), 
-loggedIn_(false), actualTokenObjectHandle_(0), actualSessionObjectHandle_(0)
+loggedIn_(false), actualObjectHandle_(0)
 {
   if (label.size() <= 32)
     label_ = label;
@@ -160,17 +160,10 @@ void Token::logout() {
   loggedIn_ = false;
 }
 
-CK_OBJECT_HANDLE Token::addTokenObject(CryptoObject * object) {
-  actualTokenObjectHandle_++;
-  CK_OBJECT_HANDLE handle = actualTokenObjectHandle_;
-  (tokenObjects_[handle]).reset(object);
-  return handle;
-}
-
-CK_OBJECT_HANDLE Token::addSessionObject(CryptoObject * object) {
-  actualSessionObjectHandle_--;
-  CK_OBJECT_HANDLE handle = actualSessionObjectHandle_;
-  (sessionObjects_[handle]).reset(object);
+CK_OBJECT_HANDLE Token::addObject(CryptoObject * object)
+{
+  CK_OBJECT_HANDLE handle = ++actualObjectHandle_;
+  (objects_[handle]).reset(object);
   return handle;
 }
 
@@ -179,17 +172,9 @@ std::string Token::getLabel() const {
 }
 
 CryptoObject & Token::getObject(CK_OBJECT_HANDLE handle) {
-  return handle > 0? *(tokenObjects_.at(handle)) : *(sessionObjects_.at(handle));
+  return *(objects_.at(handle));
 }
 
-std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & Token::getObjects(CK_OBJECT_HANDLE handle) {  
-  return handle > 0? tokenObjects_ : sessionObjects_;
-}
-
-std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & Token::getTokenObjects() {
-  return tokenObjects_;
-}
-
-std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & Token::getSessionObjects() {
-  return sessionObjects_;
+std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & Token::getObjects() {  
+  return objects_;
 }

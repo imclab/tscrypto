@@ -55,7 +55,7 @@ class DebugDatabase : public Database {
 public:
   virtual void saveToken(Token & token) override {
     std::cout << "{ \"label\" : \"" << token.getLabel() << "\", \"objects\" : [ ";
-    for(auto const& objectPair: token.getTokenObjects()) {
+    for(auto const& objectPair: token.getObjects()) {
       // objectPair : std::pair<CK_OBJECT_HANDLE, CryptoObjectPtr>
       std::cout << "{ \"handle\" : " << objectPair.first << " , ";
       std::cout << " \"attributes\" : [ ";

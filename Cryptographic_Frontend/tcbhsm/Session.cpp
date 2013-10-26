@@ -29,7 +29,9 @@ using namespace tcbhsm;
 
 namespace { // Funcion auxiliar
 
-  bool userAuthorization(CK_STATE sessionState, CK_BBOOL isTokenObject, CK_BBOOL isPrivateObject, bool userAction) {
+  bool userAuthorization(CK_STATE sessionState, CK_BBOOL isTokenObject, 
+                         CK_BBOOL isPrivateObject, bool userAction) 
+  {
     switch(sessionState) {
       case CKS_RW_SO_FUNCTIONS:
         return isPrivateObject == CK_FALSE;
@@ -72,39 +74,45 @@ Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication,
                  CK_NOTIFY notify, Slot & currentSlot, 
                  Configuration const & configuration)
 : flags_(flags), application_(pApplication)
-, notify_(notify), currentSlot_(currentSlot), configuration_(configuration)
+, notify_(notify), currentSlot_(currentSlot)
+, configuration_(configuration)
 {
   currentSlot_.getToken().addSession(this);    
 }
 
 Session::~Session() {  
   cf::ConnectionPtr conn(createConnection());
-  Token & token = getCurrentSlot().getToken();
+  Token & token = getCurrentSlot().getToken();  
+  auto& objects = token.getObjects();
   
-  for (auto& objectPair: token.getSessionObjects()) {
-    CryptoObjectPtr& object = objectPair.second;
+  for (auto& objectPair: objects) {
+    CryptoObject& object = *(objectPair.second);    
     
-    CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
-    const CK_ATTRIBUTE * handlerAttribute = object->findAttribute(&tmpl);
-    if (handlerAttribute != nullptr) {
+    if (object.getType() == CryptoObjectType::SESSION_OBJECT) {
       
-      // If a keypair is stored, then each the public and the private key will be deleted.
-      // Neitherless if it's only one instance stored in the backend :P.
-      
-      std::string handler(reinterpret_cast<char *>(handlerAttribute->pValue),
-                          handlerAttribute->ulValueLen);
-      cf::DeleteKeyPairMethod method(handler);      
-      try {
-        method.execute(*conn).getResponse();
-      } 
-      catch (std::runtime_error& e) {
-        // throw TcbError("Session::~Session", e.what(), CKR_GENERAL_ERROR);
+      CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
+      CK_ATTRIBUTE const * handlerAttribute = object.findAttribute(&tmpl);
+      if (handlerAttribute != nullptr) {
+        
+        // If a keypair is stored, then each the public and the private key
+        // will be deleted.
+        // Neitherless if it's only one instance stored in the backend :P.
+        
+        char * value = reinterpret_cast<char *>(handlerAttribute->pValue);
+        std::string handler(value, handlerAttribute->ulValueLen);
+        cf::DeleteKeyPairMethod method(handler);      
+        try {
+          method.execute(*conn).getResponse();
+        } 
+        catch (std::runtime_error& e) {
+          // throw TcbError("Session::~Session", e.what(), CKR_GENERAL_ERROR);
+        }
       }
       
+      objects.erase(objectPair.first);
     }
   }
   
-  token.getSessionObjects().clear();
   token.removeSession(this);
 }
 
@@ -118,7 +126,8 @@ cf::ConnectionPtr Session::createConnection()
 
   int portNumber = std::stoi(port);
   
-  return cf::ConnectionPtr(new cf::RabbitConnection(hostname, portNumber, "", rpcQueue, 1));
+  return cf::ConnectionPtr(new cf::RabbitConnection(hostname, portNumber, 
+                                                    "", rpcQueue, 1));
 }
 
 Slot & Session::getCurrentSlot() {
@@ -192,14 +201,14 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
     case CKO_PRIVATE_KEY:
       if(keyType == CKK_RSA) {
         Token & token = getCurrentSlot().getToken();
-        CryptoObject * object = new CryptoObject(pTemplate, ulCount);
+        CryptoObjectType objectType = 
+            isToken? 
+            CryptoObjectType::TOKEN_OBJECT : 
+            CryptoObjectType::SESSION_OBJECT;
+            
+        CryptoObject * object = new CryptoObject(pTemplate, ulCount, objectType);
         
-        if(isToken == CK_TRUE) {
-          return token.addTokenObject(object);
-        } else {
-          return token.addSessionObject(object);
-        }
-        
+        return token.addObject(object);                
       } else {
         throw TcbError("Session::createObject", 
                        "keyType != CKK_RSA",
@@ -219,7 +228,7 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
 
 void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
   Token & token = getCurrentSlot().getToken();
-  auto & objectContainer = token.getObjects(hObject);
+  auto & objectContainer = token.getObjects();
   
   auto it = objectContainer.find(hObject);  
   if (it != objectContainer.end()) {
@@ -260,25 +269,36 @@ void Session::findObjectsInit(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
   
   if (ulCount == 0) {
     // Busco todos los objetos...
+    for (auto& handleObjectPair: token.getObjects()) {
+      foundObjects.push_back(handleObjectPair.first);
+    }
+    
+    /*
     for (auto& handleObjectPair: token.getTokenObjects()) {
       foundObjects.push_back(handleObjectPair.first);
     }
     
     for (auto& handleObjectPair: token.getSessionObjects()) {
       foundObjects.push_back(handleObjectPair.first);
-    }
+    }*/
+    
   } else {
-    for (auto& handleObjectPair: token.getTokenObjects()) {
+    for (auto& handleObjectPair: token.getObjects()) {
       if (handleObjectPair.second->match(pTemplate, ulCount)) {
         foundObjects.push_back(handleObjectPair.first);
       }
     }
-    
-    for (auto& handleObjectPair: token.getSessionObjects()) {
-      if (handleObjectPair.second->match(pTemplate, ulCount)) {
-        foundObjects.push_back(handleObjectPair.first);
-      }
-    }
+//     for (auto& handleObjectPair: token.getTokenObjects()) {
+//       if (handleObjectPair.second->match(pTemplate, ulCount)) {
+//         foundObjects.push_back(handleObjectPair.first);
+//       }
+//     }
+//     
+//     for (auto& handleObjectPair: token.getSessionObjects()) {
+//       if (handleObjectPair.second->match(pTemplate, ulCount)) {
+//         foundObjects.push_back(handleObjectPair.first);
+//       }
+//     }
   }
   //TODO: verificar permisos de acceso.
   foundObjectsIterator = foundObjects.begin();
@@ -288,8 +308,11 @@ void Session::findObjectsInit(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
 }
 
 auto Session::findObjects(CK_ULONG maxObjectCount) -> std::vector<CK_OBJECT_HANDLE> {
-  if (!findInitialized)
-    throw TcbError("Session::findObjects", "No se inicio la busqueda.", CKR_OPERATION_NOT_INITIALIZED);
+  if (!findInitialized) {
+    throw TcbError("Session::findObjects", 
+                   "No se inicio la busqueda.", 
+                   CKR_OPERATION_NOT_INITIALIZED);
+  }
 
   auto end = foundObjectsIterator + maxObjectCount;
   if (foundObjectsEnd < end)
@@ -301,10 +324,14 @@ auto Session::findObjects(CK_ULONG maxObjectCount) -> std::vector<CK_OBJECT_HAND
 }
 
 void Session::findObjectsFinal() {
-  if (!findInitialized)
-    throw TcbError("Session::findObjects", "No se inicio la busqueda.", CKR_OPERATION_NOT_INITIALIZED);
-  else 
+  if (!findInitialized) {
+    throw TcbError("Session::findObjects", 
+                   "No se inicio la busqueda.", 
+                   CKR_OPERATION_NOT_INITIALIZED);
+  }
+  else {
     findInitialized = false;
+  }
 }
 
 

@@ -48,12 +48,9 @@ namespace tcbhsm
     std::string getLabel() const;
     
     // Container operations
-    CK_OBJECT_HANDLE addTokenObject(CryptoObject * object);
-    CK_OBJECT_HANDLE addSessionObject(CryptoObject * object);  
+    CK_OBJECT_HANDLE addObject(CryptoObject * object);
     CryptoObject & getObject(CK_OBJECT_HANDLE handle);
-    std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getObjects(CK_OBJECT_HANDLE handle);
-    std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getTokenObjects();
-    std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getSessionObjects();
+    std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getObjects();
     
   private:
     CK_FLAGS tokenFlags_;
@@ -63,12 +60,8 @@ namespace tcbhsm
     SecurityLevel securityLevel_;
     bool loggedIn_;
     
-    // Strategy: TokenObjectHandle > 0, SessionObjectHandle < 0.
-    CK_OBJECT_HANDLE actualTokenObjectHandle_;
-    CK_OBJECT_HANDLE actualSessionObjectHandle_;
-    
-    std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> tokenObjects_;
-    std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> sessionObjects_;
+    CK_OBJECT_HANDLE actualObjectHandle_;
+    std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> objects_;
     
     std::set<Session const *> sessionSet_;
     

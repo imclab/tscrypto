@@ -8,7 +8,11 @@
 
 using namespace tcbhsm;
 
-CryptoObject::CryptoObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount) {
+CryptoObject::CryptoObject(CK_ATTRIBUTE_PTR pAttributes, 
+                           CK_ULONG ulCount,
+                           CryptoObjectType type) 
+: type_(type)
+{
   CK_ATTRIBUTE att;
   auto end = pAttributes + ulCount;
   for (auto it = pAttributes; it != end; ++it) {
@@ -104,4 +108,9 @@ void CryptoObject::copyAttributes(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) 
 
 std::vector<CK_ATTRIBUTE> const & CryptoObject::getAttributes() const {
   return attributes_;
+}
+
+CryptoObjectType CryptoObject::getType() const 
+{
+  return type_;
 }
