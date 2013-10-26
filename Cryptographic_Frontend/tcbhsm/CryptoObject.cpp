@@ -8,26 +8,13 @@
 
 using namespace tcbhsm;
 
-CryptoObject::CryptoObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount) : isDistributed_(false) {
+CryptoObject::CryptoObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount) {
   CK_ATTRIBUTE att;
   auto end = pAttributes + ulCount;
   for (auto it = pAttributes; it != end; ++it) {
     att.type = it->type;
     att.ulValueLen = it->ulValueLen;
     att.pValue = malloc(att.ulValueLen);
-    std::memcpy(att.pValue, it->pValue, att.ulValueLen);
-    
-    attributes_.push_back(att);
-  }
-}
-
-CryptoObject::CryptoObject(CK_ATTRIBUTE_PTR pAttributes, CK_ULONG ulCount, bool distributed) : isDistributed_(distributed) {
-  CK_ATTRIBUTE att;
-  auto end = pAttributes + ulCount;
-  for (auto it = pAttributes; it != end; ++it) {
-    att.type = it->type;
-    att.ulValueLen = it->ulValueLen;
-    att.pValue = std::malloc(att.ulValueLen);
     std::memcpy(att.pValue, it->pValue, att.ulValueLen);
     
     attributes_.push_back(att);
@@ -113,10 +100,6 @@ void CryptoObject::copyAttributes(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) 
     else 
       throw TcbError("CryptoObject::copyAttributes", "src == nullptr", CKR_ARGUMENTS_BAD);
   }
-}
-
-bool CryptoObject::isDistributed() const {
-  return isDistributed_;
 }
 
 std::vector<CK_ATTRIBUTE> const & CryptoObject::getAttributes() const {

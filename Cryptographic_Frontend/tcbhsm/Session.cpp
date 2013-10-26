@@ -145,10 +145,6 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
   CK_OBJECT_CLASS oClass = CKO_VENDOR_DEFINED;
   CK_KEY_TYPE keyType = CKK_VENDOR_DEFINED;
   
-  
-  // Recupera la opcion de si es un objeto distribuido o no...
-  bool distributedObject = false;
-  
   // Extract object information
   for(CK_ULONG i = 0; i < ulCount; i++) {
     switch(pTemplate[i].type) {
@@ -174,14 +170,7 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
         if(pTemplate[i].ulValueLen == sizeof(CK_KEY_TYPE)) {
           keyType = *(CK_KEY_TYPE*)pTemplate[i].pValue;
         }
-        break;
-        
-      case CKA_VENDOR_DEFINED: // RabbitConnection :D
-        if (pTemplate[i].ulValueLen > 0) {
-          distributedObject = true;
-        }
-        break;
-        
+        break;               
       default:
         break;
     }
@@ -203,7 +192,7 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
     case CKO_PRIVATE_KEY:
       if(keyType == CKK_RSA) {
         Token & token = getCurrentSlot().getToken();
-        CryptoObject * object = new CryptoObject(pTemplate, ulCount, distributedObject);
+        CryptoObject * object = new CryptoObject(pTemplate, ulCount);
         
         if(isToken == CK_TRUE) {
           return token.addTokenObject(object);
