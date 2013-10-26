@@ -7,7 +7,6 @@
 
 #include "config.h"
 
-#include <array>
 #include <vector>
 #include <set>
 #include <map>
@@ -50,7 +49,7 @@ namespace tcbhsm
     std::ostream& out_;
     
     std::unique_ptr<Configuration> configuration_;
-    std::array<SessionPtr, MAX_SESSION_COUNT> sessions_;
+    std::map<CK_SESSION_HANDLE, SessionPtr> sessions_;
     std::vector<SlotPtr> slots_;
     
     std::map<CK_SLOT_ID, std::set<unsigned long>> slotSessionsMap_;

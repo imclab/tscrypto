@@ -40,6 +40,7 @@ public:
   
   ~Session();
 
+  CK_SESSION_HANDLE getHandle() const;
   CK_STATE getState() const;
   CK_FLAGS getFlags() const;
 
@@ -77,6 +78,7 @@ public:
   CryptoObject & getObject(CK_OBJECT_HANDLE objectHandle); // throws exception
 
 private:
+  const CK_SESSION_HANDLE handle_;
   const CK_FLAGS flags_;
   const CK_VOID_PTR application_;
   const CK_NOTIFY notify_;

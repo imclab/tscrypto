@@ -18,6 +18,7 @@ namespace tcbhsm
   class CryptoObject
   {
   private:
+    CK_OBJECT_HANDLE handle_;
     CryptoObjectType type_;
     std::vector<CK_ATTRIBUTE> attributes_;
   public:
@@ -30,6 +31,7 @@ namespace tcbhsm
     void copyAttributes (CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) const; // throw Exception
     const CK_ATTRIBUTE * findAttribute (CK_ATTRIBUTE* attribute) const;
     CryptoObjectType getType() const;
+    CK_OBJECT_HANDLE getHandle() const;
     
     std::vector<CK_ATTRIBUTE> const & getAttributes() const;
   };

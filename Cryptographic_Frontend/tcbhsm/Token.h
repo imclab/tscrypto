@@ -60,7 +60,6 @@ namespace tcbhsm
     SecurityLevel securityLevel_;
     bool loggedIn_;
     
-    CK_OBJECT_HANDLE actualObjectHandle_;
     std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> objects_;
     
     std::set<Session const *> sessionSet_;

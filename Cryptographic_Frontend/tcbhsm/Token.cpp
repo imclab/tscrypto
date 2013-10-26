@@ -13,7 +13,7 @@ using namespace tcbhsm;
 
 Token::Token(std::string label, std::string userPin, std::string soPin) 
 : userPin_(userPin), soPin_(soPin), securityLevel_(SecurityLevel::PUBLIC), 
-loggedIn_(false), actualObjectHandle_(0)
+loggedIn_(false)
 {
   if (label.size() <= 32)
     label_ = label;
@@ -161,8 +161,8 @@ void Token::logout() {
 }
 
 CK_OBJECT_HANDLE Token::addObject(CryptoObject * object)
-{
-  CK_OBJECT_HANDLE handle = ++actualObjectHandle_;
+{  
+  CK_OBJECT_HANDLE handle = object->getHandle();
   (objects_[handle]).reset(object);
   return handle;
 }

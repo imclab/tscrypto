@@ -92,8 +92,7 @@ void Application::errorLog(std::string message) const
 Session & Application::getSession(CK_SESSION_HANDLE session) const
 {
   try {
-    unsigned long i = toLong(session);
-    Session & s = *(sessions_.at(i));
+    Session & s = *(sessions_.at(session));
     return s;
   } catch(...) {
     throw TcbError("Application::getSession", 
@@ -129,34 +128,24 @@ void Application::openSession(CK_SLOT_ID slotID, CK_FLAGS flags,
   if (phSession == nullptr)
     throw TcbError("Application::openSession", "phSession == nullptr", CKR_ARGUMENTS_BAD);
   
-  // NOTE: CK_INVALID_HANDLE == 0
-  
-  unsigned long i = 0;
   
   Slot &slot = getSlot(slotID);
-  for (SessionPtr& session: sessions_) {
-    // De entre todos los espacios para hacer sesiones
-    // se busca el que esté vacío.
-    if (session == nullptr) {    
-      session.reset(new Session(flags, pApplication, notify, slot, *configuration_));
-      slotSessionsMap_[slotID].insert(i);
-      *phSession = toSessionHandle(i);
-      return;
-    }
-    ++i;
-  }
+  Session * sessionPtr = 
+      new Session(flags, pApplication, notify, slot, *configuration_);
+  CK_SESSION_HANDLE handle = sessionPtr->getHandle();      
   
-  throw TcbError("Application::openSession", "No se pueden abrir mas sesiones", CKR_GENERAL_ERROR);
+  sessions_[handle].reset(sessionPtr);
+  
 }
 
 void Application::closeSession(CK_SESSION_HANDLE hSession) // throws
 {
-  unsigned long i = toLong(hSession);
   CK_SLOT_ID slotID = getSession(hSession).getCurrentSlot().getId();  
+ 
   // Se elimina la sesion con todo lo que tiene adentro
   try {
-    sessions_.at(i).reset(nullptr);
-    slotSessionsMap_[slotID].erase(i);
+    sessions_.at(hSession).reset(nullptr);
+    slotSessionsMap_[slotID].erase(hSession);
   } catch(...) {
     throw TcbError("Application::closeSession", "Mal indice de sesion", CKR_SESSION_HANDLE_INVALID);
   }

@@ -67,13 +67,16 @@ namespace { // Funcion auxiliar
 
     return false;
   }
+  
+  CK_SESSION_HANDLE actualHandle = 0;
 
 }
 
 Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, 
                  CK_NOTIFY notify, Slot & currentSlot, 
                  Configuration const & configuration)
-: flags_(flags), application_(pApplication)
+: handle_(++actualHandle)
+, flags_(flags), application_(pApplication)
 , notify_(notify), currentSlot_(currentSlot)
 , configuration_(configuration)
 {
@@ -114,6 +117,11 @@ Session::~Session() {
   }
   
   token.removeSession(this);
+}
+
+CK_SESSION_HANDLE Session::getHandle() const 
+{
+  return handle_;
 }
 
 cf::ConnectionPtr Session::createConnection()
