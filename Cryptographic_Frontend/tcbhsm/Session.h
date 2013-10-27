@@ -67,7 +67,8 @@ public:
   void generateRandom(CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen);
 
   // Conexiones
-  cf::ConnectionPtr createConnection(); // RAII connection in a std::unique_ptr
+  cf::ConnectionPtr createConnection(); 
+  // RAII connection in a std::unique_ptr
 
   CK_OBJECT_HANDLE createObject(CK_ATTRIBUTE_PTR pTemplate, 
                                 CK_ULONG ulCount); // throws exception

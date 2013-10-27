@@ -181,8 +181,10 @@ extern "C" {
     
     try {
       std::string label ( reinterpret_cast<char*>(pLabel), 32 );
-      std::string pin ( reinterpret_cast<char*>(pPin), ulPinLen );
-      app->getSlot(slotID).initToken(label, pin);
+      std::string pin ( reinterpret_cast<char*>(pPin), ulPinLen );            
+      Slot & slot = app->getSlot(slotID);
+      
+      slot.insertToken(TokenPtr(new Token(label, pin, pin, slot)));
     } catch (TcbError & e) {
       return error(e);
     }
@@ -266,7 +268,7 @@ extern "C" {
     unsigned long bufSize = 0;
     if (tokenPresent == CK_TRUE) {
       for (auto const& pSlot: slotList) { 
-        if (pSlot->tokenIsPresent()) {
+        if (pSlot->isTokenPresent()) {
           bufSize += 1;
         }
       }
@@ -290,8 +292,9 @@ extern "C" {
     
     int i = 0;
     for (auto const& pSlot: slotList) {
-      if (tokenPresent == CK_FALSE || pSlot->tokenIsPresent())
+      if (tokenPresent == CK_FALSE || pSlot->isTokenPresent()) {
         pSlotList[i++] = pSlot->getId();
+      }
     }
     
     *pulCount = bufSize;
@@ -336,19 +339,28 @@ extern "C" {
   }
   
   CK_RV C_OpenSession(CK_SLOT_ID slotID, CK_FLAGS flags,
-                      CK_VOID_PTR pApplication, CK_NOTIFY Notify,
+                      CK_VOID_PTR pApplication, CK_NOTIFY notify,
                       CK_SESSION_HANDLE_PTR phSession)
   {
-    if (!appIsInited())
+    if (!appIsInited()) {
       return CKR_CRYPTOKI_NOT_INITIALIZED;
+    }
     
+    if (flags == 0) {
+      return CKR_SESSION_PARALLEL_NOT_SUPPORTED;
+    }    
+    
+    if (phSession == nullptr) {
+      return CKR_ARGUMENTS_BAD;
+    }
+        
     try {
-      Token & token = app->getSlot(slotID).getToken();
-      
-      if (!token.isInited())
+      Slot & slot = app->getSlot(slotID);
+      if (!slot.getToken().isInited())
         return CKR_TOKEN_NOT_RECOGNIZED;
-      
-      app->openSession(slotID, flags, pApplication, Notify, phSession);
+
+      *phSession = slot.openSession(flags, pApplication, 
+                                    notify, app->getConfiguration());      
     } catch (TcbError & e) {
       return error(e);
     }
@@ -362,7 +374,7 @@ extern "C" {
       return CKR_CRYPTOKI_NOT_INITIALIZED;
     
     try {
-      app->closeSession(hSession);
+      app->getSessionSlot(hSession).closeSession(hSession);
     } catch(TcbError & e) {
       return error(e);
     }
@@ -374,8 +386,8 @@ extern "C" {
     if (!appIsInited())
       return CKR_CRYPTOKI_NOT_INITIALIZED;
     
-    try {
-      app->closeAllSessions(slotID);
+    try {      
+      app->getSlot(slotID).closeAllSessions();
     } catch(TcbError & e) {
       return error(e);
     }

@@ -80,7 +80,6 @@ Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication,
 , notify_(notify), currentSlot_(currentSlot)
 , configuration_(configuration)
 {
-  currentSlot_.getToken().addSession(this);    
 }
 
 Session::~Session() {  
@@ -115,8 +114,6 @@ Session::~Session() {
       objects.erase(objectPair.first);
     }
   }
-  
-  token.removeSession(this);
 }
 
 CK_SESSION_HANDLE Session::getHandle() const 
@@ -134,8 +131,9 @@ cf::ConnectionPtr Session::createConnection()
 
   int portNumber = std::stoi(port);
   
-  return cf::ConnectionPtr(new cf::RabbitConnection(hostname, portNumber, 
-                                                    "", rpcQueue, 1));
+  cf::Connection * c = new cf::RabbitConnection(hostname, portNumber, 
+                                                "", rpcQueue, 1);
+  return cf::ConnectionPtr(c);
 }
 
 Slot & Session::getCurrentSlot() {
@@ -280,33 +278,12 @@ void Session::findObjectsInit(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
     for (auto& handleObjectPair: token.getObjects()) {
       foundObjects.push_back(handleObjectPair.first);
     }
-    
-    /*
-    for (auto& handleObjectPair: token.getTokenObjects()) {
-      foundObjects.push_back(handleObjectPair.first);
-    }
-    
-    for (auto& handleObjectPair: token.getSessionObjects()) {
-      foundObjects.push_back(handleObjectPair.first);
-    }*/
-    
   } else {
     for (auto& handleObjectPair: token.getObjects()) {
       if (handleObjectPair.second->match(pTemplate, ulCount)) {
         foundObjects.push_back(handleObjectPair.first);
       }
     }
-//     for (auto& handleObjectPair: token.getTokenObjects()) {
-//       if (handleObjectPair.second->match(pTemplate, ulCount)) {
-//         foundObjects.push_back(handleObjectPair.first);
-//       }
-//     }
-//     
-//     for (auto& handleObjectPair: token.getSessionObjects()) {
-//       if (handleObjectPair.second->match(pTemplate, ulCount)) {
-//         foundObjects.push_back(handleObjectPair.first);
-//       }
-//     }
   }
   //TODO: verificar permisos de acceso.
   foundObjectsIterator = foundObjects.begin();

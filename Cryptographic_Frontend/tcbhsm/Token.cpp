@@ -11,27 +11,20 @@
 
 using namespace tcbhsm;
 
-Token::Token(std::string label, std::string userPin, std::string soPin) 
-: userPin_(userPin), soPin_(soPin), securityLevel_(SecurityLevel::PUBLIC), 
-loggedIn_(false)
+Token::Token(std::string label, std::string userPin, std::string soPin, Slot & slot) 
+: userPin_(userPin), soPin_(soPin)
+, securityLevel_(SecurityLevel::PUBLIC), loggedIn_(false), slot_(slot)
 {
-  if (label.size() <= 32)
+  if (label.size() <= 32) {
     label_ = label;
-  else
+  } else {
     throw TcbError("Token::Token", "Etiqueta con mas de 32 caracteres", CKR_ARGUMENTS_BAD);
+  }
   
   // TODO: Deserialize Token Objects
 }
 
 Token::~Token() {
-}
-
-void Token::addSession(Session const * const session) {
-  sessionSet_.insert(session);
-}
-  
-void Token::removeSession(Session const * const session) {
-  sessionSet_.erase(session);
 }
 
 void Token::getInfo(CK_TOKEN_INFO_PTR pInfo) const
@@ -58,9 +51,9 @@ void Token::getInfo(CK_TOKEN_INFO_PTR pInfo) const
   
   pInfo->flags = tokenFlags_;
   pInfo->ulMaxSessionCount = MAX_SESSION_COUNT;
-  pInfo->ulSessionCount = sessionSet_.size();
+  pInfo->ulSessionCount = slot_.sessionsCount();
   pInfo->ulMaxRwSessionCount = MAX_SESSION_COUNT;
-  pInfo->ulRwSessionCount = sessionSet_.size(); // TODO!
+  pInfo->ulRwSessionCount = slot_.sessionsCount(); // TODO!
   pInfo->ulMaxPinLen = MAX_PIN_LEN;
   pInfo->ulMinPinLen = MIN_PIN_LEN;
   pInfo->ulTotalPublicMemory = CK_UNAVAILABLE_INFORMATION;
@@ -94,62 +87,63 @@ auto Token::getSecurityLevel() const -> SecurityLevel {
 
 Token::SecurityLevel Token::checkUserPin(CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) const {
   std::string pin(reinterpret_cast<char *>(pPin), ulPinLen);
-  if (userPin_ == pin)
+  if (userPin_ == pin) {
     return SecurityLevel::USER;
-  else
+  } else {
     throw TcbError("Token::login", "Mal pin", CKR_PIN_INCORRECT);
-  
+  }  
 }
 
 Token::SecurityLevel Token::checkSecurityOfficerPin(CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) const {
   std::string pin(reinterpret_cast<char *>(pPin), ulPinLen);
-  if (soPin_ == pin)
+  if (soPin_ == pin) {
     return SecurityLevel::SECURITY_OFFICER;
-  else
+  } else {
     throw TcbError("Token::login", "Mal pin", CKR_PIN_INCORRECT);
+  }
 }
 
 void Token::login(CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) {
-  if (loggedIn_) {
-    if ((userType == CKU_USER && securityLevel_ == SecurityLevel::SECURITY_OFFICER)
-      || 
-      (userType == CKU_SO && securityLevel_ == SecurityLevel::USER))
-    {
-      
-      throw TcbError("Token::login", 
-                     "loggedIn_ == true", 
-                     CKR_USER_ANOTHER_ALREADY_LOGGED_IN);
-      
-    }
+  if (loggedIn_ 
+    && 
+    ((userType == CKU_USER && securityLevel_ == SecurityLevel::SECURITY_OFFICER)
+    || 
+    (userType == CKU_SO && securityLevel_ == SecurityLevel::USER)))
+  {
+    throw TcbError("Token::login", 
+                   "loggedIn_ == true", 
+                   CKR_USER_ANOTHER_ALREADY_LOGGED_IN);
+    
   }
-  if (pPin == nullptr)  
-    throw TcbError("Token::login", "pPin == nullptr", CKR_ARGUMENTS_BAD);
   
-  if (userType == CKU_SO) {
-    
-    securityLevel_ = checkSecurityOfficerPin(pPin, ulPinLen);
-    
-  } else if (userType == CKU_USER) {
-    
-    securityLevel_ = checkUserPin(pPin, ulPinLen);
-    
-  } else if (userType == CKU_CONTEXT_SPECIFIC) {
-    
-    switch (securityLevel_) {
-      case SecurityLevel::PUBLIC:
-        throw TcbError("Token::login", "Mal userType", CKR_OPERATION_NOT_INITIALIZED);
-        
-      case SecurityLevel::USER:
-        securityLevel_ = checkUserPin(pPin, ulPinLen);
-        break;
-        
-      case SecurityLevel::SECURITY_OFFICER:
-        securityLevel_ = checkSecurityOfficerPin(pPin, ulPinLen);
-        break;
-    }    
-    
-  } else {
-    throw TcbError("Token::login", "Mal userType", CKR_USER_TYPE_INVALID);
+  if (pPin == nullptr) {
+    throw TcbError("Token::login", "pPin == nullptr", CKR_ARGUMENTS_BAD);
+  }
+  
+  switch (userType) {
+    case CKU_SO:
+      securityLevel_ = checkSecurityOfficerPin(pPin, ulPinLen);
+      break;
+    case CKU_USER:
+      securityLevel_ = checkUserPin(pPin, ulPinLen);
+      break;
+    case CKU_CONTEXT_SPECIFIC:
+      switch (securityLevel_) {
+        case SecurityLevel::PUBLIC:
+          throw TcbError("Token::login", "Mal userType", CKR_OPERATION_NOT_INITIALIZED);
+          
+        case SecurityLevel::USER:
+          securityLevel_ = checkUserPin(pPin, ulPinLen);
+          break;
+          
+        case SecurityLevel::SECURITY_OFFICER:
+          securityLevel_ = checkSecurityOfficerPin(pPin, ulPinLen);
+          break;
+      }    
+      break;
+    default:
+      throw TcbError("Token::login", "Mal userType", CKR_USER_TYPE_INVALID);
+      break;      
   }
   
   loggedIn_ = true;

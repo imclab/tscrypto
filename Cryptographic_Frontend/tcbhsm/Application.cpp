@@ -19,15 +19,6 @@
 
 using namespace tcbhsm;
 
-namespace {
-  inline unsigned long toLong(CK_SESSION_HANDLE h) {
-    return static_cast<unsigned long>(h) - 1;
-  }
-  inline CK_SESSION_HANDLE toSessionHandle(unsigned long l) {
-    return static_cast<CK_SESSION_HANDLE>(l) + 1;
-  }
-}
-
 Application::Application(std::ostream& out)
 : out_(out)
 { 
@@ -44,8 +35,10 @@ Application::Application(std::ostream& out)
   // The tokens are owned by the slots.
   int i = 0;
   for (auto const & slotConf: configuration_->getSlotConf()) {
-    TokenPtr token( new Token(slotConf.label, slotConf.userPin, slotConf.soPin) );    
-    SlotPtr slot(new Slot(i, std::move(token)));
+    SlotPtr slot(new Slot(i));    
+    
+    slot->insertToken(TokenPtr(new Token(slotConf.label, slotConf.userPin, slotConf.soPin, *slot)));
+    
     slots_.push_back(std::move(slot));    
   }  
   
@@ -89,16 +82,9 @@ void Application::errorLog(std::string message) const
   out_ << message << std::endl;
 }
 
-Session & Application::getSession(CK_SESSION_HANDLE session) const
+Session & Application::getSession(CK_SESSION_HANDLE session)
 {
-  try {
-    Session & s = *(sessions_.at(session));
-    return s;
-  } catch(...) {
-    throw TcbError("Application::getSession", 
-                   "Mal indice de sesion.", 
-                   CKR_SESSION_HANDLE_INVALID);
-  }
+  return getSessionSlot(session).getSession(session);
 }
 
 const std::vector<SlotPtr> & Application::getSlotList() const
@@ -118,53 +104,16 @@ Slot & Application::getSlot(CK_SLOT_ID id) const
   }
 }
 
-void Application::openSession(CK_SLOT_ID slotID, CK_FLAGS flags,
-                              CK_VOID_PTR pApplication, CK_NOTIFY notify,
-                              CK_SESSION_HANDLE_PTR phSession)
-{  
-  if (flags == 0)
-    throw TcbError("Application::openSession" , "flags == 0", CKR_SESSION_PARALLEL_NOT_SUPPORTED);
-  
-  if (phSession == nullptr)
-    throw TcbError("Application::openSession", "phSession == nullptr", CKR_ARGUMENTS_BAD);
-  
-  
-  Slot &slot = getSlot(slotID);
-  Session * sessionPtr = 
-      new Session(flags, pApplication, notify, slot, *configuration_);
-  CK_SESSION_HANDLE handle = sessionPtr->getHandle();      
-  
-  sessions_[handle].reset(sessionPtr);
-  
-}
-
-void Application::closeSession(CK_SESSION_HANDLE hSession) // throws
-{
-  CK_SLOT_ID slotID = getSession(hSession).getCurrentSlot().getId();  
- 
-  // Se elimina la sesion con todo lo que tiene adentro
-  try {
-    sessions_.at(hSession).reset(nullptr);
-    slotSessionsMap_[slotID].erase(hSession);
-  } catch(...) {
-    throw TcbError("Application::closeSession", "Mal indice de sesion", CKR_SESSION_HANDLE_INVALID);
-  }
-}
-
-void Application::closeAllSessions(CK_SLOT_ID slotID)
-{
-  try {
-    auto& slotSessions = slotSessionsMap_.at(slotID);
-    for (auto session: slotSessions) {
-      closeSession(toSessionHandle(session));
+Slot & Application::getSessionSlot(CK_SESSION_HANDLE handle) {
+  for(auto & slotPtr: slots_) {
+    if (slotPtr->hasSession(handle)) {
+      return *slotPtr;
     }
-    
-    // Para eliminar cualquier basura...
-    slotSessions.clear();
-    
-  } catch(std::exception &e) {
-    throw TcbError("Application::closeAllSessions", e.what(), CKR_SLOT_ID_INVALID);
   }
+  
+  throw TcbError("Application::getSessionSlot", 
+                 "Session not found.", 
+                 CKR_SESSION_HANDLE_INVALID);
 }
 
 Configuration const & Application::getConfiguration() const { // throws exception

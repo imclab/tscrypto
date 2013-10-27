@@ -25,34 +25,27 @@ namespace tcbhsm
   using SlotPtr = std::unique_ptr<Slot>;  
   using SessionPtr = std::unique_ptr<Session>;
   
-  /** La aplicacion maneja sesiones y slots, y la relacion entre ellos **/
+  /** La aplicacion tiene slots y algunas funcionalidades de ayuda... **/
   class Application
   {
   public:
     Application(std::ostream& out);
     ~Application();
     
-    void errorLog(std::string message) const;
-    const std::vector<SlotPtr> & getSlotList() const;
     Slot & getSlot(CK_SLOT_ID id) const; // throws exception
-    Session & getSession(CK_SESSION_HANDLE session) const; // throws exception
+    std::vector<SlotPtr> const & getSlotList() const;
     
-    void openSession(CK_SLOT_ID slotID, CK_FLAGS flags,
-                     CK_VOID_PTR pApplication, CK_NOTIFY Notify,
-                     CK_SESSION_HANDLE_PTR phSession); // throws Exception
-    void closeSession(CK_SESSION_HANDLE hSession); // throws Exception
-    void closeAllSessions(CK_SLOT_ID slotID); // throws Exception
-    
-    Configuration const & getConfiguration() const; // throws exception
+    Slot & getSessionSlot(CK_SESSION_HANDLE handle);    
+    Session & getSession(CK_SESSION_HANDLE session); // throws exception
+
+    Configuration const & getConfiguration() const; // throws exception    
+    void errorLog(std::string message) const;    
     
   private:
     std::ostream& out_;
     
     std::unique_ptr<Configuration> configuration_;
-    std::map<CK_SESSION_HANDLE, SessionPtr> sessions_;
-    std::vector<SlotPtr> slots_;
-    
-    std::map<CK_SLOT_ID, std::set<unsigned long>> slotSessionsMap_;
+    std::vector<SlotPtr> slots_;  
   };
 }
 

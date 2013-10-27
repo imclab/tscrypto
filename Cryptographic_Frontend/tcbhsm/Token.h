@@ -33,12 +33,10 @@ namespace tcbhsm
       SECURITY_OFFICER, USER, PUBLIC
     };
     
-    Token(std::string label, std::string userPin, std::string soPin);
+    Token(std::string label, std::string userPin, std::string soPin, Slot& slot);
     ~Token();
     
     // Basic operations
-    void addSession(Session const * const session);
-    void removeSession(Session const * const session);
     void getInfo(CK_TOKEN_INFO_PTR pInfo) const;
     void setUserPin(std::string pin);
     bool isInited() const;
@@ -59,10 +57,9 @@ namespace tcbhsm
     std::string label_;
     SecurityLevel securityLevel_;
     bool loggedIn_;
+    Slot &slot_;
     
-    std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> objects_;
-    
-    std::set<Session const *> sessionSet_;
+    std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> objects_;   
     
   protected:
     SecurityLevel checkUserPin(CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) const;
