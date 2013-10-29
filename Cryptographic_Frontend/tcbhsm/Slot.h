@@ -18,6 +18,7 @@ namespace tcbhsm
   
 class Token;
 class Session;
+class Configuration;
 
 using TokenPtr = std::unique_ptr<Token>;
 using SessionPtr = std::unique_ptr<Session>;

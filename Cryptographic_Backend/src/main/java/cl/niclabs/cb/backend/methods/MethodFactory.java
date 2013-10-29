@@ -7,4 +7,6 @@ public interface MethodFactory {
     GetAttributeMethod makeGetAttributeMethod(GetAttributeMethod.Args args);
     SignInitMethod makeSignInitMethod(SignInitMethod.Args args);
     SignMethod makeSignMethod(SignMethod.Args args);
+    SeedRandomMethod makeSeedRandomMethod(SeedRandomMethod.Args args);
+    GenerateRandomMethod makeGenerateRandomMethod(GenerateRandomMethod.Args args);
 }

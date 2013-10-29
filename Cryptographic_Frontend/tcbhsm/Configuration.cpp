@@ -1,9 +1,10 @@
-#include "tcbhsm.h"
-
 #include <fstream>
 #include <cerrno>
 #include <json/json.h>
 
+#include "Configuration.h"
+#include "TcbError.h"
+#include "cryptoki.h"
 
 using namespace tcbhsm;
 

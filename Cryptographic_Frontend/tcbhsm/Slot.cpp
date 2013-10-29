@@ -2,7 +2,11 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include "tcbhsm.h"
+#include "Slot.h"
+#include "Session.h"
+#include "Token.h"
+#include "TcbError.h"
+#include "Configuration.h"
 
 #include <cstring> // memset, memcpy
 // TODO: Replace memset and memcpy with std::fill and std::copy...

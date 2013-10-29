@@ -9,6 +9,8 @@ import cl.inria.tscrypto.sigDealer.ResultsCollector;
 import cl.inria.tscrypto.sigDealer.SDConfig;
 
 import cl.niclabs.cb.backend.methods.*;
+import cl.niclabs.cb.backend.methods.implementation.GenerateRandomMethodImpl;
+import cl.niclabs.cb.backend.methods.implementation.SeedRandomMethodImpl;
 import com.rabbitmq.client.Connection;
 
 import java.io.IOException;
@@ -80,5 +82,15 @@ public class TsCryptoMethodFactory implements MethodFactory {
 
     public KeyManagementCollector getKeyManagementCollector() {
         return keyManagementCollector;
+    }
+
+    @Override
+    public SeedRandomMethod makeSeedRandomMethod(SeedRandomMethod.Args args) {
+        return new SeedRandomMethodImpl(args);
+    }
+
+    @Override
+    public GenerateRandomMethod makeGenerateRandomMethod(GenerateRandomMethod.Args args) {
+        return new GenerateRandomMethodImpl(args);
     }
 }

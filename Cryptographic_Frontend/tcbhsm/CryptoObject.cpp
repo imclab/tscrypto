@@ -1,10 +1,13 @@
-#include "tcbhsm.h"
-
 #include <cstdlib>
 #include <cstring>
 
 #include <json/json.h>
 #include <base64/base64.h>
+
+#include "CryptoObject.h"
+#include "TcbError.h"
+#include "cryptoki/cryptoki.h"
+
 
 using namespace tcbhsm;
 

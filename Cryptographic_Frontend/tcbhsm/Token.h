@@ -22,6 +22,7 @@ namespace cf {
 namespace tcbhsm
 {
   class Session;
+  class Slot;
   class CryptoObject;
   using CryptoObjectPtr = std::unique_ptr<CryptoObject>;
   

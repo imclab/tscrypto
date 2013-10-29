@@ -2,12 +2,16 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include "tcbhsm.h"
+#include <cstring>
 
 #include "cf/DeleteKeyPairMethod.hpp"
 #include "cf/ResponseMessage.hpp"
 
-#include <cstring>
+#include "Token.h"
+#include "Slot.h"
+#include "CryptoObject.h"
+#include "TcbError.h"
+
 
 using namespace tcbhsm;
 

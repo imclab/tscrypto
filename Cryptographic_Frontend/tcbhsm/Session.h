@@ -13,6 +13,7 @@
 #include <botan/auto_rng.h>
 
 #include <memory>
+#include <vector>
 #include <utility>
 
 namespace cf {

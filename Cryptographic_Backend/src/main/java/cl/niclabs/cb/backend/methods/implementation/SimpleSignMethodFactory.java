@@ -42,4 +42,14 @@ public class SimpleSignMethodFactory implements MethodFactory {
     public SignMethod makeSignMethod(SignMethod.Args args) {
         return new SignMethodImpl(args);
     }
+
+    @Override
+    public SeedRandomMethod makeSeedRandomMethod(SeedRandomMethod.Args args) {
+        return new SeedRandomMethodImpl(args);
+    }
+
+    @Override
+    public GenerateRandomMethod makeGenerateRandomMethod(GenerateRandomMethod.Args args) {
+        return new GenerateRandomMethodImpl(args);
+    }
 }

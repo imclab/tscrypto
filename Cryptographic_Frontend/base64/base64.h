@@ -1,4 +1,6 @@
 #include <string>
+#include <vector>
+
 namespace base64 {
   using TCHAR = char;
   using DWORD = long;

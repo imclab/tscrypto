@@ -56,6 +56,16 @@ public class MethodParser implements JsonDeserializer<Method> {
                 GetAttributeMethod.Args args = context.deserialize(argsJsonElement, GetAttributeMethod.Args.class);
                 return methodFactory.makeGetAttributeMethod(args);
             }
+            case "SeedRandom":
+            {
+                SeedRandomMethod.Args args = context.deserialize(argsJsonElement, SeedRandomMethod.Args.class);
+                return methodFactory.makeSeedRandomMethod(args);
+            }
+            case "GenerateRandom":
+            {
+                GenerateRandomMethod.Args args = context.deserialize(argsJsonElement, GenerateRandomMethod.Args.class);
+                return methodFactory.makeGenerateRandomMethod(args);
+            }
             default:
             {
                 throw new JsonParseException("Cannot parse method: " + method);

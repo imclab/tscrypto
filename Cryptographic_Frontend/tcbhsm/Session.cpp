@@ -1,17 +1,6 @@
 /**
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
-
-#include "tcbhsm.h"
-
-#include "cf/Method.hpp"
-#include "cf/GenerateKeyPairMethod.hpp"
-#include "cf/DeleteKeyPairMethod.hpp"
-#include "cf/SignInitMethod.hpp"
-#include "cf/RabbitConnection.hpp"
-#include "cf/ResponseMessage.hpp"
-#include "cf/SignMethod.hpp"
-
 #include "base64/base64.h"
 
 #include <botan/init.h>
@@ -23,7 +12,27 @@
 #include <botan/filters.h>
 
 #include <algorithm>
+#include <vector>
 #include <sstream>
+
+#include "cf/Method.hpp"
+#include "cf/GenerateKeyPairMethod.hpp"
+#include "cf/DeleteKeyPairMethod.hpp"
+#include "cf/SignInitMethod.hpp"
+#include "cf/RabbitConnection.hpp"
+#include "cf/ResponseMessage.hpp"
+#include "cf/SignMethod.hpp"
+#include "cf/SeedRandomMethod.hpp"
+#include "cf/GenerateRandomMethod.hpp"
+
+#include "Session.h"
+#include "Slot.h"
+#include "Token.h"
+#include "CryptoObject.h"
+#include "Configuration.h"
+#include "TcbError.h"
+#include "cryptoki/cryptoki.h"
+
 
 using namespace tcbhsm;
 
@@ -913,7 +922,13 @@ void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature
       throw TcbError("Session::generateRandom", "pRandomData == nullptr", CKR_ARGUMENTS_BAD);
     }
     
-    rng.randomize(pRandomData, ulRandomLen);
+    cf::ConnectionPtr connection = createConnection();
+    cf::GenerateRandomMethod method { static_cast<long>(ulRandomLen) };
+    std::string encodedData = method.execute(*connection).getResponse().getValue<std::string>("data");
+    std::string decodedData( base64::decode(encodedData) );
+    const char * data = decodedData.c_str();
+    
+    std::copy(data, data + ulRandomLen, pRandomData);     
   }
   
   void Session::seedRandom(CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen) {
@@ -921,6 +936,9 @@ void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature
       throw TcbError("Session::seedRandom", "pSeed == nullptr", CKR_ARGUMENTS_BAD);
     }
     
-    rng.add_entropy(pSeed, ulSeedLen);
-    rng.reseed();
+    cf::ConnectionPtr connection = createConnection();
+    std::string encodedData( base64::encode(pSeed, ulSeedLen) );
+    
+    cf::SeedRandomMethod method( encodedData );
+    method.execute(*connection).getResponse();
   }
