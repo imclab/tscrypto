@@ -1,7 +1,7 @@
 package cl.niclabs.cb.backend.methods;
 
 import cl.niclabs.cb.backend.*;
-import cl.niclabs.cb.backend.methods.implementation.SimpleSignMethodFactory;
+import cl.niclabs.cb.jcrypto.methods.SimpleSignMethodFactory;
 import cl.niclabs.cb.dispatcher.*;
 import com.google.gson.Gson;
 import org.junit.Assert;

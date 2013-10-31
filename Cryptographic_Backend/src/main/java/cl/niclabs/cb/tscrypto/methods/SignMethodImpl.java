@@ -5,10 +5,11 @@ import cl.niclabs.cb.backend.methods.SignMethod;
 
 import javax.xml.bind.DatatypeConverter;
 
-class SignMethodImpl extends SignMethod {
+class SignMethodImpl implements SignMethod {
+    protected final byte[] data;
     private final Signer signer;
     public SignMethodImpl(Args args, Signer signer) {
-        super(args);
+        data = DatatypeConverter.parseBase64Binary(args.data);
         this.signer = signer;
     }
 

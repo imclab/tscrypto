@@ -1,16 +1,24 @@
-package cl.niclabs.cb.backend.methods.implementation;
+package cl.niclabs.cb.jcrypto.methods;
 
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.SignInitMethod;
+import cl.niclabs.cb.jcrypto.KeyStorage;
+import cl.niclabs.cb.jcrypto.MapKeyStorage;
+import cl.niclabs.cb.jcrypto.Signer;
+import cl.niclabs.cb.jcrypto.SignerImpl;
 
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 
-class SignInitMethodImpl extends SignInitMethod {
+class SignInitMethodImpl implements SignInitMethod {
+    protected final String mechanism;
+    protected final String privateKeyHandler;
+
     public SignInitMethodImpl(Args args) {
-        super(args);
+        mechanism = args.mechanism;
+        privateKeyHandler = args.handler;
     }
 
     @Override
@@ -19,7 +27,7 @@ class SignInitMethodImpl extends SignInitMethod {
         String handler = privateKeyHandler;
         PrivateKey pk = ks.getPrivateKey(handler);
         if (pk != null) {
-            Signer signer = Signer.getInstance();
+            Signer signer = SignerImpl.getInstance();
             try {
                 signer.init(mechanism, pk);
                 return ResponseMessage.OKMessage();

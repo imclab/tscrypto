@@ -2,7 +2,7 @@ package cl.niclabs.cb.backend.methods;
 
 import cl.niclabs.cb.backend.Method;
 
-public abstract class GenerateRandomMethod implements Method {
+public interface GenerateRandomMethod extends Method {
     public static class Args {
         public final int length;
 
@@ -17,10 +17,5 @@ public abstract class GenerateRandomMethod implements Method {
         public ReturnValue(String data) {
             this.data = data;
         }
-    }
-
-    public final int length;
-    public GenerateRandomMethod(Args args) {
-        this.length = args.length;
     }
 }

@@ -1,18 +1,22 @@
-package cl.niclabs.cb.backend.methods.implementation;
+package cl.niclabs.cb.jcrypto.methods;
 
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.SignMethod;
+import cl.niclabs.cb.jcrypto.Signer;
+import cl.niclabs.cb.jcrypto.SignerImpl;
 
 import javax.xml.bind.DatatypeConverter;
 
-class SignMethodImpl extends SignMethod {
+class SignMethodImpl implements SignMethod {
+    protected final byte[] data;
+
     public SignMethodImpl(Args args) {
-        super(args);
+        data = DatatypeConverter.parseBase64Binary(args.data);
     }
 
     @Override
     public ResponseMessage execute() {
-      Signer signer = Signer.getInstance();
+      Signer signer = SignerImpl.getInstance();
 
       try {
         ReturnValue rv = new ReturnValue(DatatypeConverter.printBase64Binary(signer.sign(data)));

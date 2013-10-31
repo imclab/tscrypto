@@ -4,11 +4,12 @@ import cl.inria.tscrypto.node.KeyManager;
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.DeleteKeyPairMethod;
 
-class DeleteKeyPairMethodImpl extends DeleteKeyPairMethod {
+class DeleteKeyPairMethodImpl implements DeleteKeyPairMethod {
+    protected final String handler;
     private final KeyManager keyManager;
 
     public DeleteKeyPairMethodImpl(Args args, KeyManager keyManager) {
-        super(args);
+        handler = args.handler;
         this.keyManager = keyManager;
     }
 

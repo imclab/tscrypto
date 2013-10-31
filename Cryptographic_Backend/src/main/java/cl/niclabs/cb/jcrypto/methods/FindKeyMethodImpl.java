@@ -1,14 +1,18 @@
-package cl.niclabs.cb.backend.methods.implementation;
+package cl.niclabs.cb.jcrypto.methods;
 
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.FindKeyMethod;
+import cl.niclabs.cb.jcrypto.KeyStorage;
+import cl.niclabs.cb.jcrypto.MapKeyStorage;
 
 import javax.xml.bind.DatatypeConverter;
 import java.security.PublicKey;
 
-class FindKeyMethodImpl extends FindKeyMethod {
+class FindKeyMethodImpl implements FindKeyMethod {
+    protected final String handler;
+
     public FindKeyMethodImpl(Args args) {
-        super(args);
+        handler = args.handler;
     }
 
     @Override

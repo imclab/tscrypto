@@ -9,12 +9,17 @@ import cl.niclabs.cb.backend.methods.GenerateKeyPairMethod;
 
 import java.io.IOException;
 
-public class GenerateKeyPairMethodImpl extends GenerateKeyPairMethod {
+class GenerateKeyPairMethodImpl implements GenerateKeyPairMethod {
+    protected final String keyType;
+    protected final int keySize;
+    protected final String publicExponent;
     private final KeyManager keyManager;
     private final KeyDispatcher keyDispatcher;
 
     public GenerateKeyPairMethodImpl(Args args, KeyManager keyManager, KeyDispatcher keyDispatcher) {
-        super(args);
+        keyType = args.keyType;
+        keySize = args.keySize;
+        publicExponent = args.publicExponent;
         this.keyManager = keyManager;
         this.keyDispatcher = keyDispatcher;
     }

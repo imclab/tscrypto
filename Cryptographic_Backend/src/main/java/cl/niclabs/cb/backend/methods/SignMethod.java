@@ -3,7 +3,7 @@ package cl.niclabs.cb.backend.methods;
 import cl.niclabs.cb.backend.Method;
 import javax.xml.bind.DatatypeConverter;
 
-public abstract class SignMethod implements Method {
+public interface SignMethod extends Method {
 
   public static class ReturnValue {
       public final String signedData;
@@ -19,12 +19,6 @@ public abstract class SignMethod implements Method {
       public Args(String data) {
           this.data = data;
       }
-  }
-
-  protected final byte[] data;
-
-  public SignMethod(Args args) {
-    data = DatatypeConverter.parseBase64Binary(args.data);
   }
 
 }

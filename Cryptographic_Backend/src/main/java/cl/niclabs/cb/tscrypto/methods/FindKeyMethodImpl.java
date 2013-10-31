@@ -7,11 +7,12 @@ import cl.niclabs.cb.backend.methods.FindKeyMethod;
 import javax.xml.bind.DatatypeConverter;
 import java.security.PublicKey;
 
-class FindKeyMethodImpl extends FindKeyMethod {
+class FindKeyMethodImpl implements FindKeyMethod {
+    protected final String handler;
     private final KeyManager keyManager;
 
     public FindKeyMethodImpl(Args args, KeyManager keyManager) {
-        super(args);
+        handler = args.handler;
         this.keyManager = keyManager;
     }
 

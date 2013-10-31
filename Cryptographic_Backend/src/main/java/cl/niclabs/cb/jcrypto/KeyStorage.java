@@ -1,4 +1,4 @@
-package cl.niclabs.cb.backend.methods.implementation;
+package cl.niclabs.cb.jcrypto;
 
 import java.security.KeyPair;
 import java.security.PrivateKey;

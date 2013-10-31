@@ -1,12 +1,15 @@
 package cl.niclabs.cb.backend.methods;
 
+import cl.niclabs.cb.backend.Method;
+
 public interface MethodFactory {
-    DeleteKeyPairMethod makeDeleteKeyMethod(DeleteKeyPairMethod.Args args);
-    FindKeyMethod makeFindKeyMethod(FindKeyMethod.Args args);
-    GenerateKeyPairMethod makeGenerateKeyPairMethod(GenerateKeyPairMethod.Args args);
-    GetAttributeMethod makeGetAttributeMethod(GetAttributeMethod.Args args);
-    SignInitMethod makeSignInitMethod(SignInitMethod.Args args);
-    SignMethod makeSignMethod(SignMethod.Args args);
-    SeedRandomMethod makeSeedRandomMethod(SeedRandomMethod.Args args);
-    GenerateRandomMethod makeGenerateRandomMethod(GenerateRandomMethod.Args args);
+    Method makeDeleteKeyMethod(DeleteKeyPairMethod.Args args);
+    Method makeFindKeyMethod(FindKeyMethod.Args args);
+    Method makeGenerateKeyPairMethod(GenerateKeyPairMethod.Args args);
+    Method makeSignInitMethod(SignInitMethod.Args args);
+    Method makeSignMethod(SignMethod.Args args);
+    Method makeSeedRandomMethod(SeedRandomMethod.Args args);
+    Method makeGenerateRandomMethod(GenerateRandomMethod.Args args);
+    Method makeDigestInitMethod(DigestInitMethod.Args args);
+    Method makeDigestMethod(DigestMethod.Args args);
 }

@@ -1,9 +1,10 @@
-package cl.niclabs.cb.dispatcher;
+package cl.niclabs.cb.jcrypto;
 
 import java.io.IOException;
 
 import cl.niclabs.cb.backend.methods.MethodFactory;
-import cl.niclabs.cb.backend.methods.implementation.SimpleSignMethodFactory;
+import cl.niclabs.cb.dispatcher.MethodDispatcher;
+import cl.niclabs.cb.jcrypto.methods.SimpleSignMethodFactory;
 
 import com.rabbitmq.client.AMQP.BasicProperties;
 import com.rabbitmq.client.Channel;

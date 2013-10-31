@@ -10,7 +10,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
 import java.util.Map;
 
-public class Signer {
+class Signer {
 
     private final KeyManager keyManager;
     private String algorithm;

@@ -1,4 +1,4 @@
-package cl.niclabs.cb.backend.methods.implementation;
+package cl.niclabs.cb.jcrypto;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
@@ -7,9 +7,17 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.Signature;
 
-public class Signer {
-	final static private Signer instance = new Signer();
+public class SignerImpl implements Signer {
+	static private Signer instance = null;
 	public static Signer getInstance() {
+        if (instance == null){
+            synchronized (SignerImpl.class) {
+                if (instance == null) {
+                    instance = new SignerImpl();
+                }
+            }
+        }
+
 		return instance;
 	}
 
@@ -17,7 +25,8 @@ public class Signer {
     private Cipher cipher = null;
 	private Signature signature = null;
 	
-	public void init (String algorithm, PrivateKey key)
+	@Override
+    public void init(String algorithm, PrivateKey key)
             throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException {
         this.algorithm = algorithm;
         switch (algorithm) {
@@ -33,7 +42,8 @@ public class Signer {
 
 	}
 	
-	public byte[] sign (byte[] data) throws Exception {
+	@Override
+    public byte[] sign(byte[] data) throws Exception {
         byte[] signedData;
         switch(algorithm) {
             case "RSA":

@@ -1,11 +1,15 @@
-package cl.niclabs.cb.backend.methods.implementation;
+package cl.niclabs.cb.jcrypto.methods;
 
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.DeleteKeyPairMethod;
+import cl.niclabs.cb.jcrypto.KeyStorage;
+import cl.niclabs.cb.jcrypto.MapKeyStorage;
 
-class DeleteKeyPairMethodImpl extends DeleteKeyPairMethod {
+class DeleteKeyPairMethodImpl implements DeleteKeyPairMethod {
+    protected final String handler;
+
     public DeleteKeyPairMethodImpl(Args args) {
-        super(args);
+        handler = args.handler;
     }
 
     @Override

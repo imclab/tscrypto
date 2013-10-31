@@ -51,11 +51,6 @@ public class MethodParser implements JsonDeserializer<Method> {
                 FindKeyMethod.Args args = context.deserialize(argsJsonElement, FindKeyMethod.Args.class);
                 return methodFactory.makeFindKeyMethod(args);
             }
-            case "GetAttribute":
-            {
-                GetAttributeMethod.Args args = context.deserialize(argsJsonElement, GetAttributeMethod.Args.class);
-                return methodFactory.makeGetAttributeMethod(args);
-            }
             case "SeedRandom":
             {
                 SeedRandomMethod.Args args = context.deserialize(argsJsonElement, SeedRandomMethod.Args.class);
@@ -65,6 +60,16 @@ public class MethodParser implements JsonDeserializer<Method> {
             {
                 GenerateRandomMethod.Args args = context.deserialize(argsJsonElement, GenerateRandomMethod.Args.class);
                 return methodFactory.makeGenerateRandomMethod(args);
+            }
+            case "DigestInit":
+            {
+                DigestInitMethod.Args args = context.deserialize(argsJsonElement, DigestInitMethod.Args.class);
+                return methodFactory.makeDigestInitMethod(args);
+            }
+            case "Digest":
+            {
+                DigestMethod.Args args = context.deserialize(argsJsonElement, DigestMethod.Args.class);
+                return methodFactory.makeDigestMethod(args);
             }
             default:
             {

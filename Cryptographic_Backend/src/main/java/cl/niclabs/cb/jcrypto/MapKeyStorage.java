@@ -1,4 +1,4 @@
-package cl.niclabs.cb.backend.methods.implementation;
+package cl.niclabs.cb.jcrypto;
 
 import java.security.KeyFactory;
 import java.security.KeyPair;
@@ -9,18 +9,26 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
-import java.util.Random;
 import java.util.UUID;
 import javax.xml.bind.DatatypeConverter;
 
 public class MapKeyStorage implements KeyStorage {
 
-    final static private KeyStorage instance = new MapKeyStorage();
-    private final HashMap<String, String[]> store = new HashMap<>();
+    static private KeyStorage instance = null;
 
     public static KeyStorage getInstance() {
+        if (instance == null) {
+            synchronized (KeyStorage.class) {
+                if (instance == null) {
+                    instance = new MapKeyStorage();
+                }
+            }
+        }
+
         return instance;
     }
+
+    private final HashMap<String, String[]> store = new HashMap<>();
 
     private MapKeyStorage() {
     }
