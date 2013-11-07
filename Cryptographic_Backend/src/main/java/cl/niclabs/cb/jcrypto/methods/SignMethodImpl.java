@@ -1,10 +1,10 @@
 package cl.niclabs.cb.jcrypto.methods;
 
 import cl.niclabs.cb.backend.ResponseMessage;
+import cl.niclabs.cb.backend.Session;
 import cl.niclabs.cb.backend.methods.SignMethod;
-import cl.niclabs.cb.jcrypto.Session;
-import cl.niclabs.cb.jcrypto.SessionManager;
-import cl.niclabs.cb.jcrypto.Signer;
+import cl.niclabs.cb.backend.Signer;
+import cl.niclabs.cb.jcrypto.SessionManagerImpl;
 
 import javax.xml.bind.DatatypeConverter;
 
@@ -19,7 +19,7 @@ class SignMethodImpl implements SignMethod {
 
     @Override
     public ResponseMessage execute() {
-        Session session = SessionManager.getInstance().getSession(sessionHandler);
+        Session session = SessionManagerImpl.getInstance().getSession(sessionHandler);
         if (session == null) {
             return ResponseMessage.ErrorMessage("Bad session handler");
         }

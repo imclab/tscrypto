@@ -1,11 +1,13 @@
 package cl.niclabs.cb.jcrypto;
 
+import cl.niclabs.cb.backend.RandomGenerator;
+
 import java.security.SecureRandom;
 
 public class RandomGeneratorImpl implements RandomGenerator {
     private SecureRandom secureRandom;
 
-    RandomGeneratorImpl() {
+    public RandomGeneratorImpl() {
         this.secureRandom = new SecureRandom();
     }
 

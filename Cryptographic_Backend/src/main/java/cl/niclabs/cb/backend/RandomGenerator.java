@@ -1,4 +1,4 @@
-package cl.niclabs.cb.jcrypto;
+package cl.niclabs.cb.backend;
 
 public interface RandomGenerator {
     void setSeed(byte[] seed);

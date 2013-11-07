@@ -1,4 +1,4 @@
-package cl.niclabs.cb.jcrypto.methods;
+package cl.niclabs.cb.tscrypto.methods;
 
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.CloseSessionMethod;

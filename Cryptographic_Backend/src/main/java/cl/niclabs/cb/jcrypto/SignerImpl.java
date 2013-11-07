@@ -1,5 +1,7 @@
 package cl.niclabs.cb.jcrypto;
 
+import cl.niclabs.cb.backend.Signer;
+
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
@@ -13,9 +15,16 @@ public class SignerImpl implements Signer {
 	private Signature signature = null;
 	
 	@Override
-    public void init(String algorithm, PrivateKey key)
+    public void init(String algorithm, String keyHandler)
             throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException {
+        PrivateKey key = MapKeyStorage.getInstance().getPrivateKey(keyHandler);
+
+        if (key == null) {
+            throw new InvalidKeyException("Llave no encontrada");
+        }
+
         this.algorithm = algorithm;
+
         switch (algorithm) {
             case "RSA":
                 cipher = Cipher.getInstance("RSA");

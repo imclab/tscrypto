@@ -5,7 +5,7 @@ import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.DeleteKeyPairMethod;
 
 class DeleteKeyPairMethodImpl implements DeleteKeyPairMethod {
-    protected final String handler;
+    private final String handler;
     private final KeyManager keyManager;
 
     public DeleteKeyPairMethodImpl(Args args, KeyManager keyManager) {

@@ -1,5 +1,7 @@
 package cl.niclabs.cb.jcrypto;
 
+import cl.niclabs.cb.backend.Digester;
+
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 

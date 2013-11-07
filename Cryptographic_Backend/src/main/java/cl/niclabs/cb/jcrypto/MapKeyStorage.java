@@ -5,7 +5,8 @@ import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Map;
 import java.util.UUID;
 
 public class MapKeyStorage implements KeyStorage {
@@ -24,7 +25,7 @@ public class MapKeyStorage implements KeyStorage {
         return instance;
     }
 
-    private final HashMap<String, String[]> store = new HashMap<>();
+    private final Map<String, String[]> store = new Hashtable<>();
 
     private MapKeyStorage() {
     }

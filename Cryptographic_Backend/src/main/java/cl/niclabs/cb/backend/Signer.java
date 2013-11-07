@@ -1,12 +1,11 @@
-package cl.niclabs.cb.jcrypto;
+package cl.niclabs.cb.backend;
 
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
 
 public interface Signer {
-    void init (String algorithm, PrivateKey key)
+    void init (String algorithm, String keyHandler)
             throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException;
 
     byte[] sign(byte[] data) throws Exception;

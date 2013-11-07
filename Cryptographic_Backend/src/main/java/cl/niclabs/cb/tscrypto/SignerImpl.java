@@ -1,36 +1,40 @@
-package cl.niclabs.cb.tscrypto.methods;
+package cl.niclabs.cb.tscrypto;
 
 import cl.inria.tscrypto.common.algorithms.SignatureRequest;
 import cl.inria.tscrypto.common.datatypes.Ticket;
 import cl.inria.tscrypto.node.KeyManager;
 import cl.inria.tscrypto.sigDealer.RequestManager;
+import cl.niclabs.cb.backend.Signer;
 
+import javax.crypto.NoSuchPaddingException;
 import java.math.BigInteger;
+import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.Hashtable;
 import java.util.Map;
 
-class Signer {
+public class SignerImpl implements Signer {
 
     private final KeyManager keyManager;
     private String algorithm;
     private String privateKeyHandler;
     private final RequestManager requestManager;
 
-    private final static Map<String, String> algorithms = new Hashtable<>();
-    static {
-        algorithms.put("Sha1WithRSA", "Sha1");
-        algorithms.put("NONEWithRSA", "NONE");
-    }
+    private final static Map<String, String> algorithms = new Hashtable<String, String>() {{
+        put("Sha1WithRSA", "Sha1");
+        put("NONEWithRSA", "NONE");
+    }};
 
-    public Signer(KeyManager keyManager, RequestManager requestManager) {
+    public SignerImpl(KeyManager keyManager, RequestManager requestManager) {
         this.keyManager = keyManager;
         this.requestManager = requestManager;
     }
 
-	public void init (String algorithm, String privateKeyHandler) throws Exception {
+	public void init (String algorithm, String privateKeyHandler)
+            throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException
+    {
         if (keyManager.getKeyInfo(privateKeyHandler) == null) {
-            throw new Exception("Not exists any key with handler: " + privateKeyHandler);
+            throw new InvalidKeyException("Not exists any key with handler: " + privateKeyHandler);
         }
 
         this.algorithm = algorithm;
@@ -44,7 +48,7 @@ class Signer {
 	
 	public byte[] sign (byte[] data) throws Exception {
         if(!algorithms.containsKey(algorithm)) {
-            throw new Exception("Signer no iniciado.");
+            throw new Exception("SignerImpl no iniciado.");
         }
 
         String hashAlgorithm = algorithms.get(algorithm);

@@ -9,16 +9,21 @@ import cl.inria.tscrypto.sigDealer.ResultsCollector;
 import cl.inria.tscrypto.sigDealer.SDConfig;
 import cl.niclabs.cb.backend.Method;
 import cl.niclabs.cb.backend.methods.*;
+
 import cl.niclabs.cb.jcrypto.methods.DigestInitMethodImpl;
 import cl.niclabs.cb.jcrypto.methods.DigestMethodImpl;
 import cl.niclabs.cb.jcrypto.methods.GenerateRandomMethodImpl;
 import cl.niclabs.cb.jcrypto.methods.SeedRandomMethodImpl;
-
 import com.rabbitmq.client.Connection;
 
 import java.io.IOException;
 
+@SuppressWarnings("UnusedDeclaration")
 public class TsCryptoMethodFactory implements MethodFactory {
+    /*
+        Esta versión ocupa algunas clases de jcrypto...
+     */
+
     private final KeyManager keyManager;
 
     private final RequestManager requestManager;
@@ -29,8 +34,6 @@ public class TsCryptoMethodFactory implements MethodFactory {
     private KeyManagementCollector keyManagementCollector;
     private KeyDispatcher keyDispatcher;
 
-    private Signer signer;
-
     public TsCryptoMethodFactory(Connection connection, SDConfig config) throws IOException {
 
         keyManager = new KeyManager();
@@ -39,13 +42,24 @@ public class TsCryptoMethodFactory implements MethodFactory {
         dispatcher = new Dispatcher(config.getRabbitMQConfig(), connection);
         keyManagementCollector = new KeyManagementCollector(config, connection);
         keyDispatcher = new KeyDispatcher(connection, config.getRabbitMQConfig());
-        signer = new Signer(keyManager, requestManager);
 
         requestManager.init(
                 dispatcher,
                 config.getRabbitMQConfig().getClientQueue(),
                 config.getRabbitMQConfig().getSignRequestAlias()
         );
+    }
+
+    @Override
+    public Method makeOpenSessionMethod() {
+        // Uses SessionManager from jcrypto
+        return new OpenSessionMethodImpl(keyManager, requestManager);
+    }
+
+    @Override
+    public Method makeCloseSessionMethod(CloseSessionMethod.Args args) {
+        // Uses SessionManager from jcrypto
+        return new CloseSessionMethodImpl(args);
     }
 
     @Override
@@ -65,12 +79,12 @@ public class TsCryptoMethodFactory implements MethodFactory {
 
     @Override
     public Method makeSignInitMethod(SignInitMethod.Args args) {
-        return new SignInitMethodImpl(args, signer);
+        return new SignInitMethodImpl(args);
     }
 
     @Override
     public Method makeSignMethod(SignMethod.Args args) {
-        return new SignMethodImpl(args, signer);
+        return new SignMethodImpl(args);
     }
 
     public ResultsCollector getResultsCollector() {
