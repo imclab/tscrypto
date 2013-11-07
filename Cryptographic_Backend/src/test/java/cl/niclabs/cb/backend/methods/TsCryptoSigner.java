@@ -33,11 +33,15 @@ public class TsCryptoSigner {
         Method method = methodFactory.makeGenerateKeyPairMethod(new GenerateKeyPairMethod.Args("RSA", 1024, "65537"));
         ResponseMessage rm = method.execute();
         System.out.println(gson.toJson(rm));
+        String keyHandler = gson.fromJson(rm.getValue(), GenerateKeyPairMethod.ReturnValue.class).handler;
+
+        method = methodFactory.makeOpenSessionMethod();
+        rm = method.execute();
+        String sessionHandler = gson.fromJson(rm.getValue(), OpenSessionMethod.ReturnValue.class).sessionHandler;
 
         Assert.assertEquals(rm.getReturnCode(), "OK");
 
-        String handler = gson.fromJson(rm.getValue(), GenerateKeyPairMethod.ReturnValue.class).handler;
-        method = methodFactory.makeSignInitMethod(new SignInitMethod.Args(sessionHandler, "Sha1WithRSA", handler));
+        method = methodFactory.makeSignInitMethod(new SignInitMethod.Args(sessionHandler, "Sha1WithRSA", keyHandler));
         rm = method.execute();
         System.out.println(gson.toJson(rm));
 
@@ -50,7 +54,7 @@ public class TsCryptoSigner {
 
         Assert.assertEquals(rm.getReturnCode(), "OK");
 
-        method = methodFactory.makeDeleteKeyMethod(new DeleteKeyPairMethod.Args(handler));
+        method = methodFactory.makeDeleteKeyMethod(new DeleteKeyPairMethod.Args(keyHandler));
         rm = method.execute();
         System.out.println(gson.toJson(rm));
 

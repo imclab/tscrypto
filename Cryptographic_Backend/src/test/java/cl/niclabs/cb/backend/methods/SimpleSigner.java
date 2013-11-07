@@ -1,12 +1,11 @@
 package cl.niclabs.cb.backend.methods;
 
-import cl.niclabs.cb.backend.*;
+import cl.niclabs.cb.backend.Method;
+import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.jcrypto.methods.SimpleSignMethodFactory;
-import cl.niclabs.cb.dispatcher.*;
 import com.google.gson.Gson;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -29,46 +28,39 @@ public class SimpleSigner {
         MethodFactory mf = SimpleSignMethodFactory.getInstance();
 
         Method method = mf.makeGenerateKeyPairMethod(new GenerateKeyPairMethod.Args("RSA", 1024, "65537"));
+        System.out.println(gson.toJson(method));
         ResponseMessage rm = method.execute();
         System.out.println(gson.toJson(rm));
+        String keyHandler = gson.fromJson(rm.getValue(), GenerateKeyPairMethod.ReturnValue.class).handler;
 
         Assert.assertEquals(rm.getReturnCode(), "OK");
 
-        String handler = gson.fromJson(rm.getValue(), GenerateKeyPairMethod.ReturnValue.class).handler;
-        method = mf.makeSignInitMethod(new SignInitMethod.Args(sessionHandler, "SHA1withRSA", handler));
+        method = mf.makeOpenSessionMethod();
+        System.out.println(gson.toJson(method));
+        rm = method.execute();
+        System.out.println(gson.toJson(rm));
+        String sessionHandler = gson.fromJson(rm.getValue(), OpenSessionMethod.ReturnValue.class).sessionHandler;
+
+        method = mf.makeSignInitMethod(new SignInitMethod.Args(sessionHandler, "SHA1withRSA", keyHandler));
+        System.out.println(gson.toJson(method));
         rm = method.execute();
         System.out.println(gson.toJson(rm));
 
         Assert.assertEquals(rm.getReturnCode(), "OK");
 
         String data = DatatypeConverter.printBase64Binary("Hola Mundo!".getBytes());
+        System.out.println(gson.toJson(method));
         method = mf.makeSignMethod(new SignMethod.Args(sessionHandler, data));
         rm = method.execute();
         System.out.println(gson.toJson(rm));
 
         Assert.assertEquals(rm.getReturnCode(), "OK");
 
-        method = mf.makeDeleteKeyMethod(new DeleteKeyPairMethod.Args(handler));
+        method = mf.makeDeleteKeyMethod(new DeleteKeyPairMethod.Args(keyHandler));
+        System.out.println(gson.toJson(method));
         rm = method.execute();
         System.out.println(gson.toJson(rm));
 
         Assert.assertEquals(rm.getReturnCode(), "OK");
-    }
-
-    @Ignore
-    @Test
-    public void methodDispatcherTest() {
-        String s = "{ \"method\":\"GenerateKeyPair\", "
-                + " \"args\": { "
-                + " \"label\" : \"hola mundo\", "
-                + " \"id\":\"chao mundo\", "
-                + " \"keyType\": \"RSA\", "
-                + " \"keySize\":1024, "
-                + " \"publicExponent\":65537"
-                + " } "
-                + "}";
-
-        String ret = MethodDispatcher.dispatch(s, SimpleSignMethodFactory.getInstance());
-        System.out.println(ret);
     }
 }

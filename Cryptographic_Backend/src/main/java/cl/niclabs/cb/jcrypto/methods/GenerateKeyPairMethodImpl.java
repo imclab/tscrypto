@@ -11,9 +11,9 @@ import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
 class GenerateKeyPairMethodImpl implements GenerateKeyPairMethod {
-    protected final String keyType;
-    protected final int keySize;
-    protected final String publicExponent;
+    private final String keyType;
+    private final int keySize;
+    private final String publicExponent;
     private final KeyStorage ks;
 
     public GenerateKeyPairMethodImpl(Args args) {
