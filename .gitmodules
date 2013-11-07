@@ -1,0 +1,4 @@
+[submodule "ThresholdRSA"]
+	path = ThresholdRSA
+	url = https://github.com/Inria-Chile/ThresholdRSA.git
+	branch = cryptographic-backend
