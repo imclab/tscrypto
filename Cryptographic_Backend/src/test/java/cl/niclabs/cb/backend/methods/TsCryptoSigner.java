@@ -37,14 +37,14 @@ public class TsCryptoSigner {
         Assert.assertEquals(rm.getReturnCode(), "OK");
 
         String handler = gson.fromJson(rm.getValue(), GenerateKeyPairMethod.ReturnValue.class).handler;
-        method = methodFactory.makeSignInitMethod(new SignInitMethod.Args("Sha1WithRSA", handler));
+        method = methodFactory.makeSignInitMethod(new SignInitMethod.Args(sessionHandler, "Sha1WithRSA", handler));
         rm = method.execute();
         System.out.println(gson.toJson(rm));
 
         Assert.assertEquals(rm.getReturnCode(), "OK");
 
         String data = DatatypeConverter.printBase64Binary("Hola Mundo!".getBytes());
-        method = methodFactory.makeSignMethod(new SignMethod.Args(data));
+        method = methodFactory.makeSignMethod(new SignMethod.Args(sessionHandler, data));
         rm = method.execute();
         System.out.println(gson.toJson(rm));
 

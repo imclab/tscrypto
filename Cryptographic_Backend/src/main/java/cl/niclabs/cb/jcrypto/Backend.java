@@ -1,18 +1,12 @@
 package cl.niclabs.cb.jcrypto;
 
-import java.io.IOException;
-
 import cl.niclabs.cb.backend.methods.MethodFactory;
 import cl.niclabs.cb.dispatcher.MethodDispatcher;
 import cl.niclabs.cb.jcrypto.methods.SimpleSignMethodFactory;
-
 import com.rabbitmq.client.AMQP.BasicProperties;
-import com.rabbitmq.client.Channel;
-import com.rabbitmq.client.Connection;
-import com.rabbitmq.client.ConnectionFactory;
-import com.rabbitmq.client.ConsumerCancelledException;
-import com.rabbitmq.client.QueueingConsumer;
-import com.rabbitmq.client.ShutdownSignalException;
+import com.rabbitmq.client.*;
+
+import java.io.IOException;
 
 public class Backend {
 

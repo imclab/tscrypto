@@ -1,18 +1,8 @@
 package cl.niclabs.cb.backend;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
-
-import java.io.Serializable;
 
 public class ResponseMessage {
-	@Override
-	public String toString() {
-		return "ResponseMessage [returnCode=" + returnCode + ", value=" + value
-				+ "]";
-	}
-
 	private final String returnCode;
 	private final Object value;
 	
@@ -40,5 +30,4 @@ public class ResponseMessage {
         Gson gson = new Gson();
 		return gson.toJson(value);
 	}
-	
 }

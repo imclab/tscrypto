@@ -26,6 +26,15 @@ public class MethodParser implements JsonDeserializer<Method> {
         String method = jsonObject.get("method").getAsString();
         JsonElement argsJsonElement = jsonObject.get("args");
         switch (method) {
+            case "OpenSession":
+            {
+                return methodFactory.makeOpenSessionMethod();
+            }
+            case "CloseSession":
+            {
+                CloseSessionMethod.Args args = context.deserialize(argsJsonElement, CloseSessionMethod.Args.class);
+                return methodFactory.makeCloseSessionMethod(args);
+            }
             case "DeleteKeyPair":
             {
                 DeleteKeyPairMethod.Args args = context.deserialize(argsJsonElement, DeleteKeyPairMethod.Args.class);

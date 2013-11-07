@@ -8,19 +8,6 @@ import java.security.PrivateKey;
 import java.security.Signature;
 
 public class SignerImpl implements Signer {
-	static private Signer instance = null;
-	public static Signer getInstance() {
-        if (instance == null){
-            synchronized (SignerImpl.class) {
-                if (instance == null) {
-                    instance = new SignerImpl();
-                }
-            }
-        }
-
-		return instance;
-	}
-
     private String algorithm = null;
     private Cipher cipher = null;
 	private Signature signature = null;

@@ -5,15 +5,33 @@ import cl.niclabs.cb.backend.methods.*;
 
 public class SimpleSignMethodFactory implements MethodFactory {
 
-    final private static SimpleSignMethodFactory instance = new SimpleSignMethodFactory();
+    private static SimpleSignMethodFactory instance = null;
 
     public static SimpleSignMethodFactory getInstance() {
+        if (instance == null) {
+            synchronized (SimpleSignMethodFactory.class) {
+                if (instance == null) {
+                    instance = new SimpleSignMethodFactory();
+                }
+            }
+        }
         return instance;
     }
 
     private SimpleSignMethodFactory() {
 
     }
+
+    @Override
+    public Method makeOpenSessionMethod() {
+        return new OpenSessionMethodImpl();
+    }
+
+    @Override
+    public Method makeCloseSessionMethod(CloseSessionMethod.Args args) {
+        return new CloseSessionMethodImpl(args);
+    }
+
     @Override
     public Method makeDeleteKeyMethod(DeleteKeyPairMethod.Args args) {
         return new DeleteKeyPairMethodImpl(args);

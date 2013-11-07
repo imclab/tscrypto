@@ -35,14 +35,14 @@ public class SimpleSigner {
         Assert.assertEquals(rm.getReturnCode(), "OK");
 
         String handler = gson.fromJson(rm.getValue(), GenerateKeyPairMethod.ReturnValue.class).handler;
-        method = mf.makeSignInitMethod(new SignInitMethod.Args("SHA1withRSA", handler));
+        method = mf.makeSignInitMethod(new SignInitMethod.Args(sessionHandler, "SHA1withRSA", handler));
         rm = method.execute();
         System.out.println(gson.toJson(rm));
 
         Assert.assertEquals(rm.getReturnCode(), "OK");
 
         String data = DatatypeConverter.printBase64Binary("Hola Mundo!".getBytes());
-        method = mf.makeSignMethod(new SignMethod.Args(data));
+        method = mf.makeSignMethod(new SignMethod.Args(sessionHandler, data));
         rm = method.execute();
         System.out.println(gson.toJson(rm));
 

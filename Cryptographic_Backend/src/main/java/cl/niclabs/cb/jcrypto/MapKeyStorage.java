@@ -1,16 +1,12 @@
 package cl.niclabs.cb.jcrypto;
 
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import javax.xml.bind.DatatypeConverter;
+import java.security.*;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.UUID;
-import javax.xml.bind.DatatypeConverter;
 
 public class MapKeyStorage implements KeyStorage {
 

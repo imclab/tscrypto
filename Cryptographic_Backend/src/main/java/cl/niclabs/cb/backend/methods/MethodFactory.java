@@ -3,6 +3,8 @@ package cl.niclabs.cb.backend.methods;
 import cl.niclabs.cb.backend.Method;
 
 public interface MethodFactory {
+    Method makeOpenSessionMethod();
+    Method makeCloseSessionMethod(CloseSessionMethod.Args args);
     Method makeDeleteKeyMethod(DeleteKeyPairMethod.Args args);
     Method makeFindKeyMethod(FindKeyMethod.Args args);
     Method makeGenerateKeyPairMethod(GenerateKeyPairMethod.Args args);

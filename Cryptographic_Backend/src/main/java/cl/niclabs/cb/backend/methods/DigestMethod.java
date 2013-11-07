@@ -2,13 +2,13 @@ package cl.niclabs.cb.backend.methods;
 
 import cl.niclabs.cb.backend.Method;
 
-import javax.xml.bind.DatatypeConverter;
-
 public interface DigestMethod extends Method {
     public static class Args {
-
+        public final String sessionHandler;
         public final String data;
-        public Args(String data) {
+
+        public Args(String sessionHandler, String data) {
+            this.sessionHandler = sessionHandler;
             this.data = data;
         }
 

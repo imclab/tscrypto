@@ -4,19 +4,6 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
 public class DigesterImpl implements Digester {
-    private static Digester instance = null;
-    public static Digester getInstance() {
-        if (instance == null) {
-            synchronized (DigesterImpl.class) {
-                if (instance == null) {
-                    instance = new DigesterImpl();
-                }
-            }
-        }
-
-        return instance;
-    }
-
     private MessageDigest messageDigest = null;
 
     @Override

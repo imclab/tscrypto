@@ -17,7 +17,7 @@ class SignMethodImpl implements SignMethod {
     public ResponseMessage execute() {
         try {
             byte[] signature = signer.sign(this.data);
-            ReturnValue rv = new ReturnValue(DatatypeConverter.printBase64Binary(signature));
+            ReturnValue rv = new ReturnValue(sessionHandler, DatatypeConverter.printBase64Binary(signature));
             return ResponseMessage.OKMessage(rv);
 
         } catch (Exception e) {
