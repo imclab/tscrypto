@@ -9,7 +9,6 @@ import cl.inria.tscrypto.sigDealer.ResultsCollector;
 import cl.inria.tscrypto.sigDealer.SDConfig;
 import cl.niclabs.cb.backend.Method;
 import cl.niclabs.cb.backend.methods.*;
-
 import cl.niclabs.cb.jcrypto.methods.DigestInitMethodImpl;
 import cl.niclabs.cb.jcrypto.methods.DigestMethodImpl;
 import cl.niclabs.cb.jcrypto.methods.GenerateRandomMethodImpl;

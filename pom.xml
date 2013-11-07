@@ -11,7 +11,7 @@
     <name>A threshold cryptographic backend based on a ThresholdRSA implementation.</name>
 
     <modules>
-        <module>Cryptographic_Backend</module>
+        <module>CryptographicBackend</module>
         <module>ThresholdRSA</module>
     </modules>
 

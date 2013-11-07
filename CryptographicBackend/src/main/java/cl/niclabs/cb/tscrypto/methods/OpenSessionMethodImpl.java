@@ -4,8 +4,8 @@ import cl.inria.tscrypto.node.KeyManager;
 import cl.inria.tscrypto.sigDealer.RequestManager;
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.Session;
-import cl.niclabs.cb.backend.methods.OpenSessionMethod;
 import cl.niclabs.cb.backend.SessionManager;
+import cl.niclabs.cb.backend.methods.OpenSessionMethod;
 import cl.niclabs.cb.jcrypto.SessionManagerImpl;
 import cl.niclabs.cb.tscrypto.SessionImpl;
 

@@ -1,21 +1,20 @@
 package cl.niclabs.cb.tscrypto.methods;
 
 import cl.niclabs.cb.backend.ResponseMessage;
-import cl.niclabs.cb.backend.Signer;
-import cl.niclabs.cb.backend.methods.SignInitMethod;
 import cl.niclabs.cb.backend.Session;
 import cl.niclabs.cb.backend.SessionManager;
+import cl.niclabs.cb.backend.Signer;
+import cl.niclabs.cb.backend.methods.SignMethod;
 import cl.niclabs.cb.jcrypto.SessionManagerImpl;
 
-class SignInitMethodImpl implements SignInitMethod {
-    private final String sessionHandler;
-    private final String mechanism;
-    private final String privateKeyHandler;
+import javax.xml.bind.DatatypeConverter;
 
-    public SignInitMethodImpl(Args args) {
+class SignMethodImpl implements SignMethod {
+    private final String sessionHandler;
+    private final byte[] data;
+    public SignMethodImpl(Args args) {
         sessionHandler = args.sessionHandler;
-        mechanism = args.mechanism;
-        privateKeyHandler = args.handler;
+        data = DatatypeConverter.parseBase64Binary(args.data);
     }
 
     @Override
@@ -29,8 +28,10 @@ class SignInitMethodImpl implements SignInitMethod {
 
         Signer signer = session.getSigner();
         try {
-            signer.init(this.mechanism, this.privateKeyHandler);
-            return ResponseMessage.OKMessage();
+            byte[] signature = signer.sign(this.data);
+            ReturnValue rv = new ReturnValue(sessionHandler, DatatypeConverter.printBase64Binary(signature));
+            return ResponseMessage.OKMessage(rv);
+
         } catch (Exception e) {
             return ResponseMessage.ErrorMessage(e.getLocalizedMessage());
         }

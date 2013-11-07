@@ -10,7 +10,6 @@ import cl.niclabs.cb.backend.Signer;
 import cl.niclabs.cb.jcrypto.DigesterImpl;
 import cl.niclabs.cb.jcrypto.RandomGeneratorImpl;
 
-
 import java.util.UUID;
 
 public class SessionImpl implements Session {

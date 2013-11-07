@@ -1,18 +1,18 @@
 package cl.niclabs.cb.jcrypto.methods;
 
+import cl.niclabs.cb.backend.Digester;
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.Session;
-import cl.niclabs.cb.backend.methods.SignMethod;
-import cl.niclabs.cb.backend.Signer;
+import cl.niclabs.cb.backend.methods.DigestMethod;
 import cl.niclabs.cb.jcrypto.SessionManagerImpl;
 
 import javax.xml.bind.DatatypeConverter;
 
-class SignMethodImpl implements SignMethod {
+public class DigestMethodImpl implements DigestMethod {
     private String sessionHandler;
     private byte[] data;
 
-    public SignMethodImpl(Args args) {
+    public DigestMethodImpl(Args args) {
         sessionHandler = args.sessionHandler;
         data = DatatypeConverter.parseBase64Binary(args.data);
     }
@@ -24,12 +24,12 @@ class SignMethodImpl implements SignMethod {
             return ResponseMessage.ErrorMessage("Bad session handler");
         }
 
-        Signer signer = session.getSigner();
+        Digester digester = session.getDigester();
         try {
-            ReturnValue rv = new ReturnValue(sessionHandler, DatatypeConverter.printBase64Binary(signer.sign(data)));
-            return ResponseMessage.OKMessage(rv);
+            String digest = DatatypeConverter.printBase64Binary(digester.digest(this.data));
+            return ResponseMessage.OKMessage(new ReturnValue(digest));
         } catch (Exception e) {
-            return ResponseMessage.ErrorMessage(e.getLocalizedMessage());
+            return ResponseMessage.ErrorMessage(e.getMessage());
         }
     }
 }

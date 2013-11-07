@@ -5,7 +5,7 @@ import cl.niclabs.cb.backend.Session;
 import cl.niclabs.cb.backend.SessionManager;
 import cl.niclabs.cb.backend.Signer;
 import cl.niclabs.cb.backend.methods.SignInitMethod;
-import cl.niclabs.cb.jcrypto.*;
+import cl.niclabs.cb.jcrypto.SessionManagerImpl;
 
 import javax.crypto.NoSuchPaddingException;
 import java.security.InvalidKeyException;

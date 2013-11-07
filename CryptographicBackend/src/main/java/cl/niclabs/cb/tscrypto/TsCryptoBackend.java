@@ -2,7 +2,6 @@ package cl.niclabs.cb.tscrypto;
 
 import cl.inria.tscrypto.common.utils.TSConnection;
 import cl.inria.tscrypto.sigDealer.SDConfig;
-
 import cl.niclabs.cb.backend.methods.MethodFactory;
 import cl.niclabs.cb.dispatcher.MethodDispatcher;
 import cl.niclabs.cb.tscrypto.methods.TsCryptoMethodFactory;

@@ -1,8 +1,8 @@
 package cl.niclabs.cb.tscrypto.methods;
 
 import cl.niclabs.cb.backend.ResponseMessage;
-import cl.niclabs.cb.backend.methods.CloseSessionMethod;
 import cl.niclabs.cb.backend.SessionManager;
+import cl.niclabs.cb.backend.methods.CloseSessionMethod;
 import cl.niclabs.cb.jcrypto.SessionManagerImpl;
 
 public class CloseSessionMethodImpl implements CloseSessionMethod {

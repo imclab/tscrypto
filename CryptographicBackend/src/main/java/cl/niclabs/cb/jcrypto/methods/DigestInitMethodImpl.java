@@ -1,20 +1,21 @@
 package cl.niclabs.cb.jcrypto.methods;
 
+import cl.niclabs.cb.backend.Digester;
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.Session;
-import cl.niclabs.cb.backend.methods.DigestMethod;
-import cl.niclabs.cb.backend.Digester;
+import cl.niclabs.cb.backend.methods.DigestInitMethod;
 import cl.niclabs.cb.jcrypto.SessionManagerImpl;
 
-import javax.xml.bind.DatatypeConverter;
+import java.security.NoSuchAlgorithmException;
 
-public class DigestMethodImpl implements DigestMethod {
+
+public class DigestInitMethodImpl implements DigestInitMethod {
     private String sessionHandler;
-    private byte[] data;
+    private String mechanism;
 
-    public DigestMethodImpl(Args args) {
+    public DigestInitMethodImpl(Args args) {
         sessionHandler = args.sessionHandler;
-        data = DatatypeConverter.parseBase64Binary(args.data);
+        mechanism = args.mechanism;
     }
 
     @Override
@@ -26,9 +27,9 @@ public class DigestMethodImpl implements DigestMethod {
 
         Digester digester = session.getDigester();
         try {
-            String digest = DatatypeConverter.printBase64Binary(digester.digest(this.data));
-            return ResponseMessage.OKMessage(new ReturnValue(digest));
-        } catch (Exception e) {
+            digester.digestInit(this.mechanism);
+            return ResponseMessage.OKMessage();
+        } catch (NoSuchAlgorithmException e) {
             return ResponseMessage.ErrorMessage(e.getMessage());
         }
     }
