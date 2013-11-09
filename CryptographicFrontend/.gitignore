@@ -6,3 +6,4 @@ test
 checks
 *.kate-swp
 .kateproject*
+*.kdev4
