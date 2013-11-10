@@ -7,14 +7,20 @@
 #include "Token.h"
 #include "TcbError.h"
 #include "Configuration.h"
+#include "ConnectionManager.h"
+
+#include <communication/Connection.hpp>
+#include <communication/OpenSessionMethod.hpp>
+#include <communication/CloseSessionMethod.hpp>
+#include <communication/ResponseMessage.hpp>
 
 #include <cstring> // memset, memcpy
 // TODO: Replace memset and memcpy with std::fill and std::copy...
 
 using namespace hsm;
 
-Slot::Slot(CK_SLOT_ID id)
-: slotId_(id)
+Slot::Slot(CK_SLOT_ID id, ConnectionManager & connectionManager)
+: slotId_(id), connectionManager_(connectionManager)
 {
   
 }
@@ -32,6 +38,18 @@ Slot::openSession(CK_FLAGS flags, CK_VOID_PTR pApplication,
                    "Token not present",
                    CKR_TOKEN_NOT_PRESENT);
   }
+  
+  communication::ConnectionPtr connectionPtr (connectionManager_.getConnection());
+  
+  communication::OpenSessionMethod method;
+  
+  std::string uuidSessionHandler (
+    method.execute(*connectionPtr)
+    .getResponse()
+    .getValue<std::string>("sessionHandler") 
+  );
+  
+  // TODO: Use that...
   
   Session * sessionPtr = new Session(flags, pApplication, 
                                      notify, *this, 

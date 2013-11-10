@@ -32,19 +32,18 @@ Application::Application(std::ostream& out)
                    CKR_DEVICE_ERROR);    
   }  
   configuration_.reset(new Configuration(std::string(configPath)));
+  connectionManager_.reset(new ConnectionManager(*configuration_));
   
   // By design, we will have one slot per configured token.  
   // The tokens are owned by the slots.
   int i = 0;
   for (auto const & slotConf: configuration_->getSlotConf()) {
-    SlotPtr slot(new Slot(i));    
+    SlotPtr slot(new Slot(i, *connectionManager_));        
     
-    slot->insertToken(new Token(slotConf.label, slotConf.userPin, slotConf.soPin, *slot));
-    
+    slot->insertToken(new Token(slotConf.label, slotConf.userPin, slotConf.soPin, *slot));    
     slots_.push_back(std::move(slot));    
   }  
   
-  connectionManager_.reset(new ConnectionManager(*configuration_));
   
 }
 

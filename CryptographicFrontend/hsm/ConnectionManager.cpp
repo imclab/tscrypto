@@ -17,7 +17,8 @@ ConnectionManager::ConnectionManager(const Configuration& configuration)
   rpcQueue_ = rabbitmqConf.rpcQueue;
 }
 
-Connection* ConnectionManager::createConnection() const
+Connection* ConnectionManager::getConnection() const
 {  
+  // NOTE: this simple implementation creates a new connection for each need of one...
   return new RabbitConnection(hostname_, port_, "", rpcQueue_, 1);
 }

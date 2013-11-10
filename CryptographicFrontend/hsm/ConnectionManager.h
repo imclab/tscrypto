@@ -18,7 +18,7 @@ class ConnectionManager
 public:
   ConnectionManager(Configuration const & configuration);
   virtual ~ConnectionManager() = default;
-  communication::Connection * createConnection() const;
+  communication::Connection * getConnection() const;
 private:
     std::string hostname_;
     int port_;

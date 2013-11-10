@@ -15,6 +15,8 @@
 
 namespace hsm
 {
+
+class ConnectionManager;
   
 class Token;
 class Session;
@@ -27,7 +29,7 @@ using SessionPtr = std::unique_ptr<Session>;
 class Slot
 {
 public:
-  Slot(CK_SLOT_ID id);
+  Slot(CK_SLOT_ID id, ConnectionManager & connectionManager);
   ~Slot();
   
   CK_SESSION_HANDLE openSession(CK_FLAGS flags, 
@@ -45,9 +47,10 @@ public:
   void insertToken(Token * token);
   Token & getToken() const; // throws exception
   bool isTokenPresent() const;
-private:
-  CK_FLAGS slotFlags_;
+private:  
   CK_SLOT_ID slotId_;
+  ConnectionManager const & connectionManager_;
+  CK_FLAGS slotFlags_;
   TokenPtr token_; // Esto por la posibilidad de no estar presente :)
   
   std::map<CK_SESSION_HANDLE, SessionPtr> sessions_;
