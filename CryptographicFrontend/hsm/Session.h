@@ -9,9 +9,6 @@
 
 #include "cryptoki.h"
 
-#include <botan/pipe.h>
-#include <botan/auto_rng.h>
-
 #include <memory>
 #include <vector>
 #include <utility>
@@ -25,7 +22,6 @@ namespace hsm
 {
 
 using KeyPair = std::pair<CK_OBJECT_HANDLE, CK_OBJECT_HANDLE>; // (Private, Public)
-using DigestPipePtr = std::unique_ptr<Botan::Pipe>;
 
 class Configuration;
 class Slot;
@@ -95,11 +91,7 @@ private:
   
   // Digest 
   bool digestInitialized_ = false;
-  DigestPipePtr digestPipe_;
-  CK_ULONG digestSize_;
-  
-  // Random Number Generation
-  Botan::AutoSeeded_RNG rng;
+  CK_ULONG digestSize_; 
 };
 
 }
