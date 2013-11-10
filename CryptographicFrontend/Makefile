@@ -1,12 +1,11 @@
 include Makefile.inc
 
-MODULES = jsoncpp tcbhsm cf base64
+MODULES = jsoncpp hsm communication base64
 
 # Cada executable va con su propia lista de objetivos
 LIB = pkcs11 # LIB agarra todo los .o de los dirs y los pone en un .so
 LIB_RPATH = . # dejar vacio para ¿deploy? xD.
-EXE = hsm test
-hsm_OBJS = main.o
+EXE = test
 test_OBJS = test.o
 
 PKGCONFIG_LIBS = librabbitmq botan-1.10

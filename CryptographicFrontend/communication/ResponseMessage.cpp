@@ -1,0 +1,14 @@
+/**
+ * @author Francisco Cifuentes [francisco@niclabs.cl]
+ */
+
+#include "ResponseMessage.hpp"
+
+using namespace communication;
+
+void ResponseMessage::addValue(IArgument * value)
+{
+    values_[value->getName()] = std::move(ArgumentPtr(value));
+}
+
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
