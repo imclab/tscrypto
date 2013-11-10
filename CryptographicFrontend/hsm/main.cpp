@@ -370,8 +370,7 @@ extern "C" {
       if (!slot.getToken().isInited())
         return CKR_TOKEN_NOT_RECOGNIZED;
 
-      *phSession = slot.openSession(flags, pApplication, 
-                                    notify, app->getConfiguration());      
+      *phSession = slot.openSession(flags, pApplication, notify);      
     } catch (TcbError & e) {
       return error(e);
     }

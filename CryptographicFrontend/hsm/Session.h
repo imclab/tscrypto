@@ -36,8 +36,7 @@ class Session
 {
 public:
   Session(CK_FLAGS flags, CK_VOID_PTR pApplication, 
-          CK_NOTIFY notify, Slot & currentSlot, 
-          Configuration const & configuration);
+          CK_NOTIFY notify, Slot & currentSlot);
   
   ~Session();
 
@@ -68,10 +67,6 @@ public:
   void seedRandom(CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen);
   void generateRandom(CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen);
 
-  // Conexiones
-  communication::ConnectionPtr createConnection(); 
-  // RAII connection in a std::unique_ptr
-
   CK_OBJECT_HANDLE createObject(CK_ATTRIBUTE_PTR pTemplate, 
                                 CK_ULONG ulCount); // throws exception
   void destroyObject(CK_OBJECT_HANDLE hObject); // throws exception
@@ -81,15 +76,13 @@ public:
   CryptoObject & getObject(CK_OBJECT_HANDLE objectHandle); // throws exception
 
 private:
-  const std::string uuid_;
+  communication::Connection* getConnection() const;
+  std::string uuid_;
   const CK_SESSION_HANDLE handle_;
   const CK_FLAGS flags_;
   const CK_VOID_PTR application_;
   const CK_NOTIFY notify_;
-  Slot & currentSlot_;
-  
-  // Configuration
-  Configuration const & configuration_;
+  Slot & slot_;
   
   // Object Search
   bool findInitialized = false;

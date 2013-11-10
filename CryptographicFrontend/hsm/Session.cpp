@@ -37,6 +37,8 @@
 #include "Configuration.h"
 #include "TcbError.h"
 #include "cryptoki/cryptoki.h"
+#include "Application.h"
+#include "ConnectionManager.h"
 
 
 using namespace hsm;
@@ -87,18 +89,20 @@ namespace { // Funcion auxiliar
 }
 
 Session::Session(CK_FLAGS flags, CK_VOID_PTR pApplication, 
-                 CK_NOTIFY notify, Slot & currentSlot, 
-                 Configuration const & configuration)
+                 CK_NOTIFY notify, Slot & currentSlot)
 : handle_(++actualHandle)
 , flags_(flags), application_(pApplication)
-, notify_(notify), currentSlot_(currentSlot)
-, configuration_(configuration)
+, notify_(notify), slot_(currentSlot)
 {
+  communication::ConnectionPtr connectionPtr (getConnection());  
+  communication::OpenSessionMethod method;  
+  uuid_ = method.execute(*connectionPtr).getResponse().getValue<std::string>("sessionHandler");    
 }
 
-Session::~Session() {  
-  communication::ConnectionPtr conn(createConnection());
-  Token & token = getCurrentSlot().getToken();  
+Session::~Session() {
+  
+  communication::ConnectionPtr conn(getConnection());
+  Token & token = slot_.getToken();  
   auto& objects = token.getObjects();
   
   for (auto& objectPair: objects) {
@@ -112,8 +116,7 @@ Session::~Session() {
         
         // If a keypair is stored, then each the public and the private key
         // will be deleted.
-        // Neitherless if it's only one instance stored in the backend :P.
-        
+        // Neitherless if it's only one instance stored in the backend.        
         char * value = reinterpret_cast<char *>(handlerAttribute->pValue);
         std::string handler(value, handlerAttribute->ulValueLen);
         communication::DeleteKeyPairMethod method(handler);      
@@ -121,13 +124,30 @@ Session::~Session() {
           method.execute(*conn).getResponse();
         } 
         catch (std::runtime_error& e) {
-          // throw TcbError("Session::~Session", e.what(), CKR_GENERAL_ERROR);
-        }
+          // Exception Safety (?)
+        }       
       }
       
       objects.erase(objectPair.first);
     }
   }
+  
+  communication::CloseSessionMethod method(uuid_);
+  try {
+    method.execute(*conn).getResponse();
+  } catch (...) {
+    // Exception Safety (?)
+  }
+}
+
+communication::Connection* Session::getConnection() const
+{
+  return slot_.getApplication().getConnectionManager().getConnection();
+}
+
+const std::string& Session::getUuid()
+{
+  return uuid_;
 }
 
 CK_SESSION_HANDLE Session::getHandle() const 
@@ -135,28 +155,13 @@ CK_SESSION_HANDLE Session::getHandle() const
   return handle_;
 }
 
-communication::ConnectionPtr Session::createConnection()
-{
-  auto const & rabbitMqConf = configuration_.getRabbitMqConf();
-  
-  char const * hostname = rabbitMqConf.hostname.c_str();
-  char const * port = rabbitMqConf.port.c_str();
-  char const * rpcQueue = rabbitMqConf.rpcQueue.c_str();
-
-  int portNumber = std::stoi(port);
-  
-  communication::Connection * c = new communication::RabbitConnection(hostname, portNumber, 
-                                                "", rpcQueue, 1);
-  return communication::ConnectionPtr(c);
-}
-
 Slot & Session::getCurrentSlot() {
-  return currentSlot_;
+  return slot_;
 }
 
 void Session::getSessionInfo(CK_SESSION_INFO_PTR pInfo) const {
     if (pInfo != nullptr) {
-        pInfo->slotID = currentSlot_.getId();
+        pInfo->slotID = slot_.getId();
         pInfo->state = getState();
         pInfo->flags = getFlags();
         pInfo->ulDeviceError = 0;
@@ -220,7 +225,7 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
     case CKO_PUBLIC_KEY:
     case CKO_PRIVATE_KEY:
       if(keyType == CKK_RSA) {
-        Token & token = getCurrentSlot().getToken();
+        Token & token = slot_.getToken();
         CryptoObjectType objectType = 
             isToken? 
             CryptoObjectType::TOKEN_OBJECT : 
@@ -247,7 +252,7 @@ CK_OBJECT_HANDLE Session::createObject(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCo
 }
 
 void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
-  Token & token = getCurrentSlot().getToken();
+  Token & token = slot_.getToken();
   auto & objectContainer = token.getObjects();
   
   auto it = objectContainer.find(hObject);  
@@ -261,10 +266,10 @@ void Session::destroyObject(CK_OBJECT_HANDLE hObject) {
                           handlerAttribute->ulValueLen);
       
       
-      communication::ConnectionPtr connection = createConnection();
+      communication::ConnectionPtr connectionPtr ( getConnection() );
       communication::DeleteKeyPairMethod method(handler);
       try {
-        method.execute(*connection).getResponse();
+        method.execute(*connectionPtr).getResponse();
       } catch (std::exception& e) {
         throw TcbError("Session::destroyObject", e.what(), CKR_GENERAL_ERROR);
       }
@@ -285,7 +290,7 @@ void Session::findObjectsInit(CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount) {
   if (pTemplate == nullptr)
     throw TcbError("Session::findObjectsInit", "pTemplate == nullptr", CKR_ARGUMENTS_BAD);
   
-  Token & token = getCurrentSlot().getToken();
+  Token & token = slot_.getToken();
   
   if (ulCount == 0) {
     // Busco todos los objetos...
@@ -336,7 +341,7 @@ void Session::findObjectsFinal() {
 
 CryptoObject & Session::getObject(CK_OBJECT_HANDLE objectHandle) {
   try {
-    return getCurrentSlot().getToken().getObject(objectHandle);
+    return slot_.getToken().getObject(objectHandle);
   } catch (std::out_of_range &e) {
     throw TcbError("Session::getObject", "Objeto no existe en la sesion.", CKR_OBJECT_HANDLE_INVALID);
   }
@@ -345,7 +350,7 @@ CryptoObject & Session::getObject(CK_OBJECT_HANDLE objectHandle) {
 
 CK_STATE Session::getState() const {
   // TODO: Completar la semántica de lecto-escritura.
-  switch (currentSlot_.getToken().getSecurityLevel()) {
+  switch (slot_.getToken().getSecurityLevel()) {
   case Token::SecurityLevel::SECURITY_OFFICER:
     return CKS_RW_SO_FUNCTIONS;
   case Token::SecurityLevel::USER:
@@ -372,12 +377,12 @@ CK_FLAGS Session::getFlags() const {
 }
 
 void Session::login(CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) {
-  Token & token = currentSlot_.getToken();
+  Token & token = slot_.getToken();
   token.login(userType, pPin, ulPinLen);
 }
 
 void Session::logout() {
-  currentSlot_.getToken().logout();
+  slot_.getToken().logout();
 }
 
 
@@ -702,7 +707,7 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
     // case CKM_VENDOR_DEFINED:
     case CKM_RSA_PKCS_KEY_PAIR_GEN:
       try {
-        communication::ConnectionPtr connection = createConnection();
+        communication::ConnectionPtr connection ( getConnection() );
         
         communication::GenerateKeyPairMethod method("RSA", modulusBits, exponent); // Unico metodo aceptado :B...       
         std::string uuidHandler = method.execute(*connection).getResponse().getValue<std::string>("handler");       
@@ -734,7 +739,7 @@ KeyPair Session::generateKeyPair(CK_MECHANISM_PTR pMechanism,
 
 void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
   try {
-    communication::ConnectionPtr connection = createConnection();
+    communication::ConnectionPtr connection( getConnection() );
     CryptoObject &keyObject = getObject(hKey);
     CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
     const CK_ATTRIBUTE * handlerAttribute = keyObject.findAttribute(&tmpl);
@@ -769,7 +774,7 @@ void Session::signInit(CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey) {
         break;
     }
     
-    communication::SignInitMethod method(mechanism, handler);
+    communication::SignInitMethod method(uuid_, mechanism, handler);
     method.execute(*connection).getResponse();
     
     signInitialized_ = true;
@@ -789,9 +794,9 @@ void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature
   }
   
   try {
-    communication::ConnectionPtr connection = createConnection();
+    communication::ConnectionPtr connection ( getConnection() );
     std::string encodedData (base64::encode(pData, ulDataLen));
-    communication::SignMethod method (encodedData);
+    communication::SignMethod method (uuid_, encodedData);
     
     const std::string & signedData = method.execute(*connection).getResponse().getValue<std::string>("signedData");
     
@@ -927,8 +932,8 @@ void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature
       throw TcbError("Session::generateRandom", "pRandomData == nullptr", CKR_ARGUMENTS_BAD);
     }
     
-    communication::ConnectionPtr connection = createConnection();
-    communication::GenerateRandomMethod method { static_cast<long>(ulRandomLen) };
+    communication::ConnectionPtr connection ( getConnection() );
+    communication::GenerateRandomMethod method (uuid_, static_cast<long>(ulRandomLen));
     std::string encodedData = method.execute(*connection).getResponse().getValue<std::string>("data");
     std::string decodedData( base64::decode(encodedData) );
     const char * data = decodedData.c_str();
@@ -941,9 +946,9 @@ void Session::sign(CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature
       throw TcbError("Session::seedRandom", "pSeed == nullptr", CKR_ARGUMENTS_BAD);
     }
     
-    communication::ConnectionPtr connection = createConnection();
+    communication::ConnectionPtr connection ( getConnection() );
     std::string encodedData( base64::encode(pSeed, ulSeedLen) );
     
-    communication::SeedRandomMethod method( encodedData );
+    communication::SeedRandomMethod method(uuid_, encodedData);
     method.execute(*connection).getResponse();
   }

@@ -8,6 +8,7 @@
 #include "TcbError.h"
 #include "Configuration.h"
 #include "ConnectionManager.h"
+#include "Application.h"
 
 #include <communication/Connection.hpp>
 #include <communication/OpenSessionMethod.hpp>
@@ -19,8 +20,8 @@
 
 using namespace hsm;
 
-Slot::Slot(CK_SLOT_ID id, ConnectionManager & connectionManager)
-: slotId_(id), connectionManager_(connectionManager)
+Slot::Slot(CK_SLOT_ID id, Application& application)
+: slotId_(id), application_(application)
 {
   
 }
@@ -30,30 +31,15 @@ Slot::~Slot() {
 }
 
 CK_SESSION_HANDLE 
-Slot::openSession(CK_FLAGS flags, CK_VOID_PTR pApplication, 
-                  CK_NOTIFY notify, Configuration const & configuration)
+Slot::openSession(CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify)
 {
   if (!isTokenPresent()) {
     throw TcbError("Slot::openSession",
                    "Token not present",
                    CKR_TOKEN_NOT_PRESENT);
-  }
+  }    
   
-  communication::ConnectionPtr connectionPtr (connectionManager_.getConnection());
-  
-  communication::OpenSessionMethod method;
-  
-  std::string uuidSessionHandler (
-    method.execute(*connectionPtr)
-    .getResponse()
-    .getValue<std::string>("sessionHandler") 
-  );
-  
-  // TODO: Use that...
-  
-  Session * sessionPtr = new Session(flags, pApplication, 
-                                     notify, *this, 
-                                     configuration);
+  Session * sessionPtr = new Session(flags, pApplication, notify, *this);
   
   CK_SESSION_HANDLE handle = sessionPtr->getHandle();  
   sessions_[handle].reset(sessionPtr);
@@ -155,4 +141,9 @@ Token & Slot::getToken() const
 void Slot::insertToken(Token * token)
 {
   token_.reset(token);
+}
+
+const Application& Slot::getApplication() const
+{
+  return application_;
 }

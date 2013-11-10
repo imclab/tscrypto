@@ -38,7 +38,7 @@ Application::Application(std::ostream& out)
   // The tokens are owned by the slots.
   int i = 0;
   for (auto const & slotConf: configuration_->getSlotConf()) {
-    SlotPtr slot(new Slot(i, *connectionManager_));        
+    SlotPtr slot(new Slot(i, *this));        
     
     slot->insertToken(new Token(slotConf.label, slotConf.userPin, slotConf.soPin, *slot));    
     slots_.push_back(std::move(slot));    

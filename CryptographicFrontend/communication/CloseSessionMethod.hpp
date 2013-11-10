@@ -13,7 +13,7 @@ namespace communication {
   {
   public:
     CloseSessionMethod(std::string sessionHandler);
-    virtual ~CloseSessionMethod();    
+    virtual ~CloseSessionMethod() = default;    
   protected:
     virtual ResponseMessagePtr parseResponse(const std::string& message);
   };
