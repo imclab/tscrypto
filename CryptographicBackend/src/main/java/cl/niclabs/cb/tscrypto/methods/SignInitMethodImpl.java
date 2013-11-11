@@ -15,7 +15,7 @@ class SignInitMethodImpl implements SignInitMethod {
     public SignInitMethodImpl(Args args) {
         sessionHandler = args.sessionHandler;
         mechanism = args.mechanism;
-        privateKeyHandler = args.handler;
+        privateKeyHandler = args.keyHandler;
     }
 
     @Override

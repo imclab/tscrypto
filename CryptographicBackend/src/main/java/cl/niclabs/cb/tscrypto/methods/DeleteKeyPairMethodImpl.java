@@ -9,7 +9,7 @@ class DeleteKeyPairMethodImpl implements DeleteKeyPairMethod {
     private final KeyManager keyManager;
 
     public DeleteKeyPairMethodImpl(Args args, KeyManager keyManager) {
-        handler = args.handler;
+        handler = args.keyHandler;
         this.keyManager = keyManager;
     }
 

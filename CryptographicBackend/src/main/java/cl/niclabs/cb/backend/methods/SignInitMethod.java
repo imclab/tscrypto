@@ -6,12 +6,12 @@ public interface SignInitMethod extends Method {
 	public static class Args {
         public final String sessionHandler;
 		public final String mechanism;
-		public final String handler;
+		public final String keyHandler;
 
-        public Args(String sessionHandler, String mechanism, String handler) {
+        public Args(String sessionHandler, String mechanism, String keyHandler) {
             this.sessionHandler = sessionHandler;
             this.mechanism = mechanism;
-            this.handler = handler;
+            this.keyHandler = keyHandler;
         }
     }
 }

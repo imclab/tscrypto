@@ -31,7 +31,7 @@ public class SimpleSigner {
         System.out.println(gson.toJson(method));
         ResponseMessage rm = method.execute();
         System.out.println(gson.toJson(rm));
-        String keyHandler = gson.fromJson(rm.getValue(), GenerateKeyPairMethod.ReturnValue.class).handler;
+        String keyHandler = gson.fromJson(rm.getValue(), GenerateKeyPairMethod.ReturnValue.class).keyHandler;
 
         Assert.assertEquals(rm.getReturnCode(), "OK");
 

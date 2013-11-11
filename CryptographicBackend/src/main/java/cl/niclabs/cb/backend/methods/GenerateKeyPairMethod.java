@@ -5,10 +5,10 @@ import cl.niclabs.cb.backend.Method;
 public interface GenerateKeyPairMethod extends Method {
 
   public static class ReturnValue {
-    public final String handler;
+    public final String keyHandler;
 
-      public ReturnValue(String handler) {
-          this.handler = handler;
+      public ReturnValue(String keyHandler) {
+          this.keyHandler = keyHandler;
       }
   }
 

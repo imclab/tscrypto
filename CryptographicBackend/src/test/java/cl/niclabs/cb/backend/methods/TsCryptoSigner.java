@@ -33,7 +33,7 @@ public class TsCryptoSigner {
         Method method = methodFactory.makeGenerateKeyPairMethod(new GenerateKeyPairMethod.Args("RSA", 1024, "65537"));
         ResponseMessage rm = method.execute();
         System.out.println(gson.toJson(rm));
-        String keyHandler = gson.fromJson(rm.getValue(), GenerateKeyPairMethod.ReturnValue.class).handler;
+        String keyHandler = gson.fromJson(rm.getValue(), GenerateKeyPairMethod.ReturnValue.class).keyHandler;
 
         method = methodFactory.makeOpenSessionMethod();
         rm = method.execute();

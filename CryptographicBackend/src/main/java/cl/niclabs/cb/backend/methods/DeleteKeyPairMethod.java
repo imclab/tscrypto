@@ -4,10 +4,10 @@ import cl.niclabs.cb.backend.Method;
 
 public interface DeleteKeyPairMethod extends Method {
     public static class Args {
-        public final String handler;
+        public final String keyHandler;
 
-        public Args(String handler) {
-            this.handler = handler;
+        public Args(String keyHandler) {
+            this.keyHandler = keyHandler;
         }
     }
 }

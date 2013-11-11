@@ -20,7 +20,7 @@ class SignInitMethodImpl implements SignInitMethod {
     public SignInitMethodImpl(Args args) {
         sessionHandler = args.sessionHandler;
         mechanism = args.mechanism;
-        handler = args.handler;
+        handler = args.keyHandler;
     }
 
     @Override

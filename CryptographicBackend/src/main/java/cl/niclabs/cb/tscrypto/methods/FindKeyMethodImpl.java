@@ -12,7 +12,7 @@ class FindKeyMethodImpl implements FindKeyMethod {
     private final KeyManager keyManager;
 
     public FindKeyMethodImpl(Args args, KeyManager keyManager) {
-        handler = args.handler;
+        handler = args.keyHandler;
         this.keyManager = keyManager;
     }
 

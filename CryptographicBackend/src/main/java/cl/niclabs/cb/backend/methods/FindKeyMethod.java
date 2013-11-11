@@ -13,7 +13,7 @@ public interface FindKeyMethod extends Method {
   }
 
   public static class Args {
-    public String handler;
+    public String keyHandler;
   }
 
 }

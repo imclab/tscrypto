@@ -12,7 +12,7 @@ class FindKeyMethodImpl implements FindKeyMethod {
     protected final String handler;
 
     public FindKeyMethodImpl(Args args) {
-        handler = args.handler;
+        handler = args.keyHandler;
     }
 
     @Override
