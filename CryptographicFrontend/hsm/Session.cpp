@@ -914,12 +914,14 @@ void Session::digest ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDiges
         throw TcbError ( "Session::digest", e.what(), CKR_GENERAL_ERROR );
     }
 
-    std::string digest ( base64::decode ( encodedDigest ) );
-    unsigned long digestSize = digest.size();
+    std::string digest ( base64::decode ( encodedDigest ) );    
+    unsigned long size = digest.size();
     *pulDigestLen = digestSize_;
+    
+    char const * const data = digest.c_str();    
+    std::copy(data, data + *pulDigestLen, pDigest);
     digestInitialized_ = false;
     digestSize_ = 0;
-
 }
 
 void Session::generateRandom ( CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen )
