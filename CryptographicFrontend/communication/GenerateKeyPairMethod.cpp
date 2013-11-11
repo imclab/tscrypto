@@ -25,7 +25,7 @@ ResponseMessagePtr GenerateKeyPairMethod::parseResponse(const std::string & mess
     reader.parse(message, json);
 
     ResponseMessagePtr response(new ResponseMessage());
-    response->addValue(new StringArgument("handler", json["handler"].asString()));
+    response->addValue(new StringArgument("keyHandler", json["keyHandler"].asString()));
 
     return response;
 }

@@ -31,7 +31,7 @@ string MethodMessage::toJson()
 
   Json::Value args;
 
-  for (const ArgumentPtr & arg : argList_) {
+  for (const ArgumentPtr & arg : argList_) {     
       if (IntegerArgument::match(*arg)) {
           args[arg->getName()] = IntegerArgument::getValue(*arg);
       } else if (StringArgument::match(*arg)) {

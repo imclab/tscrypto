@@ -9,7 +9,7 @@ SignInitMethod::SignInitMethod(std::string sessionHandler, std::string mechanism
 {
     addArgument(new StringArgument("sessionHandler", sessionHandler));
     addArgument(new StringArgument("mechanism", mechanism));
-    addArgument(new StringArgument("handler", privateKeyHandler));
+    addArgument(new StringArgument("keyHandler", privateKeyHandler));
 }
 
 ResponseMessagePtr SignInitMethod::parseResponse(const std::string & message) {

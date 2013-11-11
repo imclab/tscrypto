@@ -11,7 +11,7 @@ namespace communication
 class IArgument {
 public:
     virtual const std::string& getName() const = 0;
-    virtual const std::type_info & getTypeId() const = 0;    
+    virtual const std::type_info & getTypeId() const = 0;
 };
 
 template <typename T>
@@ -54,6 +54,9 @@ public:
     }
 };
 
+// Instancias validas...
+//typedef Argument<std::string> StringArgument;
+//typedef Argument<long long> IntegerArgument;
 using StringArgument = Argument<std::string>;
 using IntegerArgument = Argument<long long>;
 

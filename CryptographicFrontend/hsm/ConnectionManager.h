@@ -5,6 +5,8 @@
 #ifndef HSM_CONNECTIONMANAGER_H
 #define HSM_CONNECTIONMANAGER_H
 
+#include <memory>
+
 namespace communication {
 class Connection;
 }
@@ -24,6 +26,8 @@ private:
     int port_;
     std::string rpcQueue_;
 };
+using ConnectionPtr = std::unique_ptr<communication::Connection>;
+
 }
 
 #endif // HSM_CONNECTIONMANAGER_H

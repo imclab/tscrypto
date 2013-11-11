@@ -16,10 +16,6 @@
 
 #include "cryptoki.h"
 
-namespace communication {
-class Connection;
-}
-
 namespace hsm
 {  
   class Slot;

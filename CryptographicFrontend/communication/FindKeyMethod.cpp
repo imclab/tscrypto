@@ -11,7 +11,7 @@ using namespace communication;
 FindKeyMethod::FindKeyMethod(std::string handler)
   : Method("FindKey")
 {
-  addArgument(new StringArgument("handler", handler));
+  addArgument(new StringArgument("keyHandler", handler));
 }
 
 ResponseMessagePtr FindKeyMethod::parseResponse(const std::string & message)

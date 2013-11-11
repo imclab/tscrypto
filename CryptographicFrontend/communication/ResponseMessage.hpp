@@ -13,14 +13,8 @@
 #include "Argument.hpp"
 
 namespace communication
-{
-    
-    class ResponseMessage;
-    using ResponseMessagePtr = std::unique_ptr<ResponseMessage>;
-    // TODO: review if this is necessary.
-    using ResponseMessageStrategy = std::function<ResponseMessagePtr(std::string const &)>;
-    using ArgumentPtr = std::unique_ptr<IArgument>;
-    
+{    
+    using ArgumentPtr = std::unique_ptr<IArgument>;    
     class ResponseMessage
     {
     private:
@@ -36,7 +30,7 @@ namespace communication
         template <typename T> // Escondo la implementacion...
         T getValue(const std::string & name) const {
             return Argument<T>::getValue(*values_.at(name));
-        }
+        }        
         
     };
     

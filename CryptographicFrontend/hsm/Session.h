@@ -15,7 +15,6 @@
 
 namespace communication {
   class Connection;
-  using ConnectionPtr = std::unique_ptr<Connection>;
 }
 
 namespace hsm
