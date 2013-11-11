@@ -15,9 +15,6 @@
 #include <communication/CloseSessionMethod.hpp>
 #include <communication/ResponseMessage.hpp>
 
-#include <cstring> // memset, memcpy
-// TODO: Replace memset and memcpy with std::fill and std::copy...
-
 using namespace hsm;
 
 Slot::Slot(CK_SLOT_ID id, Application& application)
@@ -110,12 +107,15 @@ void Slot::getInfo(CK_SLOT_INFO_PTR pInfo) const
   if (pInfo == NULL) {
     throw TcbError("El puntero pasado a getInfo es NULL.", CKR_ARGUMENTS_BAD);
   }
-
-  std::memset(pInfo->slotDescription, ' ', 64);
-  std::memset(pInfo->manufacturerID, ' ', 32);
-
-  std::memcpy(pInfo->slotDescription, "Slot de TCBHSM", 14);
-  std::memcpy(pInfo->manufacturerID, "NicLabs", 7);
+  
+  std::fill(pInfo->slotDescription, pInfo->slotDescription + 64, ' ');
+  std::fill(pInfo->manufacturerID, pInfo->manufacturerID + 32, ' ');
+  
+  char slotDescription[] = "Slot de TCBHSM";
+  char manufacturerID[] = "NicLabs";
+  
+  std::copy(slotDescription, slotDescription + 14, pInfo->slotDescription);
+  std::copy(manufacturerID, manufacturerID + 7, pInfo->manufacturerID);
 
   pInfo->flags = slotFlags_;
 
