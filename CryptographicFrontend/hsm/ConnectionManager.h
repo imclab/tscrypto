@@ -7,20 +7,22 @@
 
 #include <memory>
 
-namespace communication {
+namespace communication
+{
 class Connection;
 }
 
-namespace hsm {
+namespace hsm
+{
 
 class Configuration;
 
 class ConnectionManager
 {
 public:
-  ConnectionManager(Configuration const & configuration);
-  virtual ~ConnectionManager() = default;
-  communication::Connection * getConnection() const;
+    ConnectionManager ( Configuration const & configuration );
+    virtual ~ConnectionManager() = default;
+    communication::Connection * getConnection() const;
 private:
     std::string hostname_;
     int port_;

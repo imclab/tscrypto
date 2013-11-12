@@ -433,8 +433,8 @@ enum CommentPlacement {
 class JSON_API StaticString
 {
 public:
-    explicit StaticString(const char *czstring)
-        : str_(czstring) {
+    explicit StaticString ( const char *czstring )
+        : str_ ( czstring ) {
     }
 
     operator const char *() const {
@@ -532,18 +532,18 @@ private:
             duplicate,
             duplicateOnCopy
         };
-        CZString(ArrayIndex index);
-        CZString(const char *cstr, DuplicationPolicy allocate);
-        CZString(const CZString &other);
+        CZString ( ArrayIndex index );
+        CZString ( const char *cstr, DuplicationPolicy allocate );
+        CZString ( const CZString &other );
         ~CZString();
-        CZString &operator =(const CZString &other);
-        bool operator<(const CZString &other) const;
-        bool operator==(const CZString &other) const;
+        CZString &operator = ( const CZString &other );
+        bool operator< ( const CZString &other ) const;
+        bool operator== ( const CZString &other ) const;
         ArrayIndex index() const;
         const char *c_str() const;
         bool isStaticString() const;
     private:
-        void swap(CZString &other);
+        void swap ( CZString &other );
         const char *cstr_;
         ArrayIndex index_;
     };
@@ -573,16 +573,16 @@ public:
     Json::Value obj_value(Json::objectValue); // {}
     \endcode
     */
-    Value(ValueType type = nullValue);
-    Value(Int value);
-    Value(UInt value);
+    Value ( ValueType type = nullValue );
+    Value ( Int value );
+    Value ( UInt value );
 #if defined(JSON_HAS_INT64)
-    Value(Int64 value);
-    Value(UInt64 value);
+    Value ( Int64 value );
+    Value ( UInt64 value );
 #endif // if defined(JSON_HAS_INT64)
-    Value(double value);
-    Value(const char *value);
-    Value(const char *beginValue, const char *endValue);
+    Value ( double value );
+    Value ( const char *value );
+    Value ( const char *beginValue, const char *endValue );
     /** \brief Constructs a value from a static string.
 
      * Like other value string constructor but do not duplicate the string for
@@ -593,32 +593,32 @@ public:
      * Json::Value aValue( StaticString("some text") );
      * \endcode
      */
-    Value(const StaticString &value);
-    Value(const std::string &value);
+    Value ( const StaticString &value );
+    Value ( const std::string &value );
 # ifdef JSON_USE_CPPTL
-    Value(const CppTL::ConstString &value);
+    Value ( const CppTL::ConstString &value );
 # endif
-    Value(bool value);
-    Value(const Value &other);
+    Value ( bool value );
+    Value ( const Value &other );
     ~Value();
 
-    Value &operator=(const Value &other);
+    Value &operator= ( const Value &other );
     /// Swap values.
     /// \note Currently, comments are intentionally not swapped, for
     /// both logic and efficiency.
-    void swap(Value &other);
+    void swap ( Value &other );
 
     ValueType type() const;
 
-    bool operator <(const Value &other) const;
-    bool operator <=(const Value &other) const;
-    bool operator >=(const Value &other) const;
-    bool operator >(const Value &other) const;
+    bool operator < ( const Value &other ) const;
+    bool operator <= ( const Value &other ) const;
+    bool operator >= ( const Value &other ) const;
+    bool operator > ( const Value &other ) const;
 
-    bool operator ==(const Value &other) const;
-    bool operator !=(const Value &other) const;
+    bool operator == ( const Value &other ) const;
+    bool operator != ( const Value &other ) const;
 
-    int compare(const Value &other) const;
+    int compare ( const Value &other ) const;
 
     const char *asCString() const;
     std::string asString() const;
@@ -650,7 +650,7 @@ public:
     bool isArray() const;
     bool isObject() const;
 
-    bool isConvertibleTo(ValueType other) const;
+    bool isConvertibleTo ( ValueType other ) const;
 
     /// Number of values in array or object
     ArrayIndex size() const;
@@ -672,51 +672,51 @@ public:
     /// May only be called on nullValue or arrayValue.
     /// \pre type() is arrayValue or nullValue
     /// \post type() is arrayValue
-    void resize(ArrayIndex size);
+    void resize ( ArrayIndex size );
 
     /// Access an array element (zero based index ).
     /// If the array contains less than index element, then null value are inserted
     /// in the array so that its size is index+1.
     /// (You may need to say 'value[0u]' to get your compiler to distinguish
     ///  this from the operator[] which takes a string.)
-    Value &operator[](ArrayIndex index);
+    Value &operator[] ( ArrayIndex index );
 
     /// Access an array element (zero based index ).
     /// If the array contains less than index element, then null value are inserted
     /// in the array so that its size is index+1.
     /// (You may need to say 'value[0u]' to get your compiler to distinguish
     ///  this from the operator[] which takes a string.)
-    Value &operator[](int index);
+    Value &operator[] ( int index );
 
     /// Access an array element (zero based index )
     /// (You may need to say 'value[0u]' to get your compiler to distinguish
     ///  this from the operator[] which takes a string.)
-    const Value &operator[](ArrayIndex index) const;
+    const Value &operator[] ( ArrayIndex index ) const;
 
     /// Access an array element (zero based index )
     /// (You may need to say 'value[0u]' to get your compiler to distinguish
     ///  this from the operator[] which takes a string.)
-    const Value &operator[](int index) const;
+    const Value &operator[] ( int index ) const;
 
     /// If the array contains at least index+1 elements, returns the element value,
     /// otherwise returns defaultValue.
-    Value get(ArrayIndex index,
-              const Value &defaultValue) const;
+    Value get ( ArrayIndex index,
+                const Value &defaultValue ) const;
     /// Return true if index < size().
-    bool isValidIndex(ArrayIndex index) const;
+    bool isValidIndex ( ArrayIndex index ) const;
     /// \brief Append value to array at the end.
     ///
     /// Equivalent to jsonvalue[jsonvalue.size()] = value;
-    Value &append(const Value &value);
+    Value &append ( const Value &value );
 
     /// Access an object value by name, create a null member if it does not exist.
-    Value &operator[](const char *key);
+    Value &operator[] ( const char *key );
     /// Access an object value by name, returns null if there is no member with that name.
-    const Value &operator[](const char *key) const;
+    const Value &operator[] ( const char *key ) const;
     /// Access an object value by name, create a null member if it does not exist.
-    Value &operator[](const std::string &key);
+    Value &operator[] ( const std::string &key );
     /// Access an object value by name, returns null if there is no member with that name.
-    const Value &operator[](const std::string &key) const;
+    const Value &operator[] ( const std::string &key ) const;
     /** \brief Access an object value by name, create a null member if it does not exist.
 
      * If the object as no entry for that name, then the member name used to store
@@ -728,23 +728,23 @@ public:
      * object[code] = 1234;
      * \endcode
      */
-    Value &operator[](const StaticString &key);
+    Value &operator[] ( const StaticString &key );
 # ifdef JSON_USE_CPPTL
     /// Access an object value by name, create a null member if it does not exist.
-    Value &operator[](const CppTL::ConstString &key);
+    Value &operator[] ( const CppTL::ConstString &key );
     /// Access an object value by name, returns null if there is no member with that name.
-    const Value &operator[](const CppTL::ConstString &key) const;
+    const Value &operator[] ( const CppTL::ConstString &key ) const;
 # endif
     /// Return the member named key if it exist, defaultValue otherwise.
-    Value get(const char *key,
-              const Value &defaultValue) const;
+    Value get ( const char *key,
+                const Value &defaultValue ) const;
     /// Return the member named key if it exist, defaultValue otherwise.
-    Value get(const std::string &key,
-              const Value &defaultValue) const;
+    Value get ( const std::string &key,
+                const Value &defaultValue ) const;
 # ifdef JSON_USE_CPPTL
     /// Return the member named key if it exist, defaultValue otherwise.
-    Value get(const CppTL::ConstString &key,
-              const Value &defaultValue) const;
+    Value get ( const CppTL::ConstString &key,
+                const Value &defaultValue ) const;
 # endif
     /// \brief Remove and return the named member.
     ///
@@ -752,17 +752,17 @@ public:
     /// \return the removed Value, or null.
     /// \pre type() is objectValue or nullValue
     /// \post type() is unchanged
-    Value removeMember(const char *key);
+    Value removeMember ( const char *key );
     /// Same as removeMember(const char*)
-    Value removeMember(const std::string &key);
+    Value removeMember ( const std::string &key );
 
     /// Return true if the object has a member named key.
-    bool isMember(const char *key) const;
+    bool isMember ( const char *key ) const;
     /// Return true if the object has a member named key.
-    bool isMember(const std::string &key) const;
+    bool isMember ( const std::string &key ) const;
 # ifdef JSON_USE_CPPTL
     /// Return true if the object has a member named key.
-    bool isMember(const CppTL::ConstString &key) const;
+    bool isMember ( const CppTL::ConstString &key ) const;
 # endif
 
     /// \brief Return a list of the member names.
@@ -778,14 +778,14 @@ public:
 //# endif
 
     /// Comments must be //... or /* ... */
-    void setComment(const char *comment,
-                    CommentPlacement placement);
+    void setComment ( const char *comment,
+                      CommentPlacement placement );
     /// Comments must be //... or /* ... */
-    void setComment(const std::string &comment,
-                    CommentPlacement placement);
-    bool hasComment(CommentPlacement placement) const;
+    void setComment ( const std::string &comment,
+                      CommentPlacement placement );
+    bool hasComment ( CommentPlacement placement ) const;
     /// Include delimiters and embedded newlines.
-    std::string getComment(CommentPlacement placement) const;
+    std::string getComment ( CommentPlacement placement ) const;
 
     std::string toStyledString() const;
 
@@ -796,15 +796,15 @@ public:
     iterator end();
 
 private:
-    Value &resolveReference(const char *key,
-                            bool isStatic);
+    Value &resolveReference ( const char *key,
+                              bool isStatic );
 
 # ifdef JSON_VALUE_USE_INTERNAL_MAP
     inline bool isItemAvailable() const {
         return itemIsUsed_ == 0;
     }
 
-    inline void setItemUsed(bool isUsed = true) {
+    inline void setItemUsed ( bool isUsed = true ) {
         itemIsUsed_ = isUsed ? 1 : 0;
     }
 
@@ -812,7 +812,7 @@ private:
         return memberNameIsStatic_ == 0;
     }
 
-    inline void setMemberNameIsStatic(bool isStatic) {
+    inline void setMemberNameIsStatic ( bool isStatic ) {
         memberNameIsStatic_ = isStatic ? 1 : 0;
     }
 # endif // # ifdef JSON_VALUE_USE_INTERNAL_MAP
@@ -822,7 +822,7 @@ private:
         CommentInfo();
         ~CommentInfo();
 
-        void setComment(const char *text);
+        void setComment ( const char *text );
 
         char *comment_;
     };
@@ -867,9 +867,9 @@ public:
     friend class Path;
 
     PathArgument();
-    PathArgument(ArrayIndex index);
-    PathArgument(const char *key);
-    PathArgument(const std::string &key);
+    PathArgument ( ArrayIndex index );
+    PathArgument ( const char *key );
+    PathArgument ( const std::string &key );
 
 private:
     enum Kind {
@@ -896,31 +896,31 @@ private:
 class JSON_API Path
 {
 public:
-    Path(const std::string &path,
-         const PathArgument &a1 = PathArgument(),
-         const PathArgument &a2 = PathArgument(),
-         const PathArgument &a3 = PathArgument(),
-         const PathArgument &a4 = PathArgument(),
-         const PathArgument &a5 = PathArgument());
+    Path ( const std::string &path,
+           const PathArgument &a1 = PathArgument(),
+           const PathArgument &a2 = PathArgument(),
+           const PathArgument &a3 = PathArgument(),
+           const PathArgument &a4 = PathArgument(),
+           const PathArgument &a5 = PathArgument() );
 
-    const Value &resolve(const Value &root) const;
-    Value resolve(const Value &root,
-                  const Value &defaultValue) const;
+    const Value &resolve ( const Value &root ) const;
+    Value resolve ( const Value &root,
+                    const Value &defaultValue ) const;
     /// Creates the "path" to access the specified node and returns a reference on the node.
-    Value &make(Value &root) const;
+    Value &make ( Value &root ) const;
 
 private:
     typedef std::vector<const PathArgument *> InArgs;
     typedef std::vector<PathArgument> Args;
 
-    void makePath(const std::string &path,
-                  const InArgs &in);
-    void addPathInArg(const std::string &path,
-                      const InArgs &in,
-                      InArgs::const_iterator &itInArg,
-                      PathArgument::Kind kind);
-    void invalidPath(const std::string &path,
-                     int location);
+    void makePath ( const std::string &path,
+                    const InArgs &in );
+    void addPathInArg ( const std::string &path,
+                        const InArgs &in,
+                        InArgs::const_iterator &itInArg,
+                        PathArgument::Kind kind );
+    void invalidPath ( const std::string &path,
+                       int location );
 
     Args args_;
 };
@@ -977,12 +977,12 @@ class JSON_API ValueMapAllocator
 public:
     virtual ~ValueMapAllocator();
     virtual ValueInternalMap *newMap() = 0;
-    virtual ValueInternalMap *newMapCopy(const ValueInternalMap &other) = 0;
-    virtual void destructMap(ValueInternalMap *map) = 0;
-    virtual ValueInternalLink *allocateMapBuckets(unsigned int size) = 0;
-    virtual void releaseMapBuckets(ValueInternalLink *links) = 0;
+    virtual ValueInternalMap *newMapCopy ( const ValueInternalMap &other ) = 0;
+    virtual void destructMap ( ValueInternalMap *map ) = 0;
+    virtual ValueInternalLink *allocateMapBuckets ( unsigned int size ) = 0;
+    virtual void releaseMapBuckets ( ValueInternalLink *links ) = 0;
     virtual ValueInternalLink *allocateMapLink() = 0;
-    virtual void releaseMapLink(ValueInternalLink *link) = 0;
+    virtual void releaseMapLink ( ValueInternalLink *link ) = 0;
 };
 
 /** \brief ValueInternalMap hash-map bucket chain link (for internal use only).
@@ -1031,10 +1031,10 @@ public:
 # ifndef JSONCPP_DOC_EXCLUDE_IMPLEMENTATION
     struct IteratorState {
         IteratorState()
-            : map_(0)
-            , link_(0)
-            , itemIndex_(0)
-            , bucketIndex_(0) {
+            : map_ ( 0 )
+            , link_ ( 0 )
+            , itemIndex_ ( 0 )
+            , bucketIndex_ ( 0 ) {
         }
         ValueInternalMap *map_;
         ValueInternalLink *link_;
@@ -1044,59 +1044,59 @@ public:
 # endif // ifndef JSONCPP_DOC_EXCLUDE_IMPLEMENTATION
 
     ValueInternalMap();
-    ValueInternalMap(const ValueInternalMap &other);
-    ValueInternalMap &operator =(const ValueInternalMap &other);
+    ValueInternalMap ( const ValueInternalMap &other );
+    ValueInternalMap &operator = ( const ValueInternalMap &other );
     ~ValueInternalMap();
 
-    void swap(ValueInternalMap &other);
+    void swap ( ValueInternalMap &other );
 
     BucketIndex size() const;
 
     void clear();
 
-    bool reserveDelta(BucketIndex growth);
+    bool reserveDelta ( BucketIndex growth );
 
-    bool reserve(BucketIndex newItemCount);
+    bool reserve ( BucketIndex newItemCount );
 
-    const Value *find(const char *key) const;
+    const Value *find ( const char *key ) const;
 
-    Value *find(const char *key);
+    Value *find ( const char *key );
 
-    Value &resolveReference(const char *key,
-                            bool isStatic);
+    Value &resolveReference ( const char *key,
+                              bool isStatic );
 
-    void remove(const char *key);
+    void remove ( const char *key );
 
-    void doActualRemove(ValueInternalLink *link,
-                        BucketIndex index,
-                        BucketIndex bucketIndex);
+    void doActualRemove ( ValueInternalLink *link,
+                          BucketIndex index,
+                          BucketIndex bucketIndex );
 
-    ValueInternalLink *&getLastLinkInBucket(BucketIndex bucketIndex);
+    ValueInternalLink *&getLastLinkInBucket ( BucketIndex bucketIndex );
 
-    Value &setNewItem(const char *key,
-                      bool isStatic,
-                      ValueInternalLink *link,
-                      BucketIndex index);
+    Value &setNewItem ( const char *key,
+                        bool isStatic,
+                        ValueInternalLink *link,
+                        BucketIndex index );
 
-    Value &unsafeAdd(const char *key,
-                     bool isStatic,
-                     HashKey hashedKey);
+    Value &unsafeAdd ( const char *key,
+                       bool isStatic,
+                       HashKey hashedKey );
 
-    HashKey hash(const char *key) const;
+    HashKey hash ( const char *key ) const;
 
-    int compare(const ValueInternalMap &other) const;
+    int compare ( const ValueInternalMap &other ) const;
 
 private:
-    void makeBeginIterator(IteratorState &it) const;
-    void makeEndIterator(IteratorState &it) const;
-    static bool equals(const IteratorState &x, const IteratorState &other);
-    static void increment(IteratorState &iterator);
-    static void incrementBucket(IteratorState &iterator);
-    static void decrement(IteratorState &iterator);
-    static const char *key(const IteratorState &iterator);
-    static const char *key(const IteratorState &iterator, bool &isStatic);
-    static Value &value(const IteratorState &iterator);
-    static int distance(const IteratorState &x, const IteratorState &y);
+    void makeBeginIterator ( IteratorState &it ) const;
+    void makeEndIterator ( IteratorState &it ) const;
+    static bool equals ( const IteratorState &x, const IteratorState &other );
+    static void increment ( IteratorState &iterator );
+    static void incrementBucket ( IteratorState &iterator );
+    static void decrement ( IteratorState &iterator );
+    static const char *key ( const IteratorState &iterator );
+    static const char *key ( const IteratorState &iterator, bool &isStatic );
+    static Value &value ( const IteratorState &iterator );
+    static int distance ( const IteratorState &x, const IteratorState &y );
 
 private:
     ValueInternalLink *buckets_;
@@ -1128,9 +1128,9 @@ public:
 # ifndef JSONCPP_DOC_EXCLUDE_IMPLEMENTATION
     struct IteratorState { // Must be a POD
         IteratorState()
-            : array_(0)
-            , currentPageIndex_(0)
-            , currentItemIndex_(0) {
+            : array_ ( 0 )
+            , currentPageIndex_ ( 0 )
+            , currentItemIndex_ ( 0 ) {
         }
         ValueInternalArray *array_;
         Value **currentPageIndex_;
@@ -1139,35 +1139,35 @@ public:
 # endif // ifndef JSONCPP_DOC_EXCLUDE_IMPLEMENTATION
 
     ValueInternalArray();
-    ValueInternalArray(const ValueInternalArray &other);
-    ValueInternalArray &operator =(const ValueInternalArray &other);
+    ValueInternalArray ( const ValueInternalArray &other );
+    ValueInternalArray &operator = ( const ValueInternalArray &other );
     ~ValueInternalArray();
-    void swap(ValueInternalArray &other);
+    void swap ( ValueInternalArray &other );
 
     void clear();
-    void resize(ArrayIndex newSize);
+    void resize ( ArrayIndex newSize );
 
-    Value &resolveReference(ArrayIndex index);
+    Value &resolveReference ( ArrayIndex index );
 
-    Value *find(ArrayIndex index) const;
+    Value *find ( ArrayIndex index ) const;
 
     ArrayIndex size() const;
 
-    int compare(const ValueInternalArray &other) const;
+    int compare ( const ValueInternalArray &other ) const;
 
 private:
-    static bool equals(const IteratorState &x, const IteratorState &other);
-    static void increment(IteratorState &iterator);
-    static void decrement(IteratorState &iterator);
-    static Value &dereference(const IteratorState &iterator);
-    static Value &unsafeDereference(const IteratorState &iterator);
-    static int distance(const IteratorState &x, const IteratorState &y);
-    static ArrayIndex indexOf(const IteratorState &iterator);
-    void makeBeginIterator(IteratorState &it) const;
-    void makeEndIterator(IteratorState &it) const;
-    void makeIterator(IteratorState &it, ArrayIndex index) const;
+    static bool equals ( const IteratorState &x, const IteratorState &other );
+    static void increment ( IteratorState &iterator );
+    static void decrement ( IteratorState &iterator );
+    static Value &dereference ( const IteratorState &iterator );
+    static Value &unsafeDereference ( const IteratorState &iterator );
+    static int distance ( const IteratorState &x, const IteratorState &y );
+    static ArrayIndex indexOf ( const IteratorState &iterator );
+    void makeBeginIterator ( IteratorState &it ) const;
+    void makeEndIterator ( IteratorState &it ) const;
+    void makeIterator ( IteratorState &it, ArrayIndex index ) const;
 
-    void makeIndexValid(ArrayIndex index);
+    void makeIndexValid ( ArrayIndex index );
 
     Value **pages_;
     ArrayIndex size_;
@@ -1238,8 +1238,8 @@ class JSON_API ValueArrayAllocator
 public:
     virtual ~ValueArrayAllocator();
     virtual ValueInternalArray *newArray() = 0;
-    virtual ValueInternalArray *newArrayCopy(const ValueInternalArray &other) = 0;
-    virtual void destructArray(ValueInternalArray *array) = 0;
+    virtual ValueInternalArray *newArrayCopy ( const ValueInternalArray &other ) = 0;
+    virtual void destructArray ( ValueInternalArray *array ) = 0;
     /** \brief Reallocate array page index.
      * Reallocates an array of pointer on each page.
      * \param indexes [input] pointer on the current index. May be \c NULL.
@@ -1251,13 +1251,13 @@ public:
      * \param minNewIndexCount Minimum number of page the new index must be able to
      *                         handle.
      */
-    virtual void reallocateArrayPageIndex(Value ** &indexes,
-                                          ValueInternalArray::PageIndex &indexCount,
-                                          ValueInternalArray::PageIndex minNewIndexCount) = 0;
-    virtual void releaseArrayPageIndex(Value **indexes,
-                                       ValueInternalArray::PageIndex indexCount) = 0;
+    virtual void reallocateArrayPageIndex ( Value ** &indexes,
+                                            ValueInternalArray::PageIndex &indexCount,
+                                            ValueInternalArray::PageIndex minNewIndexCount ) = 0;
+    virtual void releaseArrayPageIndex ( Value **indexes,
+                                         ValueInternalArray::PageIndex indexCount ) = 0;
     virtual Value *allocateArrayPage() = 0;
-    virtual void releaseArrayPage(Value *value) = 0;
+    virtual void releaseArrayPage ( Value *value ) = 0;
 };
 #endif // #ifdef JSON_VALUE_USE_INTERNAL_MAP
 
@@ -1275,22 +1275,22 @@ public:
 
     ValueIteratorBase();
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
-    explicit ValueIteratorBase(const Value::ObjectValues::iterator &current);
+    explicit ValueIteratorBase ( const Value::ObjectValues::iterator &current );
 #else
-    ValueIteratorBase(const ValueInternalArray::IteratorState &state);
-    ValueIteratorBase(const ValueInternalMap::IteratorState &state);
+    ValueIteratorBase ( const ValueInternalArray::IteratorState &state );
+    ValueIteratorBase ( const ValueInternalMap::IteratorState &state );
 #endif
 
-    bool operator ==(const SelfType &other) const {
-        return isEqual(other);
+    bool operator == ( const SelfType &other ) const {
+        return isEqual ( other );
     }
 
-    bool operator !=(const SelfType &other) const {
-        return !isEqual(other);
+    bool operator != ( const SelfType &other ) const {
+        return !isEqual ( other );
     }
 
-    difference_type operator -(const SelfType &other) const {
-        return computeDistance(other);
+    difference_type operator - ( const SelfType &other ) const {
+        return computeDistance ( other );
     }
 
     /// Return either the index or the member name of the referenced value as a Value.
@@ -1309,11 +1309,11 @@ protected:
 
     void decrement();
 
-    difference_type computeDistance(const SelfType &other) const;
+    difference_type computeDistance ( const SelfType &other ) const;
 
-    bool isEqual(const SelfType &other) const;
+    bool isEqual ( const SelfType &other ) const;
 
-    void copy(const SelfType &other);
+    void copy ( const SelfType &other );
 
 private:
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
@@ -1348,22 +1348,22 @@ private:
     /*! \internal Use by Value to create an iterator.
      */
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
-    explicit ValueConstIterator(const Value::ObjectValues::iterator &current);
+    explicit ValueConstIterator ( const Value::ObjectValues::iterator &current );
 #else
-    ValueConstIterator(const ValueInternalArray::IteratorState &state);
-    ValueConstIterator(const ValueInternalMap::IteratorState &state);
+    ValueConstIterator ( const ValueInternalArray::IteratorState &state );
+    ValueConstIterator ( const ValueInternalMap::IteratorState &state );
 #endif
 public:
-    SelfType &operator =(const ValueIteratorBase &other);
+    SelfType &operator = ( const ValueIteratorBase &other );
 
-    SelfType operator++(int) {
-        SelfType temp(*this);
+    SelfType operator++ ( int ) {
+        SelfType temp ( *this );
         ++*this;
         return temp;
     }
 
-    SelfType operator--(int) {
-        SelfType temp(*this);
+    SelfType operator-- ( int ) {
+        SelfType temp ( *this );
         --*this;
         return temp;
     }
@@ -1398,29 +1398,29 @@ public:
     typedef ValueIterator SelfType;
 
     ValueIterator();
-    ValueIterator(const ValueConstIterator &other);
-    ValueIterator(const ValueIterator &other);
+    ValueIterator ( const ValueConstIterator &other );
+    ValueIterator ( const ValueIterator &other );
 private:
     /*! \internal Use by Value to create an iterator.
      */
 #ifndef JSON_VALUE_USE_INTERNAL_MAP
-    explicit ValueIterator(const Value::ObjectValues::iterator &current);
+    explicit ValueIterator ( const Value::ObjectValues::iterator &current );
 #else
-    ValueIterator(const ValueInternalArray::IteratorState &state);
-    ValueIterator(const ValueInternalMap::IteratorState &state);
+    ValueIterator ( const ValueInternalArray::IteratorState &state );
+    ValueIterator ( const ValueInternalMap::IteratorState &state );
 #endif
 public:
 
-    SelfType &operator =(const SelfType &other);
+    SelfType &operator = ( const SelfType &other );
 
-    SelfType operator++(int) {
-        SelfType temp(*this);
+    SelfType operator++ ( int ) {
+        SelfType temp ( *this );
         ++*this;
         return temp;
     }
 
-    SelfType operator--(int) {
-        SelfType temp(*this);
+    SelfType operator-- ( int ) {
+        SelfType temp ( *this );
         --*this;
         return temp;
     }
@@ -1507,7 +1507,7 @@ public:
     /** \brief Constructs a Reader allowing the specified feature set
      * for parsing.
      */
-    Reader(const Features &features);
+    Reader ( const Features &features );
 
     /** \brief Read a Value from a <a HREF="http://www.json.org">JSON</a> document.
      * \param document UTF-8 encoded string containing the document to read.
@@ -1519,9 +1519,9 @@ public:
      *                        is \c false.
      * \return \c true if the document was successfully parsed, \c false if an error occurred.
      */
-    bool parse(const std::string &document,
-               Value &root,
-               bool collectComments = true);
+    bool parse ( const std::string &document,
+                 Value &root,
+                 bool collectComments = true );
 
     /** \brief Read a Value from a <a HREF="http://www.json.org">JSON</a> document.
      * \param beginDoc Pointer on the beginning of the UTF-8 encoded string of the document to read.
@@ -1535,15 +1535,15 @@ public:
      *                        is \c false.
      * \return \c true if the document was successfully parsed, \c false if an error occurred.
      */
-    bool parse(const char *beginDoc, const char *endDoc,
-               Value &root,
-               bool collectComments = true);
+    bool parse ( const char *beginDoc, const char *endDoc,
+                 Value &root,
+                 bool collectComments = true );
 
     /// \brief Parse from input stream.
     /// \see Json::operator>>(std::istream&, Json::Value&).
-    bool parse(std::istream &is,
-               Value &root,
-               bool collectComments = true);
+    bool parse ( std::istream &is,
+                 Value &root,
+                 bool collectComments = true );
 
     /** \brief Returns a user friendly string that list errors in the parsed document.
      * \return Formatted error message with the list of errors with their location in
@@ -1551,7 +1551,7 @@ public:
      *         during parsing.
      * \deprecated Use getFormattedErrorMessages() instead (typo fix).
      */
-    JSONCPP_DEPRECATED("Use getFormattedErrorMessages instead")
+    JSONCPP_DEPRECATED ( "Use getFormattedErrorMessages instead" )
     std::string getFormatedErrorMessages() const;
 
     /** \brief Returns a user friendly string that list errors in the parsed document.
@@ -1597,49 +1597,49 @@ private:
 
     typedef std::deque<ErrorInfo> Errors;
 
-    bool expectToken(TokenType type, Token &token, const char *message);
-    bool readToken(Token &token);
+    bool expectToken ( TokenType type, Token &token, const char *message );
+    bool readToken ( Token &token );
     void skipSpaces();
-    bool match(Location pattern,
-               int patternLength);
+    bool match ( Location pattern,
+                 int patternLength );
     bool readComment();
     bool readCStyleComment();
     bool readCppStyleComment();
     bool readString();
     void readNumber();
     bool readValue();
-    bool readObject(Token &token);
-    bool readArray(Token &token);
-    bool decodeNumber(Token &token);
-    bool decodeString(Token &token);
-    bool decodeString(Token &token, std::string &decoded);
-    bool decodeDouble(Token &token);
-    bool decodeUnicodeCodePoint(Token &token,
-                                Location &current,
-                                Location end,
-                                unsigned int &unicode);
-    bool decodeUnicodeEscapeSequence(Token &token,
-                                     Location &current,
-                                     Location end,
-                                     unsigned int &unicode);
-    bool addError(const std::string &message,
-                  Token &token,
-                  Location extra = 0);
-    bool recoverFromError(TokenType skipUntilToken);
-    bool addErrorAndRecover(const std::string &message,
-                            Token &token,
-                            TokenType skipUntilToken);
+    bool readObject ( Token &token );
+    bool readArray ( Token &token );
+    bool decodeNumber ( Token &token );
+    bool decodeString ( Token &token );
+    bool decodeString ( Token &token, std::string &decoded );
+    bool decodeDouble ( Token &token );
+    bool decodeUnicodeCodePoint ( Token &token,
+                                  Location &current,
+                                  Location end,
+                                  unsigned int &unicode );
+    bool decodeUnicodeEscapeSequence ( Token &token,
+                                       Location &current,
+                                       Location end,
+                                       unsigned int &unicode );
+    bool addError ( const std::string &message,
+                    Token &token,
+                    Location extra = 0 );
+    bool recoverFromError ( TokenType skipUntilToken );
+    bool addErrorAndRecover ( const std::string &message,
+                              Token &token,
+                              TokenType skipUntilToken );
     void skipUntilSpace();
     Value &currentValue();
     Char getNextChar();
-    void getLocationLineAndColumn(Location location,
-                                  int &line,
-                                  int &column) const;
-    std::string getLocationLineAndColumn(Location location) const;
-    void addComment(Location begin,
-                    Location end,
-                    CommentPlacement placement);
-    void skipCommentTokens(Token &token);
+    void getLocationLineAndColumn ( Location location,
+                                    int &line,
+                                    int &column ) const;
+    std::string getLocationLineAndColumn ( Location location ) const;
+    void addComment ( Location begin,
+                      Location end,
+                      CommentPlacement placement );
+    void skipCommentTokens ( Token &token );
 
     typedef std::stack<Value *> Nodes;
     Nodes nodes_;
@@ -1679,7 +1679,7 @@ private:
  \throw std::exception on parse error.
  \see Json::operator<<()
 */
-JSON_API std::istream &operator>>(std::istream &, Value &);
+JSON_API std::istream &operator>> ( std::istream &, Value & );
 
 } // namespace Json
 
@@ -1736,7 +1736,7 @@ class JSON_API Writer
 public:
     virtual ~Writer();
 
-    virtual std::string write(const Value &root) = 0;
+    virtual std::string write ( const Value &root ) = 0;
 };
 
 /** \brief Outputs a Value in <a HREF="http://www.json.org">JSON</a> format without formatting (not human friendly).
@@ -1761,10 +1761,10 @@ public:
     void dropNullPlaceholders();
 
 public: // overridden from Writer
-    virtual std::string write(const Value &root);
+    virtual std::string write ( const Value &root );
 
 private:
-    void writeValue(const Value &value);
+    void writeValue ( const Value &value );
 
     std::string document_;
     bool yamlCompatiblityEnabled_;
@@ -1800,21 +1800,21 @@ public: // overridden from Writer
      * \param root Value to serialize.
      * \return String containing the JSON document that represents the root value.
      */
-    virtual std::string write(const Value &root);
+    virtual std::string write ( const Value &root );
 
 private:
-    void writeValue(const Value &value);
-    void writeArrayValue(const Value &value);
-    bool isMultineArray(const Value &value);
-    void pushValue(const std::string &value);
+    void writeValue ( const Value &value );
+    void writeArrayValue ( const Value &value );
+    bool isMultineArray ( const Value &value );
+    void pushValue ( const std::string &value );
     void writeIndent();
-    void writeWithIndent(const std::string &value);
+    void writeWithIndent ( const std::string &value );
     void indent();
     void unindent();
-    void writeCommentBeforeValue(const Value &root);
-    void writeCommentAfterValueOnSameLine(const Value &root);
-    bool hasCommentForValue(const Value &value);
-    static std::string normalizeEOL(const std::string &text);
+    void writeCommentBeforeValue ( const Value &root );
+    void writeCommentAfterValueOnSameLine ( const Value &root );
+    bool hasCommentForValue ( const Value &value );
+    static std::string normalizeEOL ( const std::string &text );
 
     typedef std::vector<std::string> ChildValues;
 
@@ -1849,7 +1849,7 @@ private:
 class JSON_API StyledStreamWriter
 {
 public:
-    StyledStreamWriter(std::string indentation = "\t");
+    StyledStreamWriter ( std::string indentation = "\t" );
     ~StyledStreamWriter() {}
 
 public:
@@ -1858,21 +1858,21 @@ public:
      * \param root Value to serialize.
      * \note There is no point in deriving from Writer, since write() should not return a value.
      */
-    void write(std::ostream &out, const Value &root);
+    void write ( std::ostream &out, const Value &root );
 
 private:
-    void writeValue(const Value &value);
-    void writeArrayValue(const Value &value);
-    bool isMultineArray(const Value &value);
-    void pushValue(const std::string &value);
+    void writeValue ( const Value &value );
+    void writeArrayValue ( const Value &value );
+    bool isMultineArray ( const Value &value );
+    void pushValue ( const std::string &value );
     void writeIndent();
-    void writeWithIndent(const std::string &value);
+    void writeWithIndent ( const std::string &value );
     void indent();
     void unindent();
-    void writeCommentBeforeValue(const Value &root);
-    void writeCommentAfterValueOnSameLine(const Value &root);
-    bool hasCommentForValue(const Value &value);
-    static std::string normalizeEOL(const std::string &text);
+    void writeCommentBeforeValue ( const Value &root );
+    void writeCommentAfterValueOnSameLine ( const Value &root );
+    bool hasCommentForValue ( const Value &value );
+    static std::string normalizeEOL ( const std::string &text );
 
     typedef std::vector<std::string> ChildValues;
 
@@ -1885,18 +1885,18 @@ private:
 };
 
 # if defined(JSON_HAS_INT64)
-std::string JSON_API valueToString(Int value);
-std::string JSON_API valueToString(UInt value);
+std::string JSON_API valueToString ( Int value );
+std::string JSON_API valueToString ( UInt value );
 # endif // if defined(JSON_HAS_INT64)
-std::string JSON_API valueToString(LargestInt value);
-std::string JSON_API valueToString(LargestUInt value);
-std::string JSON_API valueToString(double value);
-std::string JSON_API valueToString(bool value);
-std::string JSON_API valueToQuotedString(const char *value);
+std::string JSON_API valueToString ( LargestInt value );
+std::string JSON_API valueToString ( LargestUInt value );
+std::string JSON_API valueToString ( double value );
+std::string JSON_API valueToString ( bool value );
+std::string JSON_API valueToQuotedString ( const char *value );
 
 /// \brief Output using the StyledStreamWriter.
 /// \see Json::operator>>()
-JSON_API std::ostream &operator<<(std::ostream &, const Value &root);
+JSON_API std::ostream &operator<< ( std::ostream &, const Value &root );
 
 } // namespace Json
 

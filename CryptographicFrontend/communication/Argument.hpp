@@ -8,7 +8,8 @@
 namespace communication
 {
 
-class IArgument {
+class IArgument
+{
 public:
     virtual const std::string& getName() const = 0;
     virtual const std::type_info & getTypeId() const = 0;
@@ -20,35 +21,35 @@ class Argument : public IArgument
 private:
     const std::string name_;
     const T value_;
-    static constexpr const std::type_info & type = typeid(T);
+    static constexpr const std::type_info & type = typeid ( T );
 public:
-    static bool match(const IArgument & argument) {
+    static bool match ( const IArgument & argument ) {
         return argument.getTypeId() == type;
     }
-    
-    static const T & getValue(const IArgument & a) {
-        if (match(a))
-            return static_cast<const Argument<T> &>(a).getValue();
-        
-        throw std::logic_error("Type mismatch!");
+
+    static const T & getValue ( const IArgument & a ) {
+        if ( match ( a ) ) {
+            return static_cast<const Argument<T> &> ( a ).getValue();
+        }
+
+        throw std::logic_error ( "Type mismatch!" );
     }
-    
-    Argument(const std::string & name, const T & value) 
-    : name_(name), value_(value)
-    {
-        
+
+    Argument ( const std::string & name, const T & value )
+        : name_ ( name ), value_ ( value ) {
+
     }
-    
+
     virtual ~Argument() = default;
-    
+
     virtual const std::string & getName() const override {
-     return name_;   
-    }  
-    
+        return name_;
+    }
+
     virtual const T & getValue() const {
         return value_;
     }
-    
+
     virtual const std::type_info & getTypeId() const override {
         return type;
     }
@@ -63,4 +64,4 @@ using IntegerArgument = Argument<long long>;
 }
 
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

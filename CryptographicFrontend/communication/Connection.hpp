@@ -19,7 +19,7 @@ class Connection
 {
 
 protected:
-    virtual void send(const std::string &message) const = 0;
+    virtual void send ( const std::string &message ) const = 0;
     virtual std::string receive() const = 0;
 public:
     class BadResponseException : public ConnectionException
@@ -37,10 +37,10 @@ public:
     };
 
     virtual ~Connection() = default;
-    
+
     // Template method...
-    std::string executeRpc(const std::string &message) const { // throw (ConnectionException)
-        send(message);
+    std::string executeRpc ( const std::string &message ) const { // throw (ConnectionException)
+        send ( message );
         return receive();
     }
 };

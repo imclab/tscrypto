@@ -16,37 +16,38 @@
 
 namespace hsm
 {
-  class Session;
-  class Slot;
-  class CryptoObject;
-  using CryptoObjectPtr = std::unique_ptr<CryptoObject>;
-  
-  // Tokens are (unlimited) containers of crypto objects...
-  class Token
-  {
-  public:
-    enum class SecurityLevel {
-      SECURITY_OFFICER, USER, PUBLIC
+class Session;
+class Slot;
+class CryptoObject;
+using CryptoObjectPtr = std::unique_ptr<CryptoObject>;
+
+// Tokens are (unlimited) containers of crypto objects...
+class Token
+{
+public:
+    enum class SecurityLevel
+    {
+        SECURITY_OFFICER, USER, PUBLIC
     };
-    
-    Token(std::string label, std::string userPin, std::string soPin, Slot& slot);
+
+    Token ( std::string label, std::string userPin, std::string soPin, Slot& slot );
     ~Token();
-    
+
     // Basic operations
-    void getInfo(CK_TOKEN_INFO_PTR pInfo) const;
-    void setUserPin(std::string pin);
+    void getInfo ( CK_TOKEN_INFO_PTR pInfo ) const;
+    void setUserPin ( std::string pin );
     bool isInited() const;
-    void login(CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen);
+    void login ( CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen );
     void logout();
     SecurityLevel getSecurityLevel() const;
     std::string getLabel() const;
-    
+
     // Container operations
-    CK_OBJECT_HANDLE addObject(CryptoObject * object);
-    CryptoObject & getObject(CK_OBJECT_HANDLE handle);
+    CK_OBJECT_HANDLE addObject ( CryptoObject * object );
+    CryptoObject & getObject ( CK_OBJECT_HANDLE handle );
     std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getObjects();
-    
-  private:
+
+private:
     CK_FLAGS tokenFlags_;
     std::string userPin_;
     std::string soPin_;
@@ -54,14 +55,14 @@ namespace hsm
     SecurityLevel securityLevel_;
     bool loggedIn_;
     Slot &slot_;
-    
-    std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> objects_;   
-    
-  protected:
-    SecurityLevel checkUserPin(CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) const;
-    SecurityLevel checkSecurityOfficerPin(CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen) const;
-  };
-  
+
+    std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> objects_;
+
+protected:
+    SecurityLevel checkUserPin ( CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen ) const;
+    SecurityLevel checkSecurityOfficerPin ( CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen ) const;
+};
+
 }
 
 

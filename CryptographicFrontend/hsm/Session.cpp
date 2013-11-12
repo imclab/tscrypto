@@ -914,12 +914,12 @@ void Session::digest ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDiges
         throw TcbError ( "Session::digest", e.what(), CKR_GENERAL_ERROR );
     }
 
-    std::string digest ( base64::decode ( encodedDigest ) );    
+    std::string digest ( base64::decode ( encodedDigest ) );
     unsigned long size = digest.size();
     *pulDigestLen = digestSize_;
-    
-    char const * const data = digest.c_str();    
-    std::copy(data, data + *pulDigestLen, pDigest);
+
+    char const * const data = digest.c_str();
+    std::copy ( data, data + *pulDigestLen, pDigest );
     digestInitialized_ = false;
     digestSize_ = 0;
 }

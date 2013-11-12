@@ -8,14 +8,14 @@
 
 using namespace communication;
 
-DigestInitMethod::DigestInitMethod(std::string sessionHandler, std::string mechanism): Method("DigestInit")
+DigestInitMethod::DigestInitMethod ( std::string sessionHandler, std::string mechanism ) : Method ( "DigestInit" )
 {
-  addArgument(new StringArgument("sessionHandler", sessionHandler));
-  addArgument(new StringArgument("mechanism", mechanism));
+    addArgument ( new StringArgument ( "sessionHandler", sessionHandler ) );
+    addArgument ( new StringArgument ( "mechanism", mechanism ) );
 }
 
 
-ResponseMessagePtr DigestInitMethod::parseResponse(const std::string& message)
+ResponseMessagePtr DigestInitMethod::parseResponse ( const std::string& message )
 {
-  return ResponseMessagePtr(new ResponseMessage());
+    return ResponseMessagePtr ( new ResponseMessage() );
 }

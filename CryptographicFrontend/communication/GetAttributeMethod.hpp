@@ -13,8 +13,8 @@ class GetAttributeMethod : public Method
 {
 public:
     virtual ~GetAttributeMethod() = default;
-    GetAttributeMethod(std::string attribute, std::string handler);
-    virtual ResponseMessagePtr parseResponse(const std::string & message) override;
+    GetAttributeMethod ( std::string attribute, std::string handler );
+    virtual ResponseMessagePtr parseResponse ( const std::string & message ) override;
 
 };
 
@@ -22,4 +22,4 @@ public:
 }
 
 #endif // GETATTRIBUTEMETHOD_H
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

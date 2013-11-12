@@ -17,18 +17,18 @@ using ArgumentPtr = std::unique_ptr<IArgument>;
 class MethodMessage
 {
 private:
-  std::string name_;
-  std::vector<ArgumentPtr> argList_;
+    std::string name_;
+    std::vector<ArgumentPtr> argList_;
 
 public:
-  MethodMessage(const std::string & name);
-  virtual ~MethodMessage();
-  virtual void addArgument(IArgument * arg);
-  virtual std::string toJson();
+    MethodMessage ( const std::string & name );
+    virtual ~MethodMessage();
+    virtual void addArgument ( IArgument * arg );
+    virtual std::string toJson();
 };
 
 
 }
 
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

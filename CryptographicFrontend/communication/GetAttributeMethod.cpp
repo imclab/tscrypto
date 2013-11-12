@@ -10,22 +10,23 @@
 
 using namespace communication;
 
-GetAttributeMethod::GetAttributeMethod(std::string attribute, std::string handler)
-  : Method("GetAttribute")
+GetAttributeMethod::GetAttributeMethod ( std::string attribute, std::string handler )
+    : Method ( "GetAttribute" )
 {
-  addArgument(new StringArgument("attribute", attribute));
-  addArgument(new StringArgument("handler", handler));
+    addArgument ( new StringArgument ( "attribute", attribute ) );
+    addArgument ( new StringArgument ( "handler", handler ) );
 }
 
-ResponseMessagePtr GetAttributeMethod::parseResponse(const std::string & message) {
+ResponseMessagePtr GetAttributeMethod::parseResponse ( const std::string & message )
+{
     Json::Value json;
     Json::Reader reader;
-    
-    reader.parse(message, json);
-    ResponseMessagePtr response(new ResponseMessage());
 
-    response->addValue(new StringArgument("attributeValue", json["attributeValue"].asString()));
+    reader.parse ( message, json );
+    ResponseMessagePtr response ( new ResponseMessage() );
+
+    response->addValue ( new StringArgument ( "attributeValue", json["attributeValue"].asString() ) );
 
     return response;
 }
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

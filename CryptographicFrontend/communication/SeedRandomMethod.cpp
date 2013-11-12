@@ -7,13 +7,14 @@
 
 using namespace communication;
 
-SeedRandomMethod::SeedRandomMethod(std::string sessionHandler, std::string seed)
-: Method("SeedRandom")
+SeedRandomMethod::SeedRandomMethod ( std::string sessionHandler, std::string seed )
+    : Method ( "SeedRandom" )
 {
-  addArgument(new StringArgument("sessionHandler", sessionHandler));
-  addArgument(new StringArgument("seed", seed));
+    addArgument ( new StringArgument ( "sessionHandler", sessionHandler ) );
+    addArgument ( new StringArgument ( "seed", seed ) );
 }
 
-ResponseMessagePtr SeedRandomMethod::parseResponse(const std::string & message) {
-  return ResponseMessagePtr(new ResponseMessage());
+ResponseMessagePtr SeedRandomMethod::parseResponse ( const std::string & message )
+{
+    return ResponseMessagePtr ( new ResponseMessage() );
 }

@@ -8,12 +8,12 @@ namespace communication
 class SeedRandomMethod : public Method
 {
 public:
-  SeedRandomMethod(std::string sessionHandler, std::string seed);
-  virtual ~SeedRandomMethod() = default;
-  virtual ResponseMessagePtr parseResponse(const std::string & message) override;
+    SeedRandomMethod ( std::string sessionHandler, std::string seed );
+    virtual ~SeedRandomMethod() = default;
+    virtual ResponseMessagePtr parseResponse ( const std::string & message ) override;
 };
 
 }
 
 #endif // SEEDRANDOMMETHOD_HPP
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

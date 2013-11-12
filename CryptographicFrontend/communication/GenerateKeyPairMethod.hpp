@@ -13,17 +13,17 @@
 
 namespace communication
 {
-    
-    class GenerateKeyPairMethod : public Method
-    {
-    public:
-        virtual ~GenerateKeyPairMethod() = default;
-        GenerateKeyPairMethod(std::string keyType, int keySize, std::string publicExponent);
-        virtual ResponseMessagePtr parseResponse(const std::string & message) override;
-        
-    };
-    
+
+class GenerateKeyPairMethod : public Method
+{
+public:
+    virtual ~GenerateKeyPairMethod() = default;
+    GenerateKeyPairMethod ( std::string keyType, int keySize, std::string publicExponent );
+    virtual ResponseMessagePtr parseResponse ( const std::string & message ) override;
+
+};
+
 }
 
 #endif // GenerateKeyPairMethod_H_
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

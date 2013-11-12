@@ -7,24 +7,25 @@
 
 using namespace communication;
 
-SignMethod::SignMethod(std::string sessionHandler, std::string data)
-: Method("Sign")
+SignMethod::SignMethod ( std::string sessionHandler, std::string data )
+    : Method ( "Sign" )
 {
-    addArgument(new StringArgument("sessionHandler", sessionHandler));
-    addArgument(new StringArgument("data", data));
+    addArgument ( new StringArgument ( "sessionHandler", sessionHandler ) );
+    addArgument ( new StringArgument ( "data", data ) );
 }
 
-ResponseMessagePtr SignMethod::parseResponse(const std::string & message) {
+ResponseMessagePtr SignMethod::parseResponse ( const std::string & message )
+{
     Json::Value json;
     Json::Reader reader;
-    
-    reader.parse(message, json);
-    ResponseMessagePtr response(new ResponseMessage());
-    response->addValue(new StringArgument("signedData", json["signedData"].asString()));
-    
+
+    reader.parse ( message, json );
+    ResponseMessagePtr response ( new ResponseMessage() );
+    response->addValue ( new StringArgument ( "signedData", json["signedData"].asString() ) );
+
     return response;
 }
 
 
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

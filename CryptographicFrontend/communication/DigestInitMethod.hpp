@@ -7,15 +7,16 @@
 
 #include "Method.hpp"
 
-namespace communication {
+namespace communication
+{
 
 class DigestInitMethod : public Method
 {
 public:
-    DigestInitMethod(std::string sessionHandler, std::string mechanism);
+    DigestInitMethod ( std::string sessionHandler, std::string mechanism );
     virtual ~DigestInitMethod() = default;
 protected:
-    virtual communication::ResponseMessagePtr parseResponse(const std::string& message);
+    virtual communication::ResponseMessagePtr parseResponse ( const std::string& message );
 };
 }
 

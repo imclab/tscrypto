@@ -8,12 +8,12 @@ namespace communication
 class GenerateRandomMethod : public Method
 {
 public:
-  GenerateRandomMethod(std::string sessionHandler, long int length);
-  virtual ~GenerateRandomMethod() = default;
-  virtual ResponseMessagePtr parseResponse(const std::string & message) override;
+    GenerateRandomMethod ( std::string sessionHandler, long int length );
+    virtual ~GenerateRandomMethod() = default;
+    virtual ResponseMessagePtr parseResponse ( const std::string & message ) override;
 };
 
 }
 
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

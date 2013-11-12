@@ -13,28 +13,28 @@
 #include "Argument.hpp"
 
 namespace communication
-{    
-    using ArgumentPtr = std::unique_ptr<IArgument>;    
-    class ResponseMessage
-    {
-    private:
-        std::map<std::string, ArgumentPtr> values_;
-        
-    public:
-        ResponseMessage() = default;
-        ResponseMessage(ResponseMessage & rm) = delete;
-        ResponseMessage & operator=(ResponseMessage const & rm) = delete;
-        
-        void addValue(IArgument* value);
-        
-        template <typename T> // Escondo la implementacion...
-        T getValue(const std::string & name) const {
-            return Argument<T>::getValue(*values_.at(name));
-        }        
-        
-    };
-    
+{
+using ArgumentPtr = std::unique_ptr<IArgument>;
+class ResponseMessage
+{
+private:
+    std::map<std::string, ArgumentPtr> values_;
+
+public:
+    ResponseMessage() = default;
+    ResponseMessage ( ResponseMessage & rm ) = delete;
+    ResponseMessage & operator= ( ResponseMessage const & rm ) = delete;
+
+    void addValue ( IArgument* value );
+
+    template <typename T> // Escondo la implementacion...
+    T getValue ( const std::string & name ) const {
+        return Argument<T>::getValue ( *values_.at ( name ) );
+    }
+
+};
+
 }
 
 #endif // RESPONSEMESSAGE_H
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

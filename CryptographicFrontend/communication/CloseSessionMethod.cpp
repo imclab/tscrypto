@@ -7,13 +7,13 @@
 
 using namespace communication;
 
-CloseSessionMethod::CloseSessionMethod(std::string sessionHandler): Method("CloseSession")
+CloseSessionMethod::CloseSessionMethod ( std::string sessionHandler ) : Method ( "CloseSession" )
 {
-  addArgument(new StringArgument("sessionHandler", sessionHandler));
+    addArgument ( new StringArgument ( "sessionHandler", sessionHandler ) );
 }
 
 
-ResponseMessagePtr CloseSessionMethod::parseResponse(const std::string& message)
+ResponseMessagePtr CloseSessionMethod::parseResponse ( const std::string& message )
 {
-  return ResponseMessagePtr (new ResponseMessage());
+    return ResponseMessagePtr ( new ResponseMessage() );
 }

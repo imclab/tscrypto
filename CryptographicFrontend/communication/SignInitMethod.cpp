@@ -4,15 +4,16 @@
 
 using namespace communication;
 
-SignInitMethod::SignInitMethod(std::string sessionHandler, std::string mechanism, std::string privateKeyHandler)
-  : Method("SignInit")
+SignInitMethod::SignInitMethod ( std::string sessionHandler, std::string mechanism, std::string privateKeyHandler )
+    : Method ( "SignInit" )
 {
-    addArgument(new StringArgument("sessionHandler", sessionHandler));
-    addArgument(new StringArgument("mechanism", mechanism));
-    addArgument(new StringArgument("keyHandler", privateKeyHandler));
+    addArgument ( new StringArgument ( "sessionHandler", sessionHandler ) );
+    addArgument ( new StringArgument ( "mechanism", mechanism ) );
+    addArgument ( new StringArgument ( "keyHandler", privateKeyHandler ) );
 }
 
-ResponseMessagePtr SignInitMethod::parseResponse(const std::string & message) {
-    return ResponseMessagePtr(new ResponseMessage());
+ResponseMessagePtr SignInitMethod::parseResponse ( const std::string & message )
+{
+    return ResponseMessagePtr ( new ResponseMessage() );
 }
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on;
+// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
