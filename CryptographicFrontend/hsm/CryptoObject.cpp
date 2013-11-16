@@ -40,38 +40,28 @@ CryptoObject::~CryptoObject()
     }
 }
 
-namespace
-{
-bool operator== ( const CK_ATTRIBUTE& lhs, const CK_ATTRIBUTE& rhs )
-{
-    // return lhs.type == rhs.type && lhs.pValue == rhs.pValue && lhs.ulValueLen == rhs.ulValueLen;
-    return lhs.type == rhs.type;
-}
-}
-
 bool CryptoObject::match ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount ) const
 {
-
     // Busqueda por fuerza bruta, no se me ocurre una mejor estructura de dato
     // necesito saber mejor las restricciones de un objeto.
-    auto end = pTemplate + ulCount;
-    for ( auto it = pTemplate; it != end; ++it ) {
+    
+    for (CK_ULONG i = 0; i<ulCount; i++) {
         bool found = false;
-        for ( auto& attribute: attributes_ ) {
-            if ( attribute == *it ) {
+        for (CK_ATTRIBUTE const & attribute: attributes_) {
+            if (attribute.type == pTemplate[i].type) {
                 found = true;
             }
         }
-
+        
         if ( !found ) {
             return false;
         }
     }
-
+    
     return true;
 }
 
-const CK_ATTRIBUTE* CryptoObject::findAttribute ( CK_ATTRIBUTE* tmpl ) const
+CK_ATTRIBUTE const * CryptoObject::findAttribute ( CK_ATTRIBUTE const * tmpl ) const
 {
     for ( auto& attribute: attributes_ ) {
         if ( attribute.type == tmpl->type ) {

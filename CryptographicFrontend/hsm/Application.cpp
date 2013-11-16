@@ -49,7 +49,7 @@ Application::Application ( std::ostream& out )
 
 namespace hsm
 {
-class DebugDatabase : public Database
+class DebugDatabase : public TokenSerializer
 {
 public:
     virtual void saveToken ( Token & token ) override {
@@ -70,9 +70,8 @@ public:
 
     }
 
-    virtual TokenPtr getToken ( std::string const & label ) override {
-        TokenPtr p;
-        return p;
+    virtual Token * getToken ( std::string const & label ) override {
+        return nullptr;
     }
 };
 }

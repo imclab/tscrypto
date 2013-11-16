@@ -1,21 +1,32 @@
-#ifndef TCBHSM_DATABASE_H
-#define TCBHSM_DATABASE_H
+/*
+ * @autor Francisco Cifuentes <francisco@niclabs.cl>
+ */
 
-#include <memory>
-#include <vector>
+#ifndef HSM_DATABASE_H
+#define HSM_DATABASE_H
+
+#include <sqlite3.h>
+#include <string>
+#include "TokenSerializer.h"
 
 namespace hsm
 {
-class Token;
-using TokenPtr = std::unique_ptr<Token>;
 
-class Database
+class Database : public TokenSerializer
 {
+private:
+    sqlite3 * db_;
 public:
-    virtual ~Database() = default;
-    virtual void saveToken ( Token & token ) = 0;
-    virtual TokenPtr getToken ( std::string const & label ) = 0;
+    Database(std::string filename);
+    virtual ~Database();
+    
+    void createTable();
+    
+    // Get a Token pointer to be managed from the client...
+    virtual Token * getToken ( const std::string& label );
+    virtual void saveToken ( Token& token );
 };
+
 }
 
-#endif // TCBHSM_DATABASE_H
+#endif // HSM_DATABASE_H
