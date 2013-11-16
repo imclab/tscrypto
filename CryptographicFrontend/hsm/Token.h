@@ -31,21 +31,21 @@ public:
     };
 
     Token ( std::string label, std::string userPin, std::string soPin, Slot& slot );
-    ~Token();
+    virtual ~Token();
 
     // Basic operations
-    void getInfo ( CK_TOKEN_INFO_PTR pInfo ) const;
-    void setUserPin ( std::string pin );
-    bool isInited() const;
-    void login ( CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen );
-    void logout();
-    SecurityLevel getSecurityLevel() const;
-    std::string getLabel() const;
+    virtual void getInfo ( CK_TOKEN_INFO_PTR pInfo ) const;
+    virtual void setUserPin ( std::string pin );
+    virtual bool isInited() const;
+    virtual void login ( CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen );
+    virtual void logout();
+    virtual SecurityLevel getSecurityLevel() const;
+    virtual std::string getLabel() const;
 
     // Container operations
-    CK_OBJECT_HANDLE addObject ( CryptoObject * object );
-    CryptoObject & getObject ( CK_OBJECT_HANDLE handle );
-    std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getObjects();
+    virtual CK_OBJECT_HANDLE addObject ( CryptoObject * object );
+    virtual CryptoObject & getObject ( CK_OBJECT_HANDLE handle );
+    virtual std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getObjects();
 
 private:
     CK_FLAGS tokenFlags_;

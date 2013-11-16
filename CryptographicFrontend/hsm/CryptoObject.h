@@ -28,13 +28,13 @@ public:
                    CryptoObjectType type );
     ~CryptoObject ();
 
-    bool match ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount ) const;
-    void copyAttributes ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount ) const; // throw Exception
-    const CK_ATTRIBUTE * findAttribute ( const CK_ATTRIBUTE* tmpl ) const;
-    CryptoObjectType getType() const;
-    CK_OBJECT_HANDLE getHandle() const;
+    virtual bool match ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount ) const;
+    virtual void copyAttributes ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount ) const; // throw Exception
+    virtual const CK_ATTRIBUTE * findAttribute ( const CK_ATTRIBUTE* tmpl ) const;
+    virtual CryptoObjectType getType() const;
+    virtual CK_OBJECT_HANDLE getHandle() const;
 
-    std::vector<CK_ATTRIBUTE> const & getAttributes() const;
+    virtual std::vector<CK_ATTRIBUTE> const & getAttributes() const;
 };
 
 }

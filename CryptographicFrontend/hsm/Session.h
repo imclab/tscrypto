@@ -34,49 +34,53 @@ public:
     Session ( CK_FLAGS flags, CK_VOID_PTR pApplication,
               CK_NOTIFY notify, Slot & currentSlot );
 
-    ~Session();
+    virtual ~Session();
 
-    CK_SESSION_HANDLE getHandle() const;
-    std::string const & getUuid();
-    CK_STATE getState() const;
-    CK_FLAGS getFlags() const;
+    virtual CK_SESSION_HANDLE getHandle() const;
+    virtual std::string const & getUuid();
+    virtual CK_STATE getState() const;
+    virtual CK_FLAGS getFlags() const;
 
-    void getSessionInfo ( CK_SESSION_INFO_PTR pInfo ) const;
-    bool isReadOnly() const;
-    Slot & getCurrentSlot();
+    virtual void getSessionInfo ( CK_SESSION_INFO_PTR pInfo ) const;
+    virtual bool isReadOnly() const;
+    virtual Slot & getCurrentSlot();
 
-    void login ( CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen );
-    void logout();
+    virtual void login ( CK_USER_TYPE userType, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen );
+    virtual void logout();
 
     // Cryptographic functions
-    KeyPair generateKeyPair ( CK_MECHANISM_PTR pMechanism,
-                              CK_ATTRIBUTE_PTR pPublicKeyTemplate,
-                              CK_ULONG ulPublicKeyAttributeCount,
-                              CK_ATTRIBUTE_PTR pPrivateKeyTemplate,
-                              CK_ULONG ulPrivateKeyAttributeCount );
-    void signInit ( CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey );
-    void sign ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature,
+    virtual KeyPair generateKeyPair ( CK_MECHANISM_PTR pMechanism,
+                                      CK_ATTRIBUTE_PTR pPublicKeyTemplate,
+                                      CK_ULONG ulPublicKeyAttributeCount,
+                                      CK_ATTRIBUTE_PTR pPrivateKeyTemplate,
+                                      CK_ULONG ulPrivateKeyAttributeCount );
+    virtual void signInit ( CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey );
+    virtual void sign ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature,
                 CK_ULONG_PTR pulSignatureLen );
-    void digestInit ( CK_MECHANISM_PTR pMechanism );
-    void digest ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDigest,
+    virtual void digestInit ( CK_MECHANISM_PTR pMechanism );
+    virtual void digest ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDigest,
                   CK_ULONG_PTR pulDigestLen );
-    void seedRandom ( CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen );
-    void generateRandom ( CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen );
+    virtual void seedRandom ( CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen );
+    virtual void generateRandom ( CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen );
 
-    CK_OBJECT_HANDLE createObject ( CK_ATTRIBUTE_PTR pTemplate,
+    virtual CK_OBJECT_HANDLE createObject ( CK_ATTRIBUTE_PTR pTemplate,
                                     CK_ULONG ulCount ); // throws exception
-    void destroyObject ( CK_OBJECT_HANDLE hObject ); // throws exception
-    void findObjectsInit ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount );
-    std::vector<CK_OBJECT_HANDLE> findObjects ( CK_ULONG maxObjectCount );
-    void findObjectsFinal();
-    CryptoObject & getObject ( CK_OBJECT_HANDLE objectHandle ); // throws exception
+    virtual void destroyObject ( CK_OBJECT_HANDLE hObject ); // throws exception
+    virtual void findObjectsInit ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount );
+    virtual std::vector<CK_OBJECT_HANDLE> findObjects ( CK_ULONG maxObjectCount );
+    virtual void findObjectsFinal();
+    virtual CryptoObject & getObject ( CK_OBJECT_HANDLE objectHandle ); // throws exception
 
 private:
     communication::Connection* getConnection() const;
     std::string uuid_;
     const CK_SESSION_HANDLE handle_;
     const CK_FLAGS flags_;
+    
+    // Future use
     const CK_VOID_PTR application_;
+    
+    // Future use
     const CK_NOTIFY notify_;
     Slot & slot_;
 

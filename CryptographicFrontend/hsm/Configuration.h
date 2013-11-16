@@ -29,13 +29,15 @@ public:
     struct DatabaseConf { // TODO: review this.
         std::string path;
     };
-
-    RabbitMqConf const & getRabbitMqConf() const;
-    std::vector<SlotConf> const & getSlotConf() const;
-    DatabaseConf const & getDatabaseConf() const;
-
+    
     Configuration() = delete;
     Configuration ( std::string configurationPath );
+
+    virtual RabbitMqConf const & getRabbitMqConf() const;
+    virtual std::vector<SlotConf> const & getSlotConf() const;
+    virtual DatabaseConf const & getDatabaseConf() const;
+
+    virtual ~Configuration() = default;
 private:
     RabbitMqConf rabbitMqConf_;
     std::vector<SlotConf> slotConf_;

@@ -1,7 +1,7 @@
 include ../Makefile.inc
  
 
-OBJS = Configuration.o Application.o main.o CryptoObject.o Slot.o TcbError.o Token.o ConnectionManager.o Session.o Database.cpp
+OBJS = Configuration.o Application.o hsm.o CryptoObject.o Slot.o TcbError.o Token.o ConnectionManager.o Session.o
 CXXFLAGS = -I. -I.. -I../jsoncpp -Icryptoki/ $(PRJCXXFLAGS)
 
 all: $(OBJS)

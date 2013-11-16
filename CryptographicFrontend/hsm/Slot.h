@@ -32,21 +32,21 @@ class Slot
 {
 public:
     Slot ( CK_SLOT_ID id, Application & application );
-    ~Slot();
+    virtual ~Slot();
 
-    CK_SESSION_HANDLE openSession ( CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify );
-    void closeSession ( CK_SESSION_HANDLE handle );
-    void closeAllSessions();
-    Session & getSession ( CK_SESSION_HANDLE handle );
-    bool hasSession ( CK_SESSION_HANDLE handle );
-    CK_ULONG sessionsCount() const;
+    virtual CK_SESSION_HANDLE openSession ( CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify );
+    virtual void closeSession ( CK_SESSION_HANDLE handle );
+    virtual void closeAllSessions();
+    virtual Session & getSession ( CK_SESSION_HANDLE handle );
+    virtual bool hasSession ( CK_SESSION_HANDLE handle );
+    virtual CK_ULONG sessionsCount() const;
 
-    Application const & getApplication() const;
-    CK_SLOT_ID getId() const;
-    void getInfo ( CK_SLOT_INFO_PTR pInfo ) const; // throws exception
-    void insertToken ( Token * token );
-    Token & getToken() const; // throws exception
-    bool isTokenPresent() const;
+    virtual Application const & getApplication() const;
+    virtual CK_SLOT_ID getId() const;
+    virtual void getInfo ( CK_SLOT_INFO_PTR pInfo ) const; // throws exception
+    virtual void insertToken ( Token * token );
+    virtual Token & getToken() const; // throws exception
+    virtual bool isTokenPresent() const;
 private:
     CK_SLOT_ID slotId_;
     Application const & application_;

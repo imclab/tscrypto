@@ -32,9 +32,7 @@ CK_SESSION_HANDLE
 Slot::openSession ( CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify )
 {
     if ( !isTokenPresent() ) {
-        throw TcbError ( "Slot::openSession",
-                         "Token not present",
-                         CKR_TOKEN_NOT_PRESENT );
+        throw TcbError ( "Slot::openSession", "Token not present", CKR_TOKEN_NOT_PRESENT );
     }
 
     Session * sessionPtr = new Session ( flags, pApplication, notify, *this );
@@ -48,14 +46,11 @@ Slot::openSession ( CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify )
 void Slot::closeSession ( CK_SESSION_HANDLE handle )
 {
     if ( !isTokenPresent() ) {
-        throw TcbError ( "Slot::openSession",
-                         "Token not present",
-                         CKR_TOKEN_NOT_PRESENT );
+        throw TcbError ( "Slot::openSession", "Token not present", CKR_TOKEN_NOT_PRESENT );
     }
 
     if ( sessions_.erase ( handle ) == 0 ) {
-        throw TcbError ( "Slot::closeSession",
-                         "Session handle doesn't exists in this slot",
+        throw TcbError ( "Slot::closeSession", "Session handle doesn't exists in this slot",
                          CKR_SESSION_HANDLE_INVALID );
     }
 }
@@ -63,9 +58,7 @@ void Slot::closeSession ( CK_SESSION_HANDLE handle )
 void Slot::closeAllSessions()
 {
     if ( !isTokenPresent() ) {
-        throw TcbError ( "Slot::openSession",
-                         "Token not present",
-                         CKR_TOKEN_NOT_PRESENT );
+        throw TcbError ( "Slot::openSession", "Token not present", CKR_TOKEN_NOT_PRESENT );
     }
 
     sessions_.clear();
@@ -74,16 +67,13 @@ void Slot::closeAllSessions()
 Session & Slot::getSession ( CK_SESSION_HANDLE handle )
 {
     if ( !isTokenPresent() ) {
-        throw TcbError ( "Slot::openSession",
-                         "Token not present",
-                         CKR_TOKEN_NOT_PRESENT );
+        throw TcbError ( "Slot::openSession", "Token not present", CKR_TOKEN_NOT_PRESENT );
     }
 
     try {
         return * ( sessions_.at ( handle ) );
     } catch ( ... ) {
-        throw TcbError ( "Slot::getSession",
-                         "Session handle doesn't exists in this slot",
+        throw TcbError ( "Slot::getSession", "Session handle doesn't exists in this slot",
                          CKR_SESSION_HANDLE_INVALID );
     }
 }

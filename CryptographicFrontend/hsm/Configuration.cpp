@@ -25,6 +25,7 @@ std::string getFileContents ( const char *filename )
     }
     throw TcbError ( "getFileContents", CKR_GENERAL_ERROR );
 }
+
 }
 
 Configuration::Configuration ( std::string configurationPath )
@@ -52,7 +53,6 @@ Configuration::Configuration ( std::string configurationPath )
             token["label"].asString(),
             token["user_pin"].asString(),
             token["so_pin"].asString()
-
         } );
     }
 

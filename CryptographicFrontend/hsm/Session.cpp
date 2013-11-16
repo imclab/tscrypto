@@ -915,7 +915,7 @@ void Session::digest ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDiges
     }
 
     std::string digest ( base64::decode ( encodedDigest ) );
-    unsigned long size = digest.size();
+    // unsigned long size = digest.size();
     *pulDigestLen = digestSize_;
 
     char const * const data = digest.c_str();
