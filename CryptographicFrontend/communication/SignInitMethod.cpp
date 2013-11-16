@@ -1,6 +1,6 @@
-#include "SignInitMethod.hpp"
-#include "ResponseMessage.hpp"
-#include "Argument.hpp"
+#include "SignInitMethod.h"
+#include "ResponseMessage.h"
+#include "Argument.h"
 
 using namespace communication;
 

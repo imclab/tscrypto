@@ -1,7 +1,7 @@
-#include "SeedRandomMethod.hpp"
+#include "SeedRandomMethod.h"
 
-#include "Argument.hpp"
-#include "ResponseMessage.hpp"
+#include "Argument.h"
+#include "ResponseMessage.h"
 
 #include <json/json.h>
 

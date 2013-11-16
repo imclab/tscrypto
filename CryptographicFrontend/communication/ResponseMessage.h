@@ -2,15 +2,15 @@
  * @author Francisco Cifuentes [francisco@niclabs.cl]
  */
 
-#ifndef RESPONSEMESSAGE_H
-#define RESPONSEMESSAGE_H
+#ifndef COMMUNICATION_RESPONSEMESSAGE_H
+#define COMMUNICATION_RESPONSEMESSAGE_H
 
 #include <memory>
 #include <string>
 #include <map>
 #include <functional>
 
-#include "Argument.hpp"
+#include "Argument.h"
 
 namespace communication
 {

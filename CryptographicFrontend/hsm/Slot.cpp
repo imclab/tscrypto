@@ -10,10 +10,10 @@
 #include "ConnectionManager.h"
 #include "Application.h"
 
-#include <communication/Connection.hpp>
-#include <communication/OpenSessionMethod.hpp>
-#include <communication/CloseSessionMethod.hpp>
-#include <communication/ResponseMessage.hpp>
+#include <communication/Connection.h>
+#include <communication/OpenSessionMethod.h>
+#include <communication/CloseSessionMethod.h>
+#include <communication/ResponseMessage.h>
 
 using namespace hsm;
 

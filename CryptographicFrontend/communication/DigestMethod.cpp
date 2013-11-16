@@ -2,9 +2,9 @@
  * @autor Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include "DigestMethod.hpp"
-#include "Argument.hpp"
-#include "ResponseMessage.hpp"
+#include "DigestMethod.h"
+#include "Argument.h"
+#include "ResponseMessage.h"
 #include <json/json.h>
 
 using namespace communication;

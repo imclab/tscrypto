@@ -2,10 +2,10 @@
  * @autor Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#ifndef CF_DIGESTINIT_H
-#define CF_DIGESTINIT_H
+#ifndef COMMUNICATION_DIGESTINIT_H
+#define COMMUNICATION_DIGESTINIT_H
 
-#include "Method.hpp"
+#include "Method.h"
 
 namespace communication
 {

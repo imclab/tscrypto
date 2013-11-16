@@ -2,10 +2,10 @@
  * @autor Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#ifndef CF_DIGESTMETHOD_H
-#define CF_DIGESTMETHOD_H
+#ifndef COMMUNICATION_DIGESTMETHOD_H
+#define COMMUNICATION_DIGESTMETHOD_H
 
-#include "Method.hpp"
+#include "Method.h"
 
 namespace communication
 {

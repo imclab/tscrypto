@@ -1,5 +1,5 @@
-#ifndef METHODMESSAGE_H_
-#define METHODMESSAGE_H_
+#ifndef COMMUNICATION_METHODMESSAGE_H
+#define COMMUNICATION_METHODMESSAGE_H
 
 #include <vector>
 #include <string>
@@ -8,16 +8,14 @@
 namespace communication
 {
 
-// Ojo un ArgumentPtr es un unique_ptr, por lo
-// tanto hay que usar std::move para ser explicito
-// en quien es el dueño del puntero.
 class IArgument;
-using ArgumentPtr = std::unique_ptr<IArgument>;
 
 class MethodMessage
 {
 private:
     std::string name_;
+    
+    using ArgumentPtr = std::unique_ptr<IArgument>;
     std::vector<ArgumentPtr> argList_;
 
 public:

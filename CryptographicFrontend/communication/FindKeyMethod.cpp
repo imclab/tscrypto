@@ -1,7 +1,7 @@
-#include "FindKeyMethod.hpp"
+#include "FindKeyMethod.h"
 
-#include "ResponseMessage.hpp"
-#include "Argument.hpp"
+#include "ResponseMessage.h"
+#include "Argument.h"
 #include <stdexcept>
 
 #include <json/json.h>

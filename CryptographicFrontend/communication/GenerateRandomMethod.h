@@ -1,6 +1,6 @@
-#ifndef GENERATERANDOMMETHOD_HPP
-#define GENERATERANDOMMETHOD_HPP
-#include "Method.hpp"
+#ifndef COMMUNICATION_GENERATERANDOMMETHOD_H
+#define COMMUNICATION_GENERATERANDOMMETHOD_H
+#include "Method.h"
 
 namespace communication
 {

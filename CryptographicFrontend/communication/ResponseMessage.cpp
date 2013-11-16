@@ -2,8 +2,8 @@
  * @author Francisco Cifuentes [francisco@niclabs.cl]
  */
 
-#include "ResponseMessage.hpp"
-#include "Argument.hpp"
+#include "ResponseMessage.h"
+#include "Argument.h"
 
 
 using namespace communication;

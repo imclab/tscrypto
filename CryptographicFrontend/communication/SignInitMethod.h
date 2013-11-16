@@ -1,7 +1,7 @@
-#ifndef SIGNINITMETHOD_H
-#define SIGNINITMETHOD_H
+#ifndef COMMUNICATION_SIGNINITMETHOD_H
+#define COMMUNICATION_SIGNINITMETHOD_H
 
-#include "Method.hpp"
+#include "Method.h"
 
 namespace communication
 {

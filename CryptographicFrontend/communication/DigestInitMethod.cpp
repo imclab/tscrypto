@@ -2,9 +2,9 @@
  * @autor Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include "DigestInitMethod.hpp"
-#include "Argument.hpp"
-#include "ResponseMessage.hpp"
+#include "DigestInitMethod.h"
+#include "Argument.h"
+#include "ResponseMessage.h"
 
 using namespace communication;
 

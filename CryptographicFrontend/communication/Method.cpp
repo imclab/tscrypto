@@ -1,8 +1,9 @@
+#include "Method.h"
+
 #include <json/json.h>
 
-#include "Method.hpp"
-#include "Connection.hpp"
-#include "ResponseMessage.hpp"
+#include "Connection.h"
+#include "ResponseMessage.h"
 
 using namespace communication;
 

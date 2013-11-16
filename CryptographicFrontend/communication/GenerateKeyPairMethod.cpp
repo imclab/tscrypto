@@ -1,7 +1,7 @@
-#include "GenerateKeyPairMethod.hpp"
+#include "GenerateKeyPairMethod.h"
 
-#include "Argument.hpp"
-#include "ResponseMessage.hpp"
+#include "Argument.h"
+#include "ResponseMessage.h"
 #include <json/json.h>
 
 using namespace communication;

@@ -1,6 +1,6 @@
-#ifndef FINDKEYMETHOD_HPP
-#define FINDKEYMETHOD_HPP
-#include "Method.hpp"
+#ifndef COMMUNICATION_FINDKEYMETHOD_H
+#define COMMUNICATION_FINDKEYMETHOD_H
+#include "Method.h"
 namespace communication
 {
 

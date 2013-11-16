@@ -1,6 +1,6 @@
-#ifndef SEEDRANDOMMETHOD_HPP
-#define SEEDRANDOMMETHOD_HPP
-#include "Method.hpp"
+#ifndef COMMUNICATION_SEEDRANDOMMETHOD_HPP
+#define COMMUNICATION_SEEDRANDOMMETHOD_HPP
+#include "Method.h"
 
 namespace communication
 {

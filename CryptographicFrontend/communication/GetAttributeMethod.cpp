@@ -2,9 +2,9 @@
  * @author Francisco Cifuentes [francisco@niclabs.cl]
  */
 
-#include "GetAttributeMethod.hpp"
-#include "Argument.hpp"
-#include "ResponseMessage.hpp"
+#include "GetAttributeMethod.h"
+#include "Argument.h"
+#include "ResponseMessage.h"
 
 #include <json/json.h>
 

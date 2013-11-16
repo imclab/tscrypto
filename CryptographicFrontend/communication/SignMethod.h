@@ -1,6 +1,6 @@
-#ifndef SIGNMETHOD_H
-#define SIGNMETHOD_H
-#include "Method.hpp"
+#ifndef COMMUNICATION_SIGNMETHOD_H
+#define COMMUNICATION_SIGNMETHOD_H
+#include "Method.h"
 
 namespace communication
 {

@@ -3,8 +3,8 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#ifndef Connection_H_
-#define Connection_H_
+#ifndef COMMUNICATION_CONNECTION_H
+#define COMMUNICATION_CONNECTION_H
 
 #include <string>
 #include <memory>

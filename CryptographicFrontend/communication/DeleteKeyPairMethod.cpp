@@ -1,6 +1,6 @@
-#include "DeleteKeyPairMethod.hpp"
-#include "ResponseMessage.hpp"
-#include "Argument.hpp"
+#include "DeleteKeyPairMethod.h"
+#include "ResponseMessage.h"
+#include "Argument.h"
 using namespace communication;
 
 DeleteKeyPairMethod::DeleteKeyPairMethod ( std::string handler )

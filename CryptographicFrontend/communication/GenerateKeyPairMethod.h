@@ -3,10 +3,10 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#ifndef GenerateKeyPairMethod_HPP
-#define GenerateKeyPairMethod_HPP
+#ifndef COMMUNICATION_GENERATEKEYPAIRMETHOD_H
+#define COMMUNICATION_GENERATEKEYPAIRMETHOD_H
 
-#include "Method.hpp"
+#include "Method.h"
 
 #include <string>
 #include <memory>

@@ -1,7 +1,7 @@
-#include "SignMethod.hpp"
+#include "SignMethod.h"
 
-#include "Argument.hpp"
-#include "ResponseMessage.hpp"
+#include "Argument.h"
+#include "ResponseMessage.h"
 
 #include <json/json.h>
 

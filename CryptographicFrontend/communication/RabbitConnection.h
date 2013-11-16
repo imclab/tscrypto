@@ -3,9 +3,9 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#ifndef RabbitConnection_H_
-#define RabbitConnection_H_
-#include "Connection.hpp"
+#ifndef COMMUNICATION_RABBITCONNECTION_H
+#define COMMUNICATION_RABBITCONNECTION_H
+#include "Connection.h"
 #include <amqp.h>
 
 namespace communication

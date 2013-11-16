@@ -3,8 +3,8 @@
 #include <sstream>
 #include <iostream>
 #include <json/json.h>
-#include "MethodMessage.hpp"
-#include "Argument.hpp"
+#include "MethodMessage.h"
+#include "Argument.h"
 
 using std::string;
 using std::vector;

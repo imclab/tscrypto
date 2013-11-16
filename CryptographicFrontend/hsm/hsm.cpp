@@ -2,10 +2,6 @@
 
 #include "cryptoki.h"
 
-#include <communication/SignInitMethod.hpp>
-#include <communication/SignMethod.hpp>
-#include <communication/Method.hpp>
-
 #include "config.h"
 
 #include "Application.h"

@@ -2,10 +2,10 @@
  * @author Francisco Cifuentes [francisco@niclabs.cl]
  */
 
-#ifndef GETATTRIBUTEMETHOD_H
-#define GETATTRIBUTEMETHOD_H
+#ifndef COMMUNICATION_GETATTRIBUTEMETHOD_H
+#define COMMUNICATION_GETATTRIBUTEMETHOD_H
 
-#include "Method.hpp"
+#include "Method.h"
 namespace communication
 {
 

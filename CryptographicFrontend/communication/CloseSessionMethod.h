@@ -2,10 +2,10 @@
  * @autor Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#ifndef CF_CLOSESESSIONMETHOD_HPP
-#define CF_CLOSESESSIONMETHOD_HPP
+#ifndef COMMUNICATION_CLOSESESSIONMETHOD_H
+#define COMMUNICATION_CLOSESESSIONMETHOD_H
 
-#include "Method.hpp"
+#include "Method.h"
 
 namespace communication
 {

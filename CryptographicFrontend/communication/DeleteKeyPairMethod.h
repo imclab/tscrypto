@@ -1,7 +1,7 @@
-#ifndef DELETEKEYPAIRMETHOD_H
-#define DELETEKEYPAIRMETHOD_H
+#ifndef COMMUNICATION_DELETEKEYPAIRMETHOD_H
+#define COMMUNICATION_DELETEKEYPAIRMETHOD_H
 
-#include "Method.hpp"
+#include "Method.h"
 #include <string>
 
 namespace communication

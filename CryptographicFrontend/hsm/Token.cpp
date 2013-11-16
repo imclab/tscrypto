@@ -4,9 +4,6 @@
 
 #include <cstring>
 
-#include "communication/DeleteKeyPairMethod.hpp"
-#include "communication/ResponseMessage.hpp"
-
 #include "Token.h"
 #include "Slot.h"
 #include "CryptoObject.h"

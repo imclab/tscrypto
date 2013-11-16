@@ -2,8 +2,8 @@
  * @autor Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include "CloseSessionMethod.hpp"
-#include "ResponseMessage.hpp"
+#include "CloseSessionMethod.h"
+#include "ResponseMessage.h"
 
 using namespace communication;
 

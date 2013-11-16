@@ -1,5 +1,5 @@
-#ifndef ARGUMENT_H_
-#define ARGUMENT_H_
+#ifndef COMMUNICATION_ARGUMENT_H
+#define COMMUNICATION_ARGUMENT_H
 
 #include <string>
 #include <stdexcept>

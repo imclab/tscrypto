@@ -2,10 +2,10 @@
  * @autor Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#ifndef OPENSESSIONMETHOD_HPP
-#define OPENSESSIONMETHOD_HPP
+#ifndef COMMUNICATION_OPENSESSIONMETHOD_HPP
+#define COMMUNICATION_OPENSESSIONMETHOD_HPP
 
-#include "Method.hpp"
+#include "Method.h"
 
 namespace communication
 {

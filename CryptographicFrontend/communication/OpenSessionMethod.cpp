@@ -2,8 +2,8 @@
  * @autor Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include "OpenSessionMethod.hpp"
-#include "ResponseMessage.hpp"
+#include "OpenSessionMethod.h"
+#include "ResponseMessage.h"
 #include <json/json.h>
 
 using namespace communication;

@@ -9,7 +9,7 @@
 #include <string>
 #include <stdexcept>
 
-#include "MethodMessage.hpp"
+#include "MethodMessage.h"
 
 namespace Json
 {
@@ -27,7 +27,9 @@ class Method   // Por ahora los metodos devuelven un string json...
 private:
     MethodMessage message_;
     std::string response_;
-    std::unique_ptr<ResponseMessage> responseMessage_;
+    
+    using ResponseMessagePtr = std::unique_ptr<ResponseMessage>;
+    ResponseMessagePtr responseMessage_;
 protected:
 
     Method ( const std::string & name );
