@@ -14,15 +14,9 @@ FindKeyMethod::FindKeyMethod ( std::string handler )
     addArgument ( new StringArgument ( "keyHandler", handler ) );
 }
 
-ResponseMessagePtr FindKeyMethod::parseResponse ( const std::string & message )
+ResponseMessage* FindKeyMethod::parseResponse ( const Json::Value& value )
 {
-    Json::Value json;
-    Json::Reader reader;
-
-    reader.parse ( message, json );
-
-    ResponseMessagePtr response ( new ResponseMessage() );
-    response->addValue ( new StringArgument ( "key", json["key"].asString() ) );
-
+    ResponseMessage * response = new ResponseMessage;
+    response->addValue ( new StringArgument ( "key", value["key"].asString() ) );
     return response;
 }

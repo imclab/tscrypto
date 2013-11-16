@@ -3,13 +3,18 @@
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#ifndef Method_H_
-#define Method_H_
+#ifndef COMMUNICATION_METHOD_H
+#define COMMUNICATION_METHOD_H
 
 #include <string>
 #include <stdexcept>
 
 #include "MethodMessage.hpp"
+
+namespace Json
+{
+class Value;
+}
 
 
 namespace communication
@@ -17,21 +22,21 @@ namespace communication
 
 class ResponseMessage;
 class Connection;
-using ResponseMessagePtr = std::unique_ptr<ResponseMessage>;
-using ResponseMessageStrategy = std::function<ResponseMessagePtr ( std::string const & ) >;
-
-
 class Method   // Por ahora los metodos devuelven un string json...
 {
 private:
     MethodMessage message_;
     std::string response_;
-    ResponseMessagePtr responseMessage_;
+    std::unique_ptr<ResponseMessage> responseMessage_;
 protected:
 
     Method ( const std::string & name );
-    void addArgument ( communication::IArgument* argument );
-    virtual ResponseMessagePtr parseResponse ( const std::string & message ) = 0;
+    
+    // This object will manage the lifetime of the argument
+    void addArgument ( IArgument* argument );
+    
+    // Factory Method of the responses.
+    virtual ResponseMessage * parseResponse (Json::Value const & value) = 0;
 
 public:
     Method & execute ( Connection const & connection ); // throw (ConnectionException);
@@ -42,5 +47,5 @@ public:
 
 }
 
-#endif // Method_H_
+#endif // COMMUNICATION_METHOD_H
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

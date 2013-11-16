@@ -10,7 +10,7 @@ class SignMethod : public Method
 public:
     SignMethod ( std::string sessionHandler, std::string data );
     virtual ~SignMethod() = default;
-    virtual ResponseMessagePtr parseResponse ( const std::string & message ) override;
+    virtual ResponseMessage* parseResponse ( const Json::Value& value ) override;
 };
 
 }

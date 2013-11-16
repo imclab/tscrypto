@@ -15,15 +15,9 @@ DigestMethod::DigestMethod ( std::string sessionHandler, std::string data ) : Me
     addArgument ( new StringArgument ( "data", data ) );
 }
 
-ResponseMessagePtr DigestMethod::parseResponse ( const std::string& message )
+ResponseMessage* DigestMethod::parseResponse ( const Json::Value& value )
 {
-    Json::Value json;
-    Json::Reader reader;
-
-    reader.parse ( message, json );
-
     ResponseMessage * responseMessage = new ResponseMessage();
-    responseMessage->addValue ( new StringArgument ( "digest", json["digest"].asString() ) );
-
-    return ResponseMessagePtr ( responseMessage );
+    responseMessage->addValue ( new StringArgument ( "digest", value["digest"].asString() ) );
+    return responseMessage;
 }

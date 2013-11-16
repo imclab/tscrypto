@@ -10,7 +10,7 @@ class GenerateRandomMethod : public Method
 public:
     GenerateRandomMethod ( std::string sessionHandler, long int length );
     virtual ~GenerateRandomMethod() = default;
-    virtual ResponseMessagePtr parseResponse ( const std::string & message ) override;
+    virtual ResponseMessage* parseResponse ( const Json::Value& value ) override;
 };
 
 }

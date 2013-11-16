@@ -3,8 +3,8 @@ include Makefile.inc
 MODULES = jsoncpp hsm communication base64
 
 # Cada executable va con su propia lista de objetivos
-LIB = pkcs11 # LIB agarra todo los .o de los dirs y los pone en un .so
-LIB_RPATH = . # dejar vacio para ¿deploy? xD.
+LIB = pkcs11 # LIB takes every .o from dirs and put them together on a .so
+LIB_RPATH = . # leave empty for ¿deploy?.
 EXE = test
 test_OBJS = test.o
 
@@ -28,7 +28,7 @@ CFLAGS	= $(EXE_CFLAGS) $(PRJCFLAGS)
 CXXFLAGS= $(EXE_CXXFLAGS) $(PRJCXXFLAGS) 
 
 all:	$(EXE)
-	@echo "LISTO!"
+	@echo "READY!"
 
 $(EXE): $(LIB_FILENAME) $(OBJS)
 	$(LD) -o $@ $($@_OBJS) $(EXE_LDFLAGS)

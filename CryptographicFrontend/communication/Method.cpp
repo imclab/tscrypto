@@ -3,7 +3,6 @@
 #include "Method.hpp"
 #include "Connection.hpp"
 #include "ResponseMessage.hpp"
-#include "Argument.hpp"
 
 using namespace communication;
 
@@ -41,8 +40,7 @@ const ResponseMessage & Method::getResponse()
         }
 
         Json::Value const & value = json["value"];
-        Json::FastWriter writer;
-        responseMessage_ = parseResponse ( writer.write ( value ) );
+        responseMessage_.reset( parseResponse ( value ) );
     }
 
     return *responseMessage_;

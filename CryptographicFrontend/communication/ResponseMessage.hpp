@@ -14,6 +14,7 @@
 
 namespace communication
 {
+
 using ArgumentPtr = std::unique_ptr<IArgument>;
 class ResponseMessage
 {
@@ -27,7 +28,7 @@ public:
 
     void addValue ( IArgument* value );
 
-    template <typename T> // Escondo la implementacion...
+    template <typename T> // Hiding the implementation (?)
     T getValue ( const std::string & name ) const {
         return Argument<T>::getValue ( *values_.at ( name ) );
     }

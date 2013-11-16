@@ -19,8 +19,7 @@ class GenerateKeyPairMethod : public Method
 public:
     virtual ~GenerateKeyPairMethod() = default;
     GenerateKeyPairMethod ( std::string keyType, int keySize, std::string publicExponent );
-    virtual ResponseMessagePtr parseResponse ( const std::string & message ) override;
-
+    virtual ResponseMessage* parseResponse ( const Json::Value& value ) override;
 };
 
 }

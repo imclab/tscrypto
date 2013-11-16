@@ -11,7 +11,7 @@ class SignInitMethod : public Method
 public:
     virtual ~SignInitMethod() = default;
     SignInitMethod ( std::string sessionHandler, std::string mechanism, std::string privateKeyHandler );
-    virtual ResponseMessagePtr parseResponse ( const std::string & message ) override;
+    virtual ResponseMessage* parseResponse ( const Json::Value& value ) override;
 };
 
 }

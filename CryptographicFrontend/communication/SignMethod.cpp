@@ -14,18 +14,11 @@ SignMethod::SignMethod ( std::string sessionHandler, std::string data )
     addArgument ( new StringArgument ( "data", data ) );
 }
 
-ResponseMessagePtr SignMethod::parseResponse ( const std::string & message )
+ResponseMessage* SignMethod::parseResponse ( const Json::Value& value )
 {
-    Json::Value json;
-    Json::Reader reader;
-
-    reader.parse ( message, json );
-    ResponseMessagePtr response ( new ResponseMessage() );
-    response->addValue ( new StringArgument ( "signedData", json["signedData"].asString() ) );
+    ResponseMessage * response = new ResponseMessage;
+    response->addValue ( new StringArgument ( "signedData", value["signedData"].asString() ) );
 
     return response;
 }
-
-
-
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

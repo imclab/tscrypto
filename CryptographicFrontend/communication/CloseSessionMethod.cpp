@@ -12,8 +12,7 @@ CloseSessionMethod::CloseSessionMethod ( std::string sessionHandler ) : Method (
     addArgument ( new StringArgument ( "sessionHandler", sessionHandler ) );
 }
 
-
-ResponseMessagePtr CloseSessionMethod::parseResponse ( const std::string& message )
+ResponseMessage* CloseSessionMethod::parseResponse ( const Json::Value& value )
 {
-    return ResponseMessagePtr ( new ResponseMessage() );
+    return new ResponseMessage;
 }

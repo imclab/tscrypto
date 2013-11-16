@@ -3,6 +3,8 @@
  */
 
 #include "ResponseMessage.hpp"
+#include "Argument.hpp"
+
 
 using namespace communication;
 

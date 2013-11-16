@@ -8,7 +8,7 @@ class FindKeyMethod : public Method
 {
 public:
     virtual ~FindKeyMethod() = default;
-    virtual ResponseMessagePtr parseResponse ( const std::string & message ) override;
+    virtual ResponseMessage* parseResponse ( const Json::Value& value ) override;
     FindKeyMethod ( std::string handler );
 };
 

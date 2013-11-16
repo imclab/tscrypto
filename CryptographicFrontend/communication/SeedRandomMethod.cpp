@@ -14,7 +14,7 @@ SeedRandomMethod::SeedRandomMethod ( std::string sessionHandler, std::string see
     addArgument ( new StringArgument ( "seed", seed ) );
 }
 
-ResponseMessagePtr SeedRandomMethod::parseResponse ( const std::string & message )
+ResponseMessage* SeedRandomMethod::parseResponse ( const Json::Value& value )
 {
-    return ResponseMessagePtr ( new ResponseMessage() );
+    return new ResponseMessage;
 }

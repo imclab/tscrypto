@@ -14,14 +14,9 @@ GenerateRandomMethod::GenerateRandomMethod ( std::string sessionHandler, long le
     addArgument ( new IntegerArgument ( "length", length ) );
 }
 
-ResponseMessagePtr GenerateRandomMethod::parseResponse ( const std::string & message )
+ResponseMessage* GenerateRandomMethod::parseResponse ( const Json::Value& value )
 {
-    Json::Value json;
-    Json::Reader reader;
-    reader.parse ( message, json );
-
-    ResponseMessagePtr response ( new ResponseMessage() );
-    response->addValue ( new StringArgument ( "data", json["data"].asString() ) );
-
+    ResponseMessage * response = new ResponseMessage();
+    response->addValue ( new StringArgument ( "data", value["data"].asString() ) );
     return response;
 }

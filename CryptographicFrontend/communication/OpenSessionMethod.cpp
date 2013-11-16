@@ -13,16 +13,10 @@ OpenSessionMethod::OpenSessionMethod() : Method ( "OpenSession" )
     // NOTE: no tiene argumentos...
 }
 
-
-ResponseMessagePtr OpenSessionMethod::parseResponse ( const std::string& message )
+ResponseMessage* OpenSessionMethod::parseResponse ( const Json::Value& value )
 {
-    Json::Value json;
-    Json::Reader reader;
-
-    reader.parse ( message, json );
-
     ResponseMessage * response = new ResponseMessage();
-    response->addValue ( new StringArgument ( "sessionHandler", json["sessionHandler"].asString() ) );
-
-    return ResponseMessagePtr ( response );
+    response->addValue ( new StringArgument ( "sessionHandler", value["sessionHandler"].asString() ) );
+    return response;
 }
+

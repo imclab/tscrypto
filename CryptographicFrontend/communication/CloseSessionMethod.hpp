@@ -14,9 +14,8 @@ class CloseSessionMethod : public communication::Method
 {
 public:
     CloseSessionMethod ( std::string sessionHandler );
+    virtual ResponseMessage* parseResponse ( const Json::Value& value ) override;
     virtual ~CloseSessionMethod() = default;
-protected:
-    virtual ResponseMessagePtr parseResponse ( const std::string& message );
 };
 }
 

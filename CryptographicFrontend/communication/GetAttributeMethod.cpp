@@ -17,16 +17,10 @@ GetAttributeMethod::GetAttributeMethod ( std::string attribute, std::string hand
     addArgument ( new StringArgument ( "handler", handler ) );
 }
 
-ResponseMessagePtr GetAttributeMethod::parseResponse ( const std::string & message )
+ResponseMessage* GetAttributeMethod::parseResponse ( const Json::Value& value )
 {
-    Json::Value json;
-    Json::Reader reader;
-
-    reader.parse ( message, json );
-    ResponseMessagePtr response ( new ResponseMessage() );
-
-    response->addValue ( new StringArgument ( "attributeValue", json["attributeValue"].asString() ) );
-
+    ResponseMessage * response = new ResponseMessage;
+    response->addValue ( new StringArgument ( "attributeValue", value["attributeValue"].asString() ) );
     return response;
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

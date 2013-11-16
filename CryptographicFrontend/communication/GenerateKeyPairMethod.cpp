@@ -18,16 +18,10 @@ GenerateKeyPairMethod::GenerateKeyPairMethod ( string keyType,
     addArgument ( new StringArgument ( "publicExponent", publicExponent ) );
 }
 
-ResponseMessagePtr GenerateKeyPairMethod::parseResponse ( const std::string & message )
+ResponseMessage* GenerateKeyPairMethod::parseResponse ( const Json::Value& value )
 {
-    Json::Value json;
-    Json::Reader reader;
-
-    reader.parse ( message, json );
-
-    ResponseMessagePtr response ( new ResponseMessage() );
-    response->addValue ( new StringArgument ( "keyHandler", json["keyHandler"].asString() ) );
-
+    ResponseMessage * response = new ResponseMessage();
+    response->addValue ( new StringArgument ( "keyHandler", value["keyHandler"].asString() ) );
     return response;
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

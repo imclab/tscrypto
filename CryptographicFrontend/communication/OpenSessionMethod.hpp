@@ -14,7 +14,7 @@ class OpenSessionMethod : public Method
 public:
     OpenSessionMethod();
     virtual ~OpenSessionMethod() = default;
-    virtual communication::ResponseMessagePtr parseResponse ( const std::string& message );
+    virtual ResponseMessage* parseResponse ( const Json::Value& value ) override;
 };
 }
 

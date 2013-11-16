@@ -12,8 +12,8 @@ SignInitMethod::SignInitMethod ( std::string sessionHandler, std::string mechani
     addArgument ( new StringArgument ( "keyHandler", privateKeyHandler ) );
 }
 
-ResponseMessagePtr SignInitMethod::parseResponse ( const std::string & message )
+ResponseMessage* SignInitMethod::parseResponse ( const Json::Value& value )
 {
-    return ResponseMessagePtr ( new ResponseMessage() );
+    return new ResponseMessage;
 }
 // kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

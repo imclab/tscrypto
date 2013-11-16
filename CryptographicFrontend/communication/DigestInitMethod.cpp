@@ -14,8 +14,7 @@ DigestInitMethod::DigestInitMethod ( std::string sessionHandler, std::string mec
     addArgument ( new StringArgument ( "mechanism", mechanism ) );
 }
 
-
-ResponseMessagePtr DigestInitMethod::parseResponse ( const std::string& message )
+ResponseMessage* DigestInitMethod::parseResponse ( const Json::Value& value )
 {
-    return ResponseMessagePtr ( new ResponseMessage() );
+    return new ResponseMessage();
 }
