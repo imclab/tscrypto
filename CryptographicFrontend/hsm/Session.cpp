@@ -1,25 +1,26 @@
 /**
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
-#include "base64/base64.h"
 
 #include <algorithm>
 #include <vector>
 #include <sstream>
 
-#include "communication/Method.h"
-#include "communication/OpenSessionMethod.h"
-#include "communication/CloseSessionMethod.h"
-#include "communication/DeleteKeyPairMethod.h"
-#include "communication/DigestInitMethod.h"
-#include "communication/DigestMethod.h"
-#include "communication/GenerateKeyPairMethod.h"
-#include "communication/GenerateRandomMethod.h"
-#include "communication/RabbitConnection.h"
-#include "communication/ResponseMessage.h"
-#include "communication/SignInitMethod.h"
-#include "communication/SignMethod.h"
-#include "communication/SeedRandomMethod.h"
+#include <base64.h>
+
+#include <Method.h>
+#include <OpenSessionMethod.h>
+#include <CloseSessionMethod.h>
+#include <DeleteKeyPairMethod.h>
+#include <DigestInitMethod.h>
+#include <DigestMethod.h>
+#include <GenerateKeyPairMethod.h>
+#include <GenerateRandomMethod.h>
+#include <RabbitConnection.h>
+#include <ResponseMessage.h>
+#include <SignInitMethod.h>
+#include <SignMethod.h>
+#include <SeedRandomMethod.h>
 
 #include "Session.h"
 #include "Slot.h"
@@ -27,7 +28,7 @@
 #include "CryptoObject.h"
 #include "Configuration.h"
 #include "TcbError.h"
-#include "cryptoki/cryptoki.h"
+#include <cryptoki.h>
 #include "Application.h"
 #include "ConnectionManager.h"
 

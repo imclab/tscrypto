@@ -2,7 +2,7 @@
  * @autor Francisco Cifuentes <francisco@niclabs.cl>
  */
 
-#include <communication/RabbitConnection.h>
+#include <RabbitConnection.h>
 #include "ConnectionManager.h"
 #include "Configuration.h"
 

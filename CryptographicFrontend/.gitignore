@@ -1,8 +1,5 @@
 *.o
 *.a
 *.so
-test
-checks
-*.kate-swp
-.kateproject*
 *.kdev4
+build

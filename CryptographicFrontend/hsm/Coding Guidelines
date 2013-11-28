@@ -1,6 +1,0 @@
--- If it's needed that an object exist for an undertermined time it's stored as a pointer.
---- Pointers are always std::unique_ptr smartpointers...
-
--- If an object exist if and only if it's inside another object, use a stack object.
-
--- Be clear on who is the owner of an object. That's why you have to use std::unique_ptr or stack objects.

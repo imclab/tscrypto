@@ -1,6 +1,10 @@
 /**
  * @author Francisco Cifuentes <francisco@niclabs.cl>
  */
+#include <Connection.h>
+#include <OpenSessionMethod.h>
+#include <CloseSessionMethod.h>
+#include <ResponseMessage.h>
 
 #include "Slot.h"
 #include "Session.h"
@@ -10,10 +14,6 @@
 #include "ConnectionManager.h"
 #include "Application.h"
 
-#include <communication/Connection.h>
-#include <communication/OpenSessionMethod.h>
-#include <communication/CloseSessionMethod.h>
-#include <communication/ResponseMessage.h>
 
 using namespace hsm;
 

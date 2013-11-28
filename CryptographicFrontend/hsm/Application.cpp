@@ -12,7 +12,7 @@
 #include "TcbError.h"
 #include "ConnectionManager.h"
 
-#include <base64/base64.h>
+#include <base64.h>
 
 #include <cstdlib> // getenv
 #include <ostream>

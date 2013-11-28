@@ -2,11 +2,11 @@
 #include <cstring>
 
 #include <json/json.h>
-#include <base64/base64.h>
+#include <base64.h>
 
 #include "CryptoObject.h"
 #include "TcbError.h"
-#include "cryptoki/cryptoki.h"
+#include "cryptoki.h"
 
 
 using namespace hsm;
