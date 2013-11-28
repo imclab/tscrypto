@@ -100,11 +100,10 @@ set(HSM_SRC
   hsm/CryptoObject.cpp
   hsm/CryptoObject.h
   hsm/Database.h
-  hsm/hsm.cpp
   hsm/Application.cpp
   hsm/Application.h
   )
   
   
-add_library(pkcs11 SHARED ${BASE64_SRC} ${JSONCPP_SRC} ${COMMUNICATION_SRC} ${HSM_SRC})
+add_library(pkcs11 SHARED pkcs11.cpp ${BASE64_SRC} ${JSONCPP_SRC} ${COMMUNICATION_SRC} ${HSM_SRC})
 # target_link_libraries(pkcs11 ${RABBITMQ-C_LIBRARIES})
