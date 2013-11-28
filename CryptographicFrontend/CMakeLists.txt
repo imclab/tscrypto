@@ -31,11 +31,6 @@ include_directories("jsoncpp")
 include_directories("communication")
 include_directories("hsm")
 
-get_cmake_property(_variableNames VARIABLES)
-foreach (_variableName ${_variableNames})
-    message(STATUS "${_variableName}=${${_variableName}}")   
-endforeach()
-
 set(BASE64_SRC 
   base64/base64.cpp
   base64/base64.h
@@ -106,4 +101,7 @@ set(HSM_SRC
   
   
 add_library(pkcs11 SHARED pkcs11.cpp ${BASE64_SRC} ${JSONCPP_SRC} ${COMMUNICATION_SRC} ${HSM_SRC})
-# target_link_libraries(pkcs11 ${RABBITMQ-C_LIBRARIES})
+target_link_libraries(pkcs11 ${RABBITMQ-C_LIBRARIES})
+
+add_executable(test test.c)
+target_link_libraries(test pkcs11)

@@ -307,7 +307,11 @@ sign_data ( CK_SESSION_HANDLE session, FILE *data_file, FILE *signature_file )
     check_return_value ( rv, "sign final" );
 
     if ( signatureLen > 0 ) {
-        fwrite ( signature, signatureLen, 1, signature_file );
+        int i;
+        for (i=0; i<signatureLen; i++) {
+            fprintf(signature_file, "%xh", signature[i]);
+        }
+        fprintf(signature_file, "\n");
     }
     free ( signature );
     free ( text );
@@ -324,12 +328,12 @@ main ( int argc, char **argv )
     FILE *output_file = NULL;
     CK_BYTE *user_pin = NULL;
 
-    if ( argc < 3 ) {
-        printf ( "Usage: pkcs11_example3 <input file> <output file> <pin>\n" );
+    if ( argc < 2 ) {
+        printf ( "Usage: pkcs11_example3 <input file> <pin>\n" );
         exit ( 0 );
     }
-    if ( argc > 3 ) {
-        user_pin = ( CK_BYTE * ) argv[3];
+    if ( argc > 2 ) {
+        user_pin = ( CK_BYTE * ) argv[2];
     }
 
     initialize();
@@ -337,7 +341,7 @@ main ( int argc, char **argv )
 
     /* signing */
     input_file = fopen ( argv[1], "r" );
-    output_file = fopen ( argv[2], "w" );
+    output_file = stdout;
     session = start_session ( slot );
     if ( user_pin ) {
         login ( session, user_pin );
