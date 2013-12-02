@@ -16,7 +16,7 @@ public:
     DigestMethod ( std::string sessionHandler, std::string data );
     virtual ~DigestMethod() = default;
 protected:
-    virtual ResponseMessage* parseResponse ( const Json::Value& value ) override;
+    virtual ResponseMessage parseResponse ( const Json::Value& value ) override;
 };
 }
 

@@ -22,13 +22,14 @@
 #include <SignMethod.h>
 #include <SeedRandomMethod.h>
 
+#include <pkcs11.h>
+
 #include "Session.h"
 #include "Slot.h"
 #include "Token.h"
 #include "CryptoObject.h"
 #include "Configuration.h"
 #include "TcbError.h"
-#include <cryptoki.h>
 #include "Application.h"
 #include "ConnectionManager.h"
 
@@ -87,15 +88,15 @@ Session::Session ( CK_FLAGS flags, CK_VOID_PTR pApplication,
     , flags_ ( flags ), application_ ( pApplication )
     , notify_ ( notify ), slot_ ( currentSlot )
 {
-    ConnectionPtr connectionPtr ( getConnection() );
+    Connection const & connection ( getConnection() );
     OpenSessionMethod method;
-    uuid_ = method.execute ( *connectionPtr ).getResponse().getValue<std::string> ( "sessionHandler" );
+    uuid_ = method.execute ( connection ).getResponse().getValue<std::string> ( "sessionHandler" );
 }
 
 Session::~Session()
 {
 
-    ConnectionPtr conn ( getConnection() );
+    Connection const & conn ( getConnection() );
     Token & token = slot_.getToken();
     auto& objects = token.getObjects();
 
@@ -115,7 +116,7 @@ Session::~Session()
                 std::string handler ( value, handlerAttribute->ulValueLen );
                 DeleteKeyPairMethod method ( handler );
                 try {
-                    method.execute ( *conn ).getResponse();
+                    method.execute ( conn ).getResponse();
                 } catch ( std::runtime_error& e ) {
                     // Exception Safety (?)
                 }
@@ -127,13 +128,13 @@ Session::~Session()
 
     CloseSessionMethod method ( uuid_ );
     try {
-        method.execute ( *conn ).getResponse();
+        method.execute ( conn ).getResponse();
     } catch ( ... ) {
         // Exception Safety (?)
     }
 }
 
-Connection* Session::getConnection() const
+const Connection & Session::getConnection() const
 {
     return slot_.getApplication().getConnectionManager().getConnection();
 }
@@ -264,10 +265,10 @@ void Session::destroyObject ( CK_OBJECT_HANDLE hObject )
                                   handlerAttribute->ulValueLen );
 
 
-            ConnectionPtr connectionPtr ( getConnection() );
+            const Connection & connection =  getConnection();
             DeleteKeyPairMethod method ( handler );
             try {
-                method.execute ( *connectionPtr ).getResponse();
+                method.execute ( connection ).getResponse();
             } catch ( std::exception& e ) {
                 throw TcbError ( "Session::destroyObject", e.what(), CKR_GENERAL_ERROR );
             }
@@ -715,10 +716,10 @@ KeyPair Session::generateKeyPair ( CK_MECHANISM_PTR pMechanism,
         // case CKM_VENDOR_DEFINED:
     case CKM_RSA_PKCS_KEY_PAIR_GEN:
         try {
-            ConnectionPtr connection ( getConnection() );
+            Connection const & connection ( getConnection() );
 
             GenerateKeyPairMethod method ( "RSA", modulusBits, exponent ); // Unico metodo aceptado :B...
-            std::string keyHandler = method.execute ( *connection ).getResponse().getValue<std::string> ( "keyHandler" );
+            std::string keyHandler = method.execute ( connection ).getResponse().getValue<std::string> ( "keyHandler" );
 
             CK_OBJECT_HANDLE publicKeyHandle = createPublicKey ( *this, pPublicKeyTemplate,
                                                ulPublicKeyAttributeCount,
@@ -746,7 +747,6 @@ KeyPair Session::generateKeyPair ( CK_MECHANISM_PTR pMechanism,
 void Session::signInit ( CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
 {
     try {
-        ConnectionPtr connection ( getConnection() );
         CryptoObject &keyObject = getObject ( hKey );
         CK_ATTRIBUTE tmpl = { .type=CKA_VENDOR_DEFINED };
         const CK_ATTRIBUTE * handlerAttribute = keyObject.findAttribute ( &tmpl );
@@ -781,13 +781,12 @@ void Session::signInit ( CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
             break;
         }
 
+        Connection const & connection ( getConnection() );
         SignInitMethod method ( uuid_, mechanism, handler );
-        method.execute ( *connection ).getResponse();
+        method.execute ( connection ).getResponse();
 
         signInitialized_ = true;
-    } catch ( TcbError &e ) {
-        throw;
-    } catch ( std::exception &e ) {
+    }  catch ( std::exception &e ) {
         throw TcbError ( "Session::signInit", e.what(), CKR_GENERAL_ERROR );
     }
 }
@@ -800,11 +799,11 @@ void Session::sign ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignatu
     }
 
     try {
-        ConnectionPtr connection ( getConnection() );
+        Connection const & connection ( getConnection() );
         std::string encodedData ( base64::encode ( pData, ulDataLen ) );
         SignMethod method ( uuid_, encodedData );
 
-        const std::string & signedData = method.execute ( *connection ).getResponse().getValue<std::string> ( "signedData" );
+        const std::string & signedData = method.execute ( connection ).getResponse().getValue<std::string> ( "signedData" );
 
         std::string responseDecoded ( base64::decode ( signedData ) );
         unsigned long responseSize = responseDecoded.size();
@@ -868,10 +867,10 @@ void Session::digestInit ( CK_MECHANISM_PTR pMechanism )
         break;
     }
 
-    ConnectionPtr connectionPtr ( getConnection() );
+    Connection const & connection ( getConnection() );
     DigestInitMethod method ( uuid_, mechanism );
     try {
-        method.execute ( *connectionPtr ).getResponse();
+        method.execute ( connection ).getResponse();
     } catch ( std::exception& e ) {
         throw TcbError ( "Session::digestInit", e.what(), CKR_GENERAL_ERROR );
     }
@@ -904,13 +903,13 @@ void Session::digest ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDiges
         throw TcbError ( "Session::digest", "pData == nullptr", CKR_ARGUMENTS_BAD );
     }
 
-    ConnectionPtr connectionPtr ( getConnection() );
+    Connection const & connection ( getConnection() );
     std::string encodedData ( base64::encode ( pData, ulDataLen ) );
     DigestMethod method ( uuid_, encodedData );
 
     std::string encodedDigest;
     try {
-        encodedDigest = method.execute ( *connectionPtr ).getResponse().getValue<std::string> ( "digest" );
+        encodedDigest = method.execute ( connection ).getResponse().getValue<std::string> ( "digest" );
     } catch ( std::exception & e ) {
         throw TcbError ( "Session::digest", e.what(), CKR_GENERAL_ERROR );
     }
@@ -931,9 +930,9 @@ void Session::generateRandom ( CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen )
         throw TcbError ( "Session::generateRandom", "pRandomData == nullptr", CKR_ARGUMENTS_BAD );
     }
 
-    ConnectionPtr connection ( getConnection() );
+    Connection const & connection ( getConnection() );
     GenerateRandomMethod method ( uuid_, static_cast<long> ( ulRandomLen ) );
-    std::string encodedData = method.execute ( *connection ).getResponse().getValue<std::string> ( "data" );
+    std::string encodedData = method.execute ( connection ).getResponse().getValue<std::string> ( "data" );
     std::string decodedData ( base64::decode ( encodedData ) );
     const char * data = decodedData.c_str();
 
@@ -946,9 +945,10 @@ void Session::seedRandom ( CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen )
         throw TcbError ( "Session::seedRandom", "pSeed == nullptr", CKR_ARGUMENTS_BAD );
     }
 
-    ConnectionPtr connection ( getConnection() );
+    Connection const & connection ( getConnection() );
     std::string encodedData ( base64::encode ( pSeed, ulSeedLen ) );
 
     SeedRandomMethod method ( uuid_, encodedData );
-    method.execute ( *connection ).getResponse();
+    method.execute ( connection ).getResponse();
 }
+

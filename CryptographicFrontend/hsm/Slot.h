@@ -7,11 +7,11 @@
 
 #include "config.h"
 #include <string>
-#include <vector>
 #include <map>
 #include <memory>
 
-#include "cryptoki.h"
+#include "pkcs11.h"
+#include "Configuration.h"
 
 namespace hsm
 {
@@ -31,8 +31,12 @@ using SessionPtr = std::unique_ptr<Session>;
 class Slot
 {
 public:
-    Slot ( CK_SLOT_ID id, Application & application );
-    virtual ~Slot();
+    Slot ( CK_SLOT_ID id, Configuration::SlotConf const & configuration, Application& application );
+    Slot ( Slot & ) = delete;
+    Slot (Slot && ) = default;
+    Slot & operator=(Slot &) = delete;
+    Slot & operator=(Slot &&) = default;
+    virtual ~Slot() = default;
 
     virtual CK_SESSION_HANDLE openSession ( CK_FLAGS flags, CK_VOID_PTR pApplication, CK_NOTIFY notify );
     virtual void closeSession ( CK_SESSION_HANDLE handle );
@@ -54,6 +58,7 @@ private:
     TokenPtr token_; // Esto por la posibilidad de no estar presente :)
 
     std::map<CK_SESSION_HANDLE, SessionPtr> sessions_;
+    CK_SLOT_ID id_;
 };
 }
 

@@ -9,10 +9,10 @@ using namespace communication;
 
 CloseSessionMethod::CloseSessionMethod ( std::string sessionHandler ) : Method ( "CloseSession" )
 {
-    addArgument ( new StringArgument ( "sessionHandler", sessionHandler ) );
+    addArgument ( "sessionHandler", sessionHandler );
 }
 
-ResponseMessage* CloseSessionMethod::parseResponse ( const Json::Value& value )
+ResponseMessage CloseSessionMethod::parseResponse ( const Json::Value& value )
 {
-    return new ResponseMessage;
+    return ResponseMessage();
 }

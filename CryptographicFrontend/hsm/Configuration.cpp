@@ -4,7 +4,7 @@
 
 #include "Configuration.h"
 #include "TcbError.h"
-#include "cryptoki.h"
+#include "pkcs11.h"
 
 using namespace hsm;
 
@@ -23,12 +23,17 @@ std::string getFileContents ( const char *filename )
         in.close();
         return ( contents );
     }
-    throw TcbError ( "getFileContents", CKR_GENERAL_ERROR );
+    throw TcbError ( "getFileContents", "File does not exists" , CKR_GENERAL_ERROR );
 }
 
 }
 
 Configuration::Configuration ( std::string configurationPath )
+{
+    this->Configuration::load(configurationPath);
+}
+
+void Configuration::load(std::string configurationPath)
 {
     std::string configJson = getFileContents ( configurationPath.c_str() );
 
@@ -55,8 +60,8 @@ Configuration::Configuration ( std::string configurationPath )
             token["so_pin"].asString()
         } );
     }
-
 }
+
 
 Configuration::RabbitMqConf const & Configuration::getRabbitMqConf() const
 {

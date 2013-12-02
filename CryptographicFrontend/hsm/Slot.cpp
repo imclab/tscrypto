@@ -17,15 +17,10 @@
 
 using namespace hsm;
 
-Slot::Slot ( CK_SLOT_ID id, Application& application )
+Slot::Slot ( CK_SLOT_ID id, const Configuration::SlotConf& configuration, Application& application )
     : slotId_ ( id ), application_ ( application )
 {
-
-}
-
-Slot::~Slot()
-{
-
+    this->insertToken(new Token(configuration.label, configuration.userPin, configuration.soPin, *this));
 }
 
 CK_SESSION_HANDLE

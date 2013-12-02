@@ -14,7 +14,7 @@ class DigestInitMethod : public Method
 {
 public:
     DigestInitMethod ( std::string sessionHandler, std::string mechanism );
-    virtual ResponseMessage* parseResponse ( const Json::Value& value ) override;
+    virtual ResponseMessage parseResponse ( const Json::Value& value ) override;
     virtual ~DigestInitMethod() = default;
 };
 }

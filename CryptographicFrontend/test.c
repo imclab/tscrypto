@@ -1,9 +1,9 @@
-#include <cryptoki.h>
+#include <pkcs11.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-// Tiene que ser freeida por el usuario
+// text has to freed by the user.
 int read_all_file ( FILE *fp, unsigned char **text )
 {
     int actual_max_buffer_size = 512;

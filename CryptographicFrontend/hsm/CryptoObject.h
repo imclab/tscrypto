@@ -4,9 +4,8 @@
 
 #ifndef TCBHSM_SESSIONOBJECT_H
 #define TCBHSM_SESSIONOBJECT_H
-#include "cryptoki.h"
+#include "pkcs11.h"
 #include <vector>
-#include <memory>
 
 namespace hsm
 {

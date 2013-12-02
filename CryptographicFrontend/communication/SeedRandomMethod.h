@@ -10,10 +10,10 @@ class SeedRandomMethod : public Method
 public:
     SeedRandomMethod ( std::string sessionHandler, std::string seed );
     virtual ~SeedRandomMethod() = default;
-    virtual ResponseMessage* parseResponse ( const Json::Value& value ) override;
+    virtual ResponseMessage parseResponse ( const Json::Value& value ) override;
 };
 
 }
 
 #endif // SEEDRANDOMMETHOD_HPP
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on; 

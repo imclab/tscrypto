@@ -1,8 +1,22 @@
 cmake_minimum_required(VERSION 2.6)
 project (CryptographicFrontend)
 
+set(CryptographicFrontend_VERSION_MAJOR 1)
+set(CryptographicFrontend_VERSION_MINOR 0)
+set(MAX_SESSION_COUNT 5)
+set(MIN_PIN_LEN 3)
+set(MAX_PIN_LEN 10)
+
+configure_file (
+  "${PROJECT_SOURCE_DIR}/hsm/config.h.in"
+  "${PROJECT_BINARY_DIR}/hsm/config.h"
+  )
+  
+include_directories("${PROJECT_BINARY_DIR}/hsm")  
+  
+
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
-SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include(FindRabbitMQ-C)
 
@@ -25,7 +39,7 @@ if (RABBITMQ-C_FOUND)
     message(FATAL_ERROR "Cannot find rabbitmq-c library")
 endif()
 
-include_directories("cryptoki")
+include_directories("cryptoki_compat")
 include_directories("base64")
 include_directories("jsoncpp")
 include_directories("communication")
@@ -78,6 +92,8 @@ set(COMMUNICATION_SRC
   )  
   
 set(HSM_SRC 
+  hsm/Database.cpp 
+  hsm/Database.h
   hsm/Session.cpp
   hsm/Session.h
   hsm/Slot.cpp
@@ -87,14 +103,13 @@ set(HSM_SRC
   hsm/Token.cpp
   hsm/Token.h
   hsm/TokenSerializer.h
-  hsm/config.h
   hsm/Configuration.cpp
   hsm/Configuration.h
-  hsm/ConnectionManager.cpp
   hsm/ConnectionManager.h
+  hsm/RabbitConnectionManager.h
+  hsm/RabbitConnectionManager.cpp
   hsm/CryptoObject.cpp
   hsm/CryptoObject.h
-  hsm/Database.h
   hsm/Application.cpp
   hsm/Application.h
   )

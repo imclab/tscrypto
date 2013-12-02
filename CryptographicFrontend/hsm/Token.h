@@ -8,11 +8,10 @@
 #include "config.h"
 
 #include <map>
-#include <set>
 #include <string>
 #include <memory>
 
-#include "cryptoki.h"
+#include "pkcs11.h"
 
 namespace hsm
 {
@@ -47,6 +46,10 @@ public:
     virtual CryptoObject & getObject ( CK_OBJECT_HANDLE handle );
     virtual std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getObjects();
 
+protected:
+    SecurityLevel checkUserPin ( CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen ) const;
+    SecurityLevel checkSecurityOfficerPin ( CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen ) const;
+    
 private:
     CK_FLAGS tokenFlags_;
     std::string userPin_;
@@ -57,10 +60,6 @@ private:
     Slot &slot_;
 
     std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> objects_;
-
-protected:
-    SecurityLevel checkUserPin ( CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen ) const;
-    SecurityLevel checkSecurityOfficerPin ( CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen ) const;
 };
 
 }

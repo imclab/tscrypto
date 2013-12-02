@@ -1,8 +1,6 @@
 #ifndef TCBHSM_TOKENSERIALIZER_H
 #define TCBHSM_TOKENSERIALIZER_H
-
-#include <memory>
-#include <vector>
+#include <string>
 
 namespace hsm
 {

@@ -4,7 +4,6 @@
 #include <iostream>
 #include <json/json.h>
 #include "MethodMessage.h"
-#include "Argument.h"
 
 using std::string;
 using std::vector;
@@ -17,11 +16,23 @@ MethodMessage::MethodMessage ( const string & name )
     name_ = name;
 }
 
-MethodMessage::~MethodMessage() {}
-
-void MethodMessage::addArgument ( IArgument* arg )
+void MethodMessage::addArgument ( argument::Name name, argument::Value value )
 {
-    argList_.push_back ( ArgumentPtr ( arg ) );
+    argMap_[name] = value;
+}
+
+namespace
+{
+struct ToJson : boost::static_visitor<> {
+    ToJson ( Json::Value & arg ) : arg_ ( arg ) {}
+
+    template<typename T>
+    void operator() ( T & value ) const {
+        arg_ = value;
+    }
+private:
+    Json::Value & arg_;
+};
 }
 
 string MethodMessage::toJson()
@@ -31,12 +42,8 @@ string MethodMessage::toJson()
 
     Json::Value args;
 
-    for ( const ArgumentPtr & arg : argList_ ) {
-        if ( IntegerArgument::match ( *arg ) ) {
-            args[arg->getName()] = IntegerArgument::getValue ( *arg );
-        } else if ( StringArgument::match ( *arg ) ) {
-            args[arg->getName()] = StringArgument::getValue ( *arg );
-        }
+    for ( const std::pair<argument::Name, argument::Value> & arg : argMap_ ) {
+        boost::apply_visitor ( ToJson ( args[arg.first] ), arg.second );
     }
 
     obj["args"] = args;
@@ -45,4 +52,4 @@ string MethodMessage::toJson()
     return writer.write ( obj );
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on; 

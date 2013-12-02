@@ -13,14 +13,14 @@ using namespace communication;
 GetAttributeMethod::GetAttributeMethod ( std::string attribute, std::string handler )
     : Method ( "GetAttribute" )
 {
-    addArgument ( new StringArgument ( "attribute", attribute ) );
-    addArgument ( new StringArgument ( "handler", handler ) );
+    addArgument ( "attribute", attribute );
+    addArgument ( "handler", handler );
 }
 
-ResponseMessage* GetAttributeMethod::parseResponse ( const Json::Value& value )
+ResponseMessage GetAttributeMethod::parseResponse ( const Json::Value& value )
 {
-    ResponseMessage * response = new ResponseMessage;
-    response->addValue ( new StringArgument ( "attributeValue", value["attributeValue"].asString() ) );
+    ResponseMessage response;
+    response.addValue ( "attributeValue", value["attributeValue"].asString() );
     return response;
 }
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on; 

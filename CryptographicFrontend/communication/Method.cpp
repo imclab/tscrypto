@@ -12,38 +12,37 @@ Method::Method ( const std::string & name )
 {
 }
 
-void Method::addArgument ( IArgument* argument )
+void Method::addArgument ( argument::Name name, argument::Value value )
 {
-    message_.addArgument ( argument );
+    message_.addArgument(name, value);
 }
 
-Method & Method::execute ( Connection const & connection ) // throw (ConnectionException)
+
+Method& Method::execute ( const Connection& connection ) // throw (ConnectionException)
 {
-    std::string json = message_.toJson();
-    response_ = connection.executeRpc ( json );
+    std::string responseJson ( connection.executeRpc ( message_.toJson() ) );
+
+    Json::Value json;
+    Json::Reader reader;
+
+    if ( !reader.parse ( responseJson, json ) ) {
+        throw std::invalid_argument ( "El mensaje de respuesta fue incapaz de ser parseado" );
+    }
+
+    std::string rc = json["returnCode"].asString();
+
+    if ( rc != "OK" ) {
+        throw std::runtime_error ( rc );
+    }
+
+    Json::Value const & value = json["value"];
+
+    responseMessage_ = parseResponse(value);
+
     return *this;
 }
 
 const ResponseMessage & Method::getResponse()
 {
-    if ( responseMessage_ == nullptr ) {
-        Json::Value json;
-        Json::Reader reader;
-
-        if ( !reader.parse ( response_, json ) ) {
-            throw std::invalid_argument ( "El mensaje de respuesta fue incapaz de ser parseado" );
-        }
-
-        std::string rc = json["returnCode"].asString();
-
-        if ( rc != "OK" ) {
-            throw std::runtime_error ( rc );
-        }
-
-        Json::Value const & value = json["value"];
-        responseMessage_.reset( parseResponse ( value ) );
-    }
-
-    return *responseMessage_;
+    return responseMessage_;
 }
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 

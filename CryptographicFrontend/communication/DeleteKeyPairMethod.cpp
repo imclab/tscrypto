@@ -6,11 +6,11 @@ using namespace communication;
 DeleteKeyPairMethod::DeleteKeyPairMethod ( std::string handler )
     : Method ( "DeleteKeyPair" )
 {
-    addArgument ( new StringArgument ( "handler", handler ) );
+    addArgument ( "handler", handler );
 }
 
-ResponseMessage* DeleteKeyPairMethod::parseResponse ( const Json::Value& value )
+ResponseMessage DeleteKeyPairMethod::parseResponse ( const Json::Value& value )
 {
-    return new ResponseMessage;
+    return ResponseMessage();
 }
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on; 

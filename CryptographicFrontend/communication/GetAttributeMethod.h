@@ -14,7 +14,7 @@ class GetAttributeMethod : public Method
 public:
     virtual ~GetAttributeMethod() = default;
     GetAttributeMethod ( std::string attribute, std::string handler );
-    virtual ResponseMessage* parseResponse ( const Json::Value& value ) override;
+    virtual ResponseMessage parseResponse ( const Json::Value& value ) override;
 
 };
 
@@ -22,4 +22,4 @@ public:
 }
 
 #endif // GETATTRIBUTEMETHOD_H
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on; 

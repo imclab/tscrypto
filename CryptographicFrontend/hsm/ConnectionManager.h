@@ -5,12 +5,10 @@
 #ifndef HSM_CONNECTIONMANAGER_H
 #define HSM_CONNECTIONMANAGER_H
 
-#include <memory>
-
-namespace communication
-{
-class Connection;
+namespace communication {
+  class Connection;
 }
+using communication::Connection;
 
 namespace hsm
 {
@@ -18,17 +16,11 @@ namespace hsm
 class Configuration;
 
 class ConnectionManager
-{
+{  
 public:
-    ConnectionManager ( Configuration const & configuration );
     virtual ~ConnectionManager() = default;
-    virtual communication::Connection * getConnection() const;
-private:
-    std::string hostname_;
-    int port_;
-    std::string rpcQueue_;
+    virtual const Connection & getConnection() const = 0;
 };
-using ConnectionPtr = std::unique_ptr<communication::Connection>;
 
 }
 

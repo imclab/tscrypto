@@ -11,13 +11,13 @@ using namespace communication;
 
 DigestMethod::DigestMethod ( std::string sessionHandler, std::string data ) : Method ( "Digest" )
 {
-    addArgument ( new StringArgument ( "sessionHandler", sessionHandler ) );
-    addArgument ( new StringArgument ( "data", data ) );
+    addArgument ( "sessionHandler", sessionHandler );
+    addArgument ( "data", data );
 }
 
-ResponseMessage* DigestMethod::parseResponse ( const Json::Value& value )
+ResponseMessage DigestMethod::parseResponse ( const Json::Value& value )
 {
-    ResponseMessage * responseMessage = new ResponseMessage();
-    responseMessage->addValue ( new StringArgument ( "digest", value["digest"].asString() ) );
+    ResponseMessage responseMessage;
+    responseMessage.addValue ( "digest", value["digest"].asString() );
     return responseMessage;
 }

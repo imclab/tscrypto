@@ -12,13 +12,93 @@
 
 using namespace communication;
 
+RabbitConnection::RabbitConnection()
+    : channel_(-1), sockFd_(-1), connection_(nullptr),
+    replyToQueue_( {0, nullptr})
+{
+
+}
+
+
+RabbitConnection::RabbitConnection ( const std::string & host,
+                                     int port,
+                                     const std::string & exchange,
+                                     const std::string & routingKey,
+                                     amqp_channel_t channel )
+    : channel_ ( channel ), exchange_ ( exchange ), routingKey_ ( routingKey )
+{
+    sockFd_ = amqp_open_socket ( host.c_str(), port );
+
+    if ( sockFd_ < 0 ) { // Actualizo el manejo de errores a la antigua :P.
+        throw CannotConnectException();
+    }
+
+    connection_ = amqp_new_connection();
+    amqp_set_sockfd ( connection_, sockFd_ );
+    amqp_login ( connection_, "/", 0, 131072, 0, AMQP_SASL_METHOD_PLAIN, "guest", "guest" );
+
+    amqp_channel_open ( connection_, channel_ );
+
+    amqp_queue_declare_ok_t * r =
+        amqp_queue_declare ( connection_, channel_, amqp_empty_bytes, 0, 0, 0, 1, amqp_empty_table );
+
+    replyToQueue_ = amqp_bytes_malloc_dup ( r->queue );
+    if ( replyToQueue_.bytes == nullptr ) {
+        throw std::bad_alloc();
+    }
+
+}
+
+RabbitConnection::RabbitConnection(RabbitConnection&& other)
+    : sockFd_(other.sockFd_), connection_(other.connection_),
+      channel_(other.channel_), replyToQueue_(other.replyToQueue_),
+      exchange_(std::move(other.exchange_)), routingKey_(std::move(other.routingKey_))
+{
+    // Invalidate the other connection...
+    other.sockFd_ = -1;
+    other.connection_ = nullptr;
+    other.channel_ = -1;
+    other.replyToQueue_.bytes = nullptr;
+    other.replyToQueue_.len = 0;
+    other.exchange_.clear();
+    other.routingKey_.clear();
+}
+
+RabbitConnection& RabbitConnection::operator=(RabbitConnection&& rhs)
+{
+    if (connection_ != nullptr) {        
+        // first, destruct this connection...
+        this->~RabbitConnection();
+    } 
+
+    sockFd_ = rhs.sockFd_;
+    rhs.sockFd_ = -1;
+
+    connection_ = rhs.connection_;
+    rhs.connection_ = nullptr;
+
+    channel_ = rhs.channel_;
+    rhs.channel_ = -1;
+
+    replyToQueue_ = rhs.replyToQueue_;
+    rhs.replyToQueue_.bytes = nullptr;
+    rhs.replyToQueue_.len = 0;
+
+    exchange_ = std::move(rhs.exchange_);
+    routingKey_ = std::move(rhs.routingKey_);
+
+}
+
+
 // RAII :)
 RabbitConnection::~RabbitConnection()
 {
-    amqp_bytes_free ( replyToQueue_ );
-    amqp_channel_close ( connection_, channel_, AMQP_REPLY_SUCCESS );
-    amqp_connection_close ( connection_, AMQP_REPLY_SUCCESS );
-    amqp_destroy_connection ( connection_ );
+    if (replyToQueue_.bytes != nullptr) { // Connection not inited...
+        amqp_bytes_free ( replyToQueue_ );
+        amqp_channel_close ( connection_, channel_, AMQP_REPLY_SUCCESS );
+        amqp_connection_close ( connection_, AMQP_REPLY_SUCCESS );
+        amqp_destroy_connection ( connection_ );
+    }
 }
 
 void RabbitConnection::send ( const std::string & message ) const
@@ -106,33 +186,5 @@ std::string RabbitConnection::receive() const
     return ss.str();
 }
 
-RabbitConnection::RabbitConnection ( const std::string & host,
-                                     int port,
-                                     const std::string & exchange,
-                                     const std::string & routingKey,
-                                     amqp_channel_t channel )
-    : channel_ ( channel ), exchange_ ( exchange ), routingKey_ ( routingKey )
-{
-    sockFd_ = amqp_open_socket ( host.c_str(), port );
 
-    if ( sockFd_ < 0 ) { // Actualizo el manejo de errores a la antigua :P.
-        throw CannotConnectException();
-    }
-
-    connection_ = amqp_new_connection();
-    amqp_set_sockfd ( connection_, sockFd_ );
-    amqp_login ( connection_, "/", 0, 131072, 0, AMQP_SASL_METHOD_PLAIN, "guest", "guest" );
-
-    amqp_channel_open ( connection_, channel_ );
-
-    amqp_queue_declare_ok_t * r =
-        amqp_queue_declare ( connection_, channel_, amqp_empty_bytes, 0, 0, 0, 1, amqp_empty_table );
-
-    replyToQueue_ = amqp_bytes_malloc_dup ( r->queue );
-    if ( replyToQueue_.bytes == nullptr ) {
-        throw std::bad_alloc();
-    }
-
-}
-
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on; 

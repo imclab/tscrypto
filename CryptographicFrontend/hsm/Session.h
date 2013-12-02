@@ -7,7 +7,7 @@
 
 #include "config.h"
 
-#include "cryptoki.h"
+#include "pkcs11.h"
 
 #include <memory>
 #include <vector>
@@ -72,7 +72,10 @@ public:
     virtual CryptoObject & getObject ( CK_OBJECT_HANDLE objectHandle ); // throws exception
 
 private:
-    communication::Connection* getConnection() const;
+    // Parent..
+    Slot & slot_;
+    const communication::Connection & getConnection() const;
+    
     std::string uuid_;
     const CK_SESSION_HANDLE handle_;
     const CK_FLAGS flags_;
@@ -82,7 +85,6 @@ private:
     
     // Future use
     const CK_NOTIFY notify_;
-    Slot & slot_;
 
     // Object Search
     bool findInitialized = false;

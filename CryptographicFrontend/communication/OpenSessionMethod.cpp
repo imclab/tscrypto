@@ -13,10 +13,10 @@ OpenSessionMethod::OpenSessionMethod() : Method ( "OpenSession" )
     // NOTE: no tiene argumentos...
 }
 
-ResponseMessage* OpenSessionMethod::parseResponse ( const Json::Value& value )
+ResponseMessage OpenSessionMethod::parseResponse ( const Json::Value& value )
 {
-    ResponseMessage * response = new ResponseMessage();
-    response->addValue ( new StringArgument ( "sessionHandler", value["sessionHandler"].asString() ) );
+    ResponseMessage response;
+    response.addValue ( "sessionHandler", value["sessionHandler"].asString() );
     return response;
 }
 

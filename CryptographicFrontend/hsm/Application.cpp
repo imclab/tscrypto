@@ -5,12 +5,12 @@
 #include "Application.h"
 #include "Configuration.h"
 #include "CryptoObject.h"
-#include "Database.h"
 #include "Session.h"
 #include "Slot.h"
 #include "Token.h"
 #include "TcbError.h"
-#include "ConnectionManager.h"
+#include "RabbitConnectionManager.h"
+#include "TokenSerializer.h"
 
 #include <base64.h>
 
@@ -31,17 +31,17 @@ Application::Application ( std::ostream& out )
                          "TCB_CONFIG_FILE environment variable hasn't setted yet",
                          CKR_DEVICE_ERROR );
     }
-    configuration_.reset ( new Configuration ( std::string ( configPath ) ) );
-    connectionManager_.reset ( new ConnectionManager ( *configuration_ ) );
+    
+    configuration_.load( std::string ( configPath ) );
+    connectionManager_.init ( configuration_.getRabbitMqConf() );
 
     // By design, we will have one slot per configured token.
     // The tokens are owned by the slots.
-    int i = 0;
-    for ( auto const & slotConf: configuration_->getSlotConf() ) {
-        SlotPtr slot ( new Slot ( i, *this ) );
-
-        slot->insertToken ( new Token ( slotConf.label, slotConf.userPin, slotConf.soPin, *slot ) );
+    CK_SLOT_ID i = 0;
+    for ( auto const & slotConf: configuration_.getSlotConf() ) {
+        SlotPtr slot ( new Slot ( i, slotConf, *this ) );
         slots_.push_back ( std::move ( slot ) );
+	++i;
     }
 
 
@@ -125,10 +125,10 @@ Slot & Application::getSessionSlot ( CK_SESSION_HANDLE handle )
 
 Configuration const & Application::getConfiguration() const   // throws exception
 {
-    return *configuration_;
+    return configuration_;
 }
 
 ConnectionManager const & Application::getConnectionManager() const
 {
-    return *connectionManager_;
+    return connectionManager_;
 }

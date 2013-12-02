@@ -13,15 +13,15 @@ GenerateKeyPairMethod::GenerateKeyPairMethod ( string keyType,
     : Method ( "GenerateKeyPair" )
 {
     /* methodMessage es dueño de los argumentos */
-    addArgument ( new StringArgument ( "keyType", keyType ) );
-    addArgument ( new IntegerArgument ( "keySize", keySize ) );
-    addArgument ( new StringArgument ( "publicExponent", publicExponent ) );
+    addArgument ( "keyType", keyType );
+    addArgument ( "keySize", keySize );
+    addArgument ( "publicExponent", publicExponent );
 }
 
-ResponseMessage* GenerateKeyPairMethod::parseResponse ( const Json::Value& value )
+ResponseMessage GenerateKeyPairMethod::parseResponse ( const Json::Value& value )
 {
-    ResponseMessage * response = new ResponseMessage();
-    response->addValue ( new StringArgument ( "keyHandler", value["keyHandler"].asString() ) );
+    ResponseMessage response;
+    response.addValue ( "keyHandler", value["keyHandler"].asString() );
     return response;
 }
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on; 

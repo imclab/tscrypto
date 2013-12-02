@@ -10,10 +10,10 @@ class SignMethod : public Method
 public:
     SignMethod ( std::string sessionHandler, std::string data );
     virtual ~SignMethod() = default;
-    virtual ResponseMessage* parseResponse ( const Json::Value& value ) override;
+    virtual ResponseMessage parseResponse ( const Json::Value& value ) override;
 };
 
 }
 
 #endif // SIGNMETHOD_H
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on; 

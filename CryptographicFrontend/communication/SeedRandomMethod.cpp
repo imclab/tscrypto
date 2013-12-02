@@ -10,11 +10,11 @@ using namespace communication;
 SeedRandomMethod::SeedRandomMethod ( std::string sessionHandler, std::string seed )
     : Method ( "SeedRandom" )
 {
-    addArgument ( new StringArgument ( "sessionHandler", sessionHandler ) );
-    addArgument ( new StringArgument ( "seed", seed ) );
+    addArgument ( "sessionHandler", sessionHandler );
+    addArgument ( "seed", seed );
 }
 
-ResponseMessage* SeedRandomMethod::parseResponse ( const Json::Value& value )
+ResponseMessage SeedRandomMethod::parseResponse ( const Json::Value& value )
 {
-    return new ResponseMessage;
+    return ResponseMessage();
 }

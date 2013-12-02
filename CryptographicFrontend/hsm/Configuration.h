@@ -30,12 +30,17 @@ public:
         std::string path;
     };
     
-    Configuration() = delete;
+    Configuration() = default;
     Configuration ( std::string configurationPath );
+    Configuration ( Configuration & ) = default;
+    Configuration ( Configuration && ) = default;    
+    Configuration & operator=(Configuration &) = default;
+    Configuration & operator=(Configuration &&) = default;
 
     virtual RabbitMqConf const & getRabbitMqConf() const;
     virtual std::vector<SlotConf> const & getSlotConf() const;
     virtual DatabaseConf const & getDatabaseConf() const;
+    virtual void load(std::string configurationPath);
 
     virtual ~Configuration() = default;
 private:

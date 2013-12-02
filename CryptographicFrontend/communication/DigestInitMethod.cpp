@@ -10,11 +10,11 @@ using namespace communication;
 
 DigestInitMethod::DigestInitMethod ( std::string sessionHandler, std::string mechanism ) : Method ( "DigestInit" )
 {
-    addArgument ( new StringArgument ( "sessionHandler", sessionHandler ) );
-    addArgument ( new StringArgument ( "mechanism", mechanism ) );
+    addArgument ( "sessionHandler", sessionHandler );
+    addArgument ( "mechanism", mechanism );
 }
 
-ResponseMessage* DigestInitMethod::parseResponse ( const Json::Value& value )
+ResponseMessage DigestInitMethod::parseResponse ( const Json::Value& value )
 {
-    return new ResponseMessage();
+    return ResponseMessage();
 }

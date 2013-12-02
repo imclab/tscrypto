@@ -1,27 +1,25 @@
 #ifndef COMMUNICATION_METHODMESSAGE_H
 #define COMMUNICATION_METHODMESSAGE_H
 
-#include <vector>
 #include <string>
-#include <memory>
+#include "Argument.h"
 
 namespace communication
 {
-
-class IArgument;
 
 class MethodMessage
 {
 private:
     std::string name_;
-    
-    using ArgumentPtr = std::unique_ptr<IArgument>;
-    std::vector<ArgumentPtr> argList_;
+    argument::Map argMap_;
 
 public:
     MethodMessage ( const std::string & name );
-    virtual ~MethodMessage();
-    virtual void addArgument ( IArgument * arg );
+    MethodMessage (MethodMessage && message) = default;
+    MethodMessage (const MethodMessage & message) = default;
+
+    virtual ~MethodMessage() = default;
+    virtual void addArgument(argument::Name name, argument::Value value);
     virtual std::string toJson();
 };
 
@@ -29,4 +27,4 @@ public:
 }
 
 #endif
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on; 

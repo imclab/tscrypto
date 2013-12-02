@@ -8,13 +8,12 @@
 #include "config.h"
 
 #include <vector>
-#include <set>
-#include <map>
 #include <string>
 #include <memory>
 #include <iosfwd>
 
-#include "cryptoki.h"
+#include "pkcs11.h"
+#include "RabbitConnectionManager.h"
 
 namespace hsm
 {
@@ -24,7 +23,6 @@ class Configuration;
 class ConnectionManager;
 
 using SlotPtr = std::unique_ptr<Slot>;
-using SessionPtr = std::unique_ptr<Session>;
 
 /** La aplicacion tiene slots y algunas funcionalidades de ayuda... **/
 class Application
@@ -46,10 +44,8 @@ public:
 private:
     std::ostream& out_;
 
-    std::unique_ptr<Configuration> configuration_;
-
-    // TODO: revisar si es necesario crear una conexion nueva cada vez o se puede mantener una abierta...
-    std::unique_ptr<ConnectionManager> connectionManager_;
+    Configuration configuration_;
+    RabbitConnectionManager connectionManager_;
 
     std::vector<SlotPtr> slots_;
 

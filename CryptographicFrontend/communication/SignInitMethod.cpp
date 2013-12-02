@@ -7,13 +7,13 @@ using namespace communication;
 SignInitMethod::SignInitMethod ( std::string sessionHandler, std::string mechanism, std::string privateKeyHandler )
     : Method ( "SignInit" )
 {
-    addArgument ( new StringArgument ( "sessionHandler", sessionHandler ) );
-    addArgument ( new StringArgument ( "mechanism", mechanism ) );
-    addArgument ( new StringArgument ( "keyHandler", privateKeyHandler ) );
+    addArgument ( "sessionHandler", sessionHandler );
+    addArgument ( "mechanism", mechanism );
+    addArgument ( "keyHandler", privateKeyHandler );
 }
 
-ResponseMessage* SignInitMethod::parseResponse ( const Json::Value& value )
+ResponseMessage SignInitMethod::parseResponse ( const Json::Value& value )
 {
-    return new ResponseMessage;
+    return ResponseMessage();
 }
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on; 

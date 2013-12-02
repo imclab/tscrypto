@@ -5,12 +5,25 @@
 #include "ResponseMessage.h"
 #include "Argument.h"
 
-
 using namespace communication;
 
-void ResponseMessage::addValue ( IArgument * value )
+/*
+ResponseMessage::ResponseMessage(ResponseMessage&& other)
+: values_(std::move(other.values_))
 {
-    values_[value->getName()].reset ( value );
 }
 
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+ResponseMessage& ResponseMessage::operator=(ResponseMessage&& rhs)
+{
+  values_ = std::move(rhs.values_);
+  return *this;
+}
+*/
+
+void ResponseMessage::addValue ( argument::Name name, argument::Value value )
+{
+    values_[name] = value;
+}
+
+
+// kate: indent-mode cstyle; replace-tabs on; 

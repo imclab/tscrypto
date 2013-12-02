@@ -10,6 +10,7 @@
 #include <stdexcept>
 
 #include "MethodMessage.h"
+#include "ResponseMessage.h"
 
 namespace Json
 {
@@ -20,25 +21,19 @@ class Value;
 namespace communication
 {
 
-class ResponseMessage;
 class Connection;
-class Method   // Por ahora los metodos devuelven un string json...
+class Method
 {
 private:
     MethodMessage message_;
-    std::string response_;
-    
-    using ResponseMessagePtr = std::unique_ptr<ResponseMessage>;
-    ResponseMessagePtr responseMessage_;
+    ResponseMessage responseMessage_;
 protected:
-
     Method ( const std::string & name );
-    
-    // This object will manage the lifetime of the argument
-    void addArgument ( IArgument* argument );
-    
+
+    virtual void addArgument(argument::Name name, argument::Value value);
+
     // Factory Method of the responses.
-    virtual ResponseMessage * parseResponse (Json::Value const & value) = 0;
+    virtual ResponseMessage parseResponse (Json::Value const & value) = 0;
 
 public:
     Method & execute ( Connection const & connection ); // throw (ConnectionException);
@@ -50,4 +45,5 @@ public:
 }
 
 #endif // COMMUNICATION_METHOD_H
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on; 
+

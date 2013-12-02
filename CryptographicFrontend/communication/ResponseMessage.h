@@ -7,30 +7,30 @@
 
 #include <memory>
 #include <string>
-#include <map>
-#include <functional>
+#include <unordered_map>
 
 #include "Argument.h"
 
 namespace communication
 {
 
-using ArgumentPtr = std::unique_ptr<IArgument>;
 class ResponseMessage
 {
 private:
-    std::map<std::string, ArgumentPtr> values_;
+    argument::Map values_;
 
 public:
     ResponseMessage() = default;
-    ResponseMessage ( ResponseMessage & rm ) = delete;
-    ResponseMessage & operator= ( ResponseMessage const & rm ) = delete;
+    ResponseMessage ( ResponseMessage const & other ) = default;
+    ResponseMessage ( ResponseMessage && other ) = default;
+    ResponseMessage & operator= ( ResponseMessage const & rhs ) = default;
+    ResponseMessage & operator= ( ResponseMessage && rhs ) = default;
 
-    void addValue ( IArgument* value );
+    void addValue ( argument::Name name, argument::Value value );
 
     template <typename T> // Hiding the implementation (?)
-    T getValue ( const std::string & name ) const {
-        return Argument<T>::getValue ( *values_.at ( name ) );
+    T getValue ( const argument::Name & name ) const {
+        return argument::get<T>( values_.at ( name ) );
     }
 
 };
@@ -38,4 +38,4 @@ public:
 }
 
 #endif // RESPONSEMESSAGE_H
-// kate: indent-mode cstyle; indent-width 4; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on; 

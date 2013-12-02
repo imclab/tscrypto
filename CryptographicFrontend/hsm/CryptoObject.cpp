@@ -6,7 +6,7 @@
 
 #include "CryptoObject.h"
 #include "TcbError.h"
-#include "cryptoki.h"
+#include "pkcs11.h"
 
 
 using namespace hsm;

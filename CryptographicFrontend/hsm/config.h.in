@@ -1,0 +1,5 @@
+#define VERSION_MAJOR @CryptographicFrontend_VERSION_MAJOR@
+#define VERSION_MINOR @CryptographicFrontend_VERSION_MINOR@
+#define MIN_PIN_LEN @MIN_PIN_LEN@
+#define MAX_PIN_LEN @MAX_PIN_LEN@
+#define MAX_SESSION_COUNT @MAX_SESSION_COUNT@
