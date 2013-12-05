@@ -22,8 +22,6 @@ public:
 
     struct SlotConf {
         std::string label;
-        std::string userPin;
-        std::string soPin;
     };
 
     struct DatabaseConf { // TODO: review this.

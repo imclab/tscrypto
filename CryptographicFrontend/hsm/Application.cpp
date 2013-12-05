@@ -32,55 +32,29 @@ Application::Application ( std::ostream& out )
                          CKR_DEVICE_ERROR );
     }
     
-    configuration_.load( std::string ( configPath ) );
+    configuration_.load( configPath );
     connectionManager_.init ( configuration_.getRabbitMqConf() );
-
+    database_.init(configuration_.getDatabaseConf());
+    
     // By design, we will have one slot per configured token.
     // The tokens are owned by the slots.
     CK_SLOT_ID i = 0;
-    for ( auto const & slotConf: configuration_.getSlotConf() ) {
-        SlotPtr slot ( new Slot ( i, slotConf, *this ) );
-        slots_.push_back ( std::move ( slot ) );
+    for ( Configuration::SlotConf const & slotConf: configuration_.getSlotConf() ) {
+	Slot * slot = new Slot(i, *this);
+	
+	slot->insertToken(database_.getToken(slotConf.label));
+	
+        slots_.push_back ( SlotPtr(slot) );
 	++i;
     }
 
 
 }
 
-namespace hsm
-{
-class DebugDatabase : public TokenSerializer
-{
-public:
-    virtual void saveToken ( Token & token ) override {
-        std::cout << "{ \"label\" : \"" << token.getLabel() << "\", \"objects\" : [ ";
-        for ( auto const& objectPair: token.getObjects() ) {
-            // objectPair : std::pair<CK_OBJECT_HANDLE, CryptoObjectPtr>
-            std::cout << "{ \"handle\" : " << objectPair.first << " , ";
-            std::cout << " \"attributes\" : [ ";
-            for ( auto const& attr: objectPair.second->getAttributes() ) {
-                std::cout << "{ \"type\" : " << attr.type << " ,";
-                std::cout << " \"value\" : \"";
-                std::cout << base64::encode ( ( unsigned char* ) attr.pValue, attr.ulValueLen );
-                std::cout << "\"}, ";
-            }
-            std::cout << " ] }, ";
-        }
-        std::cout << " ] }" << std::endl;
-
-    }
-
-    virtual Token * getToken ( std::string const & label ) override {
-        return nullptr;
-    }
-};
-}
-
 Application::~Application()
 {
-    DebugDatabase db;
     for ( auto const& slotPtr: slots_ ) {
-        db.saveToken ( slotPtr->getToken() );
+        database_.saveToken ( slotPtr->getToken() );
     }
 }
 
@@ -121,11 +95,6 @@ Slot & Application::getSessionSlot ( CK_SESSION_HANDLE handle )
     throw TcbError ( "Application::getSessionSlot",
                      "Session not found.",
                      CKR_SESSION_HANDLE_INVALID );
-}
-
-Configuration const & Application::getConfiguration() const   // throws exception
-{
-    return configuration_;
 }
 
 ConnectionManager const & Application::getConnectionManager() const

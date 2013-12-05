@@ -1,32 +1,14 @@
 #include <fstream>
 #include <cerrno>
-#include <json/json.h>
+
+#include <boost/property_tree/ptree.hpp>
+#include <boost/property_tree/json_parser.hpp>
 
 #include "Configuration.h"
 #include "TcbError.h"
 #include "pkcs11.h"
 
 using namespace hsm;
-
-namespace
-{
-
-std::string getFileContents ( const char *filename )
-{
-    std::ifstream in ( filename, std::ios::in | std::ios::binary );
-    if ( in ) {
-        std::string contents;
-        in.seekg ( 0, std::ios::end );
-        contents.resize ( in.tellg() );
-        in.seekg ( 0, std::ios::beg );
-        in.read ( &contents[0], contents.size() );
-        in.close();
-        return ( contents );
-    }
-    throw TcbError ( "getFileContents", "File does not exists" , CKR_GENERAL_ERROR );
-}
-
-}
 
 Configuration::Configuration ( std::string configurationPath )
 {
@@ -35,30 +17,29 @@ Configuration::Configuration ( std::string configurationPath )
 
 void Configuration::load(std::string configurationPath)
 {
-    std::string configJson = getFileContents ( configurationPath.c_str() );
-
-    Json::Value root;
-    Json::Reader reader;
-    if ( !reader.parse ( configJson, root ) ) {
-        throw TcbError ( "Configuration::Configuration", "Cannot parse config file", CKR_GENERAL_ERROR );
+    using std::string;
+    using boost::property_tree::ptree;
+    using namespace boost::property_tree::json_parser;
+    ptree root;    
+    
+    try {
+	read_json(configurationPath, root);        
+    } catch (json_parser_error & e) {
+	throw TcbError("Configuration::load", e.what(), CKR_GENERAL_ERROR);
     }
 
-    const Json::Value rabbitmq = root["rabbitmq"];
-    rabbitMqConf_.hostname = rabbitmq["hostname"].asString();
-    rabbitMqConf_.port = rabbitmq["port"].asString();
-    rabbitMqConf_.rpcQueue = rabbitmq["rpc_queue"].asString();
+    ptree rabbitmq = root.get_child("rabbitmq");    
+    rabbitMqConf_.hostname = rabbitmq.get<string>("hostname");
+    rabbitMqConf_.port = rabbitmq.get<string>("port");
+    rabbitMqConf_.rpcQueue = rabbitmq.get<string>("rpc_queue");
 
-    const Json::Value database = root["database"];
-    databaseConf_.path = database["path"].asString();
+    ptree database = root.get_child("database");          
+    databaseConf_.path = database.get<string>("path");
 
-    const Json::Value slots = root["slots"];
-    for ( unsigned int i=0; i < slots.size(); ++i ) {
-        const Json::Value token = slots[i];
-        slotConf_.push_back ( {
-            token["label"].asString(),
-            token["user_pin"].asString(),
-            token["so_pin"].asString()
-        } );
+    ptree slots = root.get_child("slots");
+    for (ptree::value_type & v: slots) {
+	ptree & token = v.second;
+	slotConf_.push_back({ token.get<string>("label") });
     }
 }
 

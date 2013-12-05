@@ -12,9 +12,9 @@
 
 using namespace hsm;
 
-Token::Token ( std::string label, std::string userPin, std::string soPin, Slot & slot )
+Token::Token ( std::string label, std::string userPin, std::string soPin )
     : userPin_ ( userPin ), soPin_ ( soPin )
-    , securityLevel_ ( SecurityLevel::PUBLIC ), loggedIn_ ( false ), slot_ ( slot )
+    , securityLevel_ ( SecurityLevel::PUBLIC ), loggedIn_ ( false )
 {
     if ( label.size() <= 32 ) {
         label_ = label;
@@ -32,7 +32,7 @@ Token::~Token()
 void Token::getInfo ( CK_TOKEN_INFO_PTR pInfo ) const
 {
     if ( !pInfo ) {
-        throw TcbError ( "Token::Token", "Puntero nulo pasado a getInfo.", CKR_ARGUMENTS_BAD );
+        throw TcbError ( "Token::getInfo", "pInfo == nullptr", CKR_ARGUMENTS_BAD );
     }
 
     if ( label_.empty() ) {
@@ -54,9 +54,9 @@ void Token::getInfo ( CK_TOKEN_INFO_PTR pInfo ) const
 
     pInfo->flags = tokenFlags_;
     pInfo->ulMaxSessionCount = MAX_SESSION_COUNT;
-    pInfo->ulSessionCount = slot_.sessionsCount();
+    pInfo->ulSessionCount = CK_UNAVAILABLE_INFORMATION;
     pInfo->ulMaxRwSessionCount = MAX_SESSION_COUNT;
-    pInfo->ulRwSessionCount = slot_.sessionsCount(); // TODO!
+    pInfo->ulRwSessionCount = CK_UNAVAILABLE_INFORMATION;
     pInfo->ulMaxPinLen = MAX_PIN_LEN;
     pInfo->ulMinPinLen = MIN_PIN_LEN;
     pInfo->ulTotalPublicMemory = CK_UNAVAILABLE_INFORMATION;

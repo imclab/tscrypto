@@ -4,12 +4,9 @@
     "port" : "5672",
     "rpc_queue" : "rpc_queue"
   },
-  "database" : {
-    "path" : "tcbhsm.db"
-  },
+  "database" : { "path" : "tcbhsm.db" },
   "slots" : [
-    // Token definition...
-    { "label": "TCBHSM", "user_pin" : "1234", "so_pin" : "1234" }
+    // Token definitions...
+    { "label": "TCBHSM" }
   ]
 }
-

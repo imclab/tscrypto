@@ -19,6 +19,7 @@ set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 include(FindRabbitMQ-C)
+include(FindSqlite3)
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
@@ -26,6 +27,7 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 
 find_package(Boost 1.54 REQUIRED)
 find_package(RabbitMQ-C)
+find_package(Sqlite3)
 
 if (Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
@@ -35,6 +37,12 @@ endif()
 
 if (RABBITMQ-C_FOUND)
     include_directories(${RABBITMQ-C_INCLUDE_DIRS})
+  else()
+    message(FATAL_ERROR "Cannot find rabbitmq-c library")
+endif()
+
+if (SQLITE3_FOUND)
+    include_directories(${SQLITE3_INCLUDE_DIRS})
   else()
     message(FATAL_ERROR "Cannot find rabbitmq-c library")
 endif()
@@ -91,7 +99,7 @@ set(COMMUNICATION_SRC
   communication/GetAttributeMethod.h
   )  
   
-set(HSM_SRC 
+set(HSM_SRC
   hsm/Database.cpp 
   hsm/Database.h
   hsm/Session.cpp
@@ -116,7 +124,7 @@ set(HSM_SRC
   
   
 add_library(pkcs11 SHARED pkcs11.cpp ${BASE64_SRC} ${JSONCPP_SRC} ${COMMUNICATION_SRC} ${HSM_SRC})
-target_link_libraries(pkcs11 ${RABBITMQ-C_LIBRARIES})
+target_link_libraries(pkcs11 ${RABBITMQ-C_LIBRARIES} ${SQLITE3_LIBRARIES})
 
 add_executable(test test.c)
 target_link_libraries(test pkcs11)

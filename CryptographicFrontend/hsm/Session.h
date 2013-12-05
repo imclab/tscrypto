@@ -30,6 +30,30 @@ class CryptoObject;
 // Sessions are enclosed in operations with objects, Tokens on containing objects.
 class Session
 {
+    // Parent..
+    Slot & slot_;    
+    
+    std::string uuid_;
+    const CK_SESSION_HANDLE handle_;
+    const CK_FLAGS flags_;
+    
+    // Future use
+    const CK_VOID_PTR application_;
+    const CK_NOTIFY notify_;
+
+    // Object Search
+    bool findInitialized_ = false;
+    std::vector<CK_OBJECT_HANDLE> foundObjects_;
+    std::vector<CK_OBJECT_HANDLE>::iterator foundObjectsIterator_;
+    std::vector<CK_OBJECT_HANDLE>::iterator foundObjectsEnd_;
+
+    // Signing
+    bool signInitialized_ = false;
+
+    // Digest
+    bool digestInitialized_ = false;
+    CK_ULONG digestSize_;    
+    
 public:
     Session ( CK_FLAGS flags, CK_VOID_PTR pApplication,
               CK_NOTIFY notify, Slot & currentSlot );
@@ -70,34 +94,6 @@ public:
     virtual std::vector<CK_OBJECT_HANDLE> findObjects ( CK_ULONG maxObjectCount );
     virtual void findObjectsFinal();
     virtual CryptoObject & getObject ( CK_OBJECT_HANDLE objectHandle ); // throws exception
-
-private:
-    // Parent..
-    Slot & slot_;
-    const communication::Connection & getConnection() const;
-    
-    std::string uuid_;
-    const CK_SESSION_HANDLE handle_;
-    const CK_FLAGS flags_;
-    
-    // Future use
-    const CK_VOID_PTR application_;
-    
-    // Future use
-    const CK_NOTIFY notify_;
-
-    // Object Search
-    bool findInitialized = false;
-    std::vector<CK_OBJECT_HANDLE> foundObjects;
-    std::vector<CK_OBJECT_HANDLE>::iterator foundObjectsIterator;
-    std::vector<CK_OBJECT_HANDLE>::iterator foundObjectsEnd;
-
-    // Signing
-    bool signInitialized_ = false;
-
-    // Digest
-    bool digestInitialized_ = false;
-    CK_ULONG digestSize_;
 };
 
 }

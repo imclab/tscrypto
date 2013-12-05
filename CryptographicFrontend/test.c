@@ -346,7 +346,9 @@ main ( int argc, char **argv )
     if ( user_pin ) {
         login ( session, user_pin );
     }
+    
     create_key_pair ( session );
+    
     sign_data ( session, input_file, output_file );
     if ( user_pin ) {
         logout ( session );

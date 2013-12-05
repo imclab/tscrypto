@@ -30,8 +30,17 @@ using SessionPtr = std::unique_ptr<Session>;
 /// Clase que representa un espacio para un token en el HSM
 class Slot
 {
+    CK_SLOT_ID slotId_;
+    Application const & application_;
+    CK_FLAGS slotFlags_;
+    
+    std::map<CK_SESSION_HANDLE, SessionPtr> sessions_;
+    // A token can be unplugged...
+    TokenPtr token_;
+    
+    CK_SLOT_ID id_;
 public:
-    Slot ( CK_SLOT_ID id, Configuration::SlotConf const & configuration, Application& application );
+    Slot ( CK_SLOT_ID id, Application& application );
     Slot ( Slot & ) = delete;
     Slot (Slot && ) = default;
     Slot & operator=(Slot &) = delete;
@@ -51,14 +60,6 @@ public:
     virtual void insertToken ( Token * token );
     virtual Token & getToken() const; // throws exception
     virtual bool isTokenPresent() const;
-private:
-    CK_SLOT_ID slotId_;
-    Application const & application_;
-    CK_FLAGS slotFlags_;
-    TokenPtr token_; // Esto por la posibilidad de no estar presente :)
-
-    std::map<CK_SESSION_HANDLE, SessionPtr> sessions_;
-    CK_SLOT_ID id_;
 };
 }
 

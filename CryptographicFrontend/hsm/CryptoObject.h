@@ -6,9 +6,11 @@
 #define TCBHSM_SESSIONOBJECT_H
 #include "pkcs11.h"
 #include <vector>
+#include <unordered_map>
 
 namespace hsm
 {
+
 enum class CryptoObjectType
 {
     SESSION_OBJECT, TOKEN_OBJECT
@@ -17,14 +19,19 @@ enum class CryptoObjectType
 
 class CryptoObject
 {
-private:
+    using AttributeMap = std::unordered_map<CK_ATTRIBUTE_TYPE, CK_ATTRIBUTE>;    
     CK_OBJECT_HANDLE handle_;
     CryptoObjectType type_;
-    std::vector<CK_ATTRIBUTE> attributes_;
+    
+    AttributeMap attributes_;
+    // std::vector<CK_ATTRIBUTE> attributes_;
+    
 public:
     CryptoObject ( CK_ATTRIBUTE_PTR pAttributes,
                    CK_ULONG ulCount,
                    CryptoObjectType type );
+    // For deserialization...
+    CryptoObject ( CK_OBJECT_HANDLE handle, std::vector<CK_ATTRIBUTE> attributes );
     ~CryptoObject ();
 
     virtual bool match ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount ) const;
@@ -32,8 +39,10 @@ public:
     virtual const CK_ATTRIBUTE * findAttribute ( const CK_ATTRIBUTE* tmpl ) const;
     virtual CryptoObjectType getType() const;
     virtual CK_OBJECT_HANDLE getHandle() const;
-
-    virtual std::vector<CK_ATTRIBUTE> const & getAttributes() const;
+    
+    virtual AttributeMap const & getAttributes() const;
+    
+    static CK_OBJECT_HANDLE actualHandle;
 };
 
 }

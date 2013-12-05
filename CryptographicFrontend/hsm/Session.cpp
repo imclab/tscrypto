@@ -36,7 +36,7 @@
 using namespace hsm;
 using namespace communication;
 
-namespace   // Funcion auxiliar
+namespace   // Aux functions.
 {
 
 bool userAuthorization ( CK_STATE sessionState, CK_BBOOL isTokenObject,
@@ -78,6 +78,10 @@ bool userAuthorization ( CK_STATE sessionState, CK_BBOOL isTokenObject,
     return false;
 }
 
+inline const Connection & getConnection(Session &s) {
+    s.getCurrentSlot().getApplication().getConnectionManager().getConnection();
+}
+
 CK_SESSION_HANDLE actualHandle = 0;
 
 }
@@ -88,7 +92,7 @@ Session::Session ( CK_FLAGS flags, CK_VOID_PTR pApplication,
     , flags_ ( flags ), application_ ( pApplication )
     , notify_ ( notify ), slot_ ( currentSlot )
 {
-    Connection const & connection ( getConnection() );
+    Connection const & connection = getConnection(*this);
     OpenSessionMethod method;
     uuid_ = method.execute ( connection ).getResponse().getValue<std::string> ( "sessionHandler" );
 }
@@ -96,7 +100,7 @@ Session::Session ( CK_FLAGS flags, CK_VOID_PTR pApplication,
 Session::~Session()
 {
 
-    Connection const & conn ( getConnection() );
+    Connection const & conn = getConnection(*this);
     Token & token = slot_.getToken();
     auto& objects = token.getObjects();
 
@@ -132,11 +136,6 @@ Session::~Session()
     } catch ( ... ) {
         // Exception Safety (?)
     }
-}
-
-const Connection & Session::getConnection() const
-{
-    return slot_.getApplication().getConnectionManager().getConnection();
 }
 
 const std::string& Session::getUuid()
@@ -264,16 +263,13 @@ void Session::destroyObject ( CK_OBJECT_HANDLE hObject )
             std::string handler ( ( char * ) handlerAttribute->pValue,
                                   handlerAttribute->ulValueLen );
 
-
-            const Connection & connection =  getConnection();
+            const Connection & connection =  getConnection(*this);
             DeleteKeyPairMethod method ( handler );
             try {
                 method.execute ( connection ).getResponse();
             } catch ( std::exception& e ) {
                 throw TcbError ( "Session::destroyObject", e.what(), CKR_GENERAL_ERROR );
             }
-
-
         }
 
         objectContainer.erase ( it );
@@ -285,7 +281,7 @@ void Session::destroyObject ( CK_OBJECT_HANDLE hObject )
 void Session::findObjectsInit ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount )
 {
     // TODO: Verificar correctitud
-    if ( findInitialized ) {
+    if ( findInitialized_ ) {
         throw TcbError ( "Session::findObjectsInit", "findInitialized", CKR_OPERATION_ACTIVE );
     }
     if ( pTemplate == nullptr ) {
@@ -297,46 +293,46 @@ void Session::findObjectsInit ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount )
     if ( ulCount == 0 ) {
         // Busco todos los objetos...
         for ( auto& handleObjectPair: token.getObjects() ) {
-            foundObjects.push_back ( handleObjectPair.first );
+            foundObjects_.push_back ( handleObjectPair.first );
         }
     } else {
         for ( auto& handleObjectPair: token.getObjects() ) {
             if ( handleObjectPair.second->match ( pTemplate, ulCount ) ) {
-                foundObjects.push_back ( handleObjectPair.first );
+                foundObjects_.push_back ( handleObjectPair.first );
             }
         }
     }
 
     //TODO: verificar permisos de acceso.
-    foundObjectsIterator = foundObjects.begin();
-    foundObjectsEnd = foundObjects.end();
-    findInitialized = true;
+    foundObjectsIterator_ = foundObjects_.begin();
+    foundObjectsEnd_ = foundObjects_.end();
+    findInitialized_ = true;
 }
 
 auto Session::findObjects ( CK_ULONG maxObjectCount ) -> std::vector<CK_OBJECT_HANDLE> {
-    if ( !findInitialized ) {
+    if ( !findInitialized_ ) {
         throw TcbError ( "Session::findObjects",
         "No se inicio la busqueda.",
         CKR_OPERATION_NOT_INITIALIZED );
     }
 
-    auto end = foundObjectsIterator + maxObjectCount;
-    if ( foundObjectsEnd < end ) {
-        end = foundObjectsEnd;
+    auto end = foundObjectsIterator_ + maxObjectCount;
+    if ( foundObjectsEnd_ < end ) {
+        end = foundObjectsEnd_;
     }
 
-    std::vector<CK_OBJECT_HANDLE> response ( foundObjectsIterator, end );
-    foundObjectsIterator = end;
+    std::vector<CK_OBJECT_HANDLE> response ( foundObjectsIterator_, end );
+    foundObjectsIterator_ = end;
     return response;
 }
 
 void Session::findObjectsFinal()
 {
-    if ( !findInitialized ) {
+    if ( !findInitialized_ ) {
         throw TcbError ( "Session::findObjects", "No se inicio la busqueda.",
                          CKR_OPERATION_NOT_INITIALIZED );
     } else {
-        findInitialized = false;
+        findInitialized_ = false;
     }
 }
 
@@ -716,7 +712,7 @@ KeyPair Session::generateKeyPair ( CK_MECHANISM_PTR pMechanism,
         // case CKM_VENDOR_DEFINED:
     case CKM_RSA_PKCS_KEY_PAIR_GEN:
         try {
-            Connection const & connection ( getConnection() );
+            Connection const & connection ( getConnection(*this) );
 
             GenerateKeyPairMethod method ( "RSA", modulusBits, exponent ); // Unico metodo aceptado :B...
             std::string keyHandler = method.execute ( connection ).getResponse().getValue<std::string> ( "keyHandler" );
@@ -781,7 +777,7 @@ void Session::signInit ( CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
             break;
         }
 
-        Connection const & connection ( getConnection() );
+        Connection const & connection ( getConnection(*this) );
         SignInitMethod method ( uuid_, mechanism, handler );
         method.execute ( connection ).getResponse();
 
@@ -799,7 +795,7 @@ void Session::sign ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignatu
     }
 
     try {
-        Connection const & connection ( getConnection() );
+        Connection const & connection ( getConnection(*this) );
         std::string encodedData ( base64::encode ( pData, ulDataLen ) );
         SignMethod method ( uuid_, encodedData );
 
@@ -867,7 +863,7 @@ void Session::digestInit ( CK_MECHANISM_PTR pMechanism )
         break;
     }
 
-    Connection const & connection ( getConnection() );
+    Connection const & connection ( getConnection(*this) );
     DigestInitMethod method ( uuid_, mechanism );
     try {
         method.execute ( connection ).getResponse();
@@ -903,7 +899,7 @@ void Session::digest ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDiges
         throw TcbError ( "Session::digest", "pData == nullptr", CKR_ARGUMENTS_BAD );
     }
 
-    Connection const & connection ( getConnection() );
+    Connection const & connection ( getConnection(*this) );
     std::string encodedData ( base64::encode ( pData, ulDataLen ) );
     DigestMethod method ( uuid_, encodedData );
 
@@ -930,7 +926,7 @@ void Session::generateRandom ( CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen )
         throw TcbError ( "Session::generateRandom", "pRandomData == nullptr", CKR_ARGUMENTS_BAD );
     }
 
-    Connection const & connection ( getConnection() );
+    Connection const & connection ( getConnection(*this) );
     GenerateRandomMethod method ( uuid_, static_cast<long> ( ulRandomLen ) );
     std::string encodedData = method.execute ( connection ).getResponse().getValue<std::string> ( "data" );
     std::string decodedData ( base64::decode ( encodedData ) );
@@ -945,7 +941,7 @@ void Session::seedRandom ( CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen )
         throw TcbError ( "Session::seedRandom", "pSeed == nullptr", CKR_ARGUMENTS_BAD );
     }
 
-    Connection const & connection ( getConnection() );
+    Connection const & connection ( getConnection(*this) );
     std::string encodedData ( base64::encode ( pSeed, ulSeedLen ) );
 
     SeedRandomMethod method ( uuid_, encodedData );

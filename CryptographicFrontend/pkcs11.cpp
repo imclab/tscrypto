@@ -196,7 +196,7 @@ extern "C" {
             std::string pin ( reinterpret_cast<char*> ( pPin ), ulPinLen );
             Slot & slot = app->getSlot ( slotID );
 
-            slot.insertToken ( new Token ( label, pin, pin, slot ) );
+            slot.insertToken ( new Token ( label, pin, pin ) );
         } catch ( TcbError & e ) {
             return error ( e );
         }

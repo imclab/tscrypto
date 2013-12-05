@@ -8,9 +8,8 @@
 
 namespace hsm
 {
-class TcbError : public std::exception
+struct TcbError : std::exception
 {
-public:
     TcbError ( std::string who, std::string error, CK_RV code );
     TcbError ( std::string error, CK_RV code );
     TcbError() = delete;

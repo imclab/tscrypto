@@ -11,11 +11,13 @@
 
 using namespace hsm;
 
-namespace
-{
-CK_OBJECT_HANDLE actualHandle = 0;
-}
+CK_OBJECT_HANDLE CryptoObject::actualHandle = 0;
 
+using AttributeMapPair = std::pair<CK_ATTRIBUTE_TYPE, CK_ATTRIBUTE>;
+
+
+// NOTE: The attributes are copied into de CryptoObject, 
+// to make memory management easier.
 CryptoObject::CryptoObject ( CK_ATTRIBUTE_PTR pAttributes,
                              CK_ULONG ulCount,
                              CryptoObjectType type )
@@ -29,33 +31,32 @@ CryptoObject::CryptoObject ( CK_ATTRIBUTE_PTR pAttributes,
         att.pValue = malloc ( att.ulValueLen );
         std::memcpy ( att.pValue, it->pValue, att.ulValueLen );
 
-        attributes_.push_back ( att );
+        attributes_[att.type] = att;
     }
 }
 
+CryptoObject::CryptoObject(CK_OBJECT_HANDLE handle, std::vector< CK_ATTRIBUTE > attributes )
+: handle_(handle), type_(CryptoObjectType::TOKEN_OBJECT)
+{
+    for (CK_ATTRIBUTE att: attributes) {
+	attributes_[att.type] = att;
+    }
+}
+
+
 CryptoObject::~CryptoObject()
 {
-    for ( auto &attribute: attributes_ ) {
-        std::free ( attribute.pValue );
+    for ( AttributeMapPair const & attribute: attributes_ ) {
+        std::free ( attribute.second.pValue );
     }
 }
 
 bool CryptoObject::match ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount ) const
-{
-    // Busqueda por fuerza bruta, no se me ocurre una mejor estructura de dato
-    // necesito saber mejor las restricciones de un objeto.
-    
+{    
     for (CK_ULONG i = 0; i<ulCount; i++) {
-        bool found = false;
-        for (CK_ATTRIBUTE const & attribute: attributes_) {
-            if (attribute.type == pTemplate[i].type) {
-                found = true;
-            }
-        }
-        
-        if ( !found ) {
-            return false;
-        }
+	if(attributes_.count(pTemplate[i].type) == 0) {
+	    return false;
+	}
     }
     
     return true;
@@ -63,13 +64,11 @@ bool CryptoObject::match ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount ) const
 
 CK_ATTRIBUTE const * CryptoObject::findAttribute ( CK_ATTRIBUTE const * tmpl ) const
 {
-    for ( auto& attribute: attributes_ ) {
-        if ( attribute.type == tmpl->type ) {
-            return &attribute;
-        }
+    if(attributes_.count(tmpl->type) > 0) {
+	return &(attributes_.at(tmpl->type));
+    } else {   
+	return nullptr;
     }
-
-    return nullptr;
 }
 
 namespace
@@ -108,8 +107,8 @@ void CryptoObject::copyAttributes ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount
     }
 
     for ( CK_ULONG i=0; i<ulCount; ++i ) {
-        CK_ATTRIBUTE* ptr = & ( pTemplate[i] );
-        const CK_ATTRIBUTE* src = findAttribute ( ptr );
+        CK_ATTRIBUTE * ptr = & ( pTemplate[i] );
+        CK_ATTRIBUTE const* src = findAttribute ( ptr );
         if ( src != nullptr ) {
             copyAttribute ( src, ptr );
         } else {
@@ -129,7 +128,7 @@ CK_OBJECT_HANDLE CryptoObject::getHandle() const
 }
 
 
-std::vector<CK_ATTRIBUTE> const & CryptoObject::getAttributes() const
+const CryptoObject::AttributeMap& CryptoObject::getAttributes() const
 {
     return attributes_;
 }

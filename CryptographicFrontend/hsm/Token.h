@@ -15,11 +15,12 @@
 
 namespace hsm
 {
+
+class Slot;
 class Session;
 class Slot;
 class CryptoObject;
 using CryptoObjectPtr = std::unique_ptr<CryptoObject>;
-
 // Tokens are (unlimited) containers of crypto objects...
 class Token
 {
@@ -29,10 +30,10 @@ public:
         SECURITY_OFFICER, USER, PUBLIC
     };
 
-    Token ( std::string label, std::string userPin, std::string soPin, Slot& slot );
+    Token ( std::string label, std::string userPin, std::string soPin);
     virtual ~Token();
 
-    // Basic operations
+    // Basic operations      
     virtual void getInfo ( CK_TOKEN_INFO_PTR pInfo ) const;
     virtual void setUserPin ( std::string pin );
     virtual bool isInited() const;
@@ -44,7 +45,7 @@ public:
     // Container operations
     virtual CK_OBJECT_HANDLE addObject ( CryptoObject * object );
     virtual CryptoObject & getObject ( CK_OBJECT_HANDLE handle );
-    virtual std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getObjects();
+    virtual std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & getObjects();    
 
 protected:
     SecurityLevel checkUserPin ( CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen ) const;
@@ -57,7 +58,8 @@ private:
     std::string label_;
     SecurityLevel securityLevel_;
     bool loggedIn_;
-    Slot &slot_;
+//     int sessionCount_; // TODO
+//     int rwSessionCount; // TODO
 
     std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> objects_;
 };

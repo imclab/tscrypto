@@ -4,15 +4,20 @@
 
 namespace hsm
 {
+
+class Slot;
+
+class CryptoObject;
 class Token;
 
-class TokenSerializer
+struct TokenSerializer
 {
-public:
     virtual ~TokenSerializer() = default;
     virtual void saveToken ( Token & token ) = 0;
-    virtual Token * getToken ( std::string const & label ) = 0;
+    virtual Token * getToken ( std::string label ) = 0;
+    virtual void saveCryptoObject( Token & token, CryptoObject & object) = 0;
 };
+
 }
 
 #endif // TCBHSM_TOKENSERIALIZER_H

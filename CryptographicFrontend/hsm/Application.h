@@ -14,6 +14,7 @@
 
 #include "pkcs11.h"
 #include "RabbitConnectionManager.h"
+#include "Database.h"
 
 namespace hsm
 {
@@ -37,7 +38,6 @@ public:
     virtual Slot & getSessionSlot ( CK_SESSION_HANDLE handle );
     virtual Session & getSession ( CK_SESSION_HANDLE session ); // throws exception
 
-    virtual Configuration const & getConfiguration() const; // throws exception
     virtual ConnectionManager const & getConnectionManager() const;
     virtual void errorLog ( std::string message ) const;
 
@@ -46,7 +46,9 @@ private:
 
     Configuration configuration_;
     RabbitConnectionManager connectionManager_;
+    Database database_;
 
+    // An application can have a variable number of slots...
     std::vector<SlotPtr> slots_;
 
 };

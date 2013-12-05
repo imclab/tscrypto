@@ -13,7 +13,7 @@
 namespace communication
 {
 
-class ConnectionException : public std::exception {};
+struct ConnectionException : std::exception {};
 
 class Connection
 {
