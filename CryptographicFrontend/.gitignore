@@ -2,4 +2,7 @@
 *.a
 *.so
 *.kdev4
+*.db
 build
+.directory
+CMakeFiles

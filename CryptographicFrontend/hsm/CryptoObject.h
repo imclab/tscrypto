@@ -30,7 +30,8 @@ public:
     CryptoObject ( CK_ATTRIBUTE_PTR pAttributes,
                    CK_ULONG ulCount,
                    CryptoObjectType type );
-    // For deserialization...
+    
+    // For deserialization... Shallow copy of attributes (owns CK_ATTRIBUTE.pValue)
     CryptoObject ( CK_OBJECT_HANDLE handle, std::vector<CK_ATTRIBUTE> attributes );
     ~CryptoObject ();
 

@@ -139,13 +139,13 @@ void Database::saveToken(hsm::Token& token)
 	// insert if not exists	
 	sqlite3_bind_text(insertCryptoObjectStmt, 1, label.c_str(), label.size(), SQLITE_STATIC);
 	sqlite3_bind_int(insertCryptoObjectStmt, 2, handle);	
-	sqlite3_step(insertCryptoObjectStmt); // Verify for errors...
+	sqlite3_step(insertCryptoObjectStmt); // TODO: Verify for errors...
 	sqlite3_reset(insertCryptoObjectStmt);
 	
 	// clean previously stored attributes...
 	sqlite3_bind_text(cleanAttributesStmt, 1, label.c_str(), label.size(), SQLITE_STATIC);
 	sqlite3_bind_int(cleanAttributesStmt, 2, handle);	
-	sqlite3_step(cleanAttributesStmt); // Verify for errors...
+	sqlite3_step(cleanAttributesStmt); // TODO: Verify for errors...
 	sqlite3_reset(cleanAttributesStmt);
 	
 	for (auto const& attributePair : pair.second->getAttributes()) {	    	    
@@ -156,7 +156,7 @@ void Database::saveToken(hsm::Token& token)
 	    sqlite3_bind_int(insertAttributesStmt, 2, handle);	
 	    sqlite3_bind_int(insertAttributesStmt, 3, type);
 	    sqlite3_bind_blob(insertAttributesStmt, 4, attribute.pValue, attribute.ulValueLen, SQLITE_STATIC);
-	    sqlite3_step(insertAttributesStmt); // Verify for errors...	    
+	    sqlite3_step(insertAttributesStmt); // TODO: Verify for errors...	    
 	    sqlite3_reset(insertAttributesStmt);
 	}
     }
