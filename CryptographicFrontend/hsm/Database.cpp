@@ -2,12 +2,13 @@
  * @autor Francisco Cifuentes <francisco@niclabs.cl>
  */
 
+#include <cstring>
+
 #include <Token.h>
 #include "CryptoObject.h"
 #include "Database.h"
 #include "TcbError.h"
 
-#include <cstring>
 
 using namespace hsm;
 
@@ -121,39 +122,48 @@ hsm::Token* Database::getToken(std::string label)
 
 void Database::saveToken(hsm::Token& token)
 {
-    sqlite3_stmt * stmt;    
+    sqlite3_stmt * insertCryptoObjectStmt;
+    sqlite3_stmt * cleanAttributesStmt;
+    sqlite3_stmt * insertAttributesStmt;
+    
+    sqlite3_prepare_v2(db_, INSERT_CO_QUERY, std::string(INSERT_CO_QUERY).size(), &insertCryptoObjectStmt, nullptr);	
+    sqlite3_prepare_v2(db_, CLEAN_ATTRIBUTES_QUERY, std::string(CLEAN_ATTRIBUTES_QUERY).size(), &cleanAttributesStmt, nullptr);	
+    sqlite3_prepare_v2(db_, INSERT_ATTRIBUTE_QUERY, std::string(INSERT_ATTRIBUTE_QUERY).size(), &insertAttributesStmt, nullptr);	
+    
     std::string label (token.getLabel());       
     
+    sqlite3_exec(db_, "BEGIN TRANSACTION", nullptr, nullptr, nullptr);
     for (auto & pair : token.getObjects()) {
 	CK_OBJECT_HANDLE handle = pair.first;
 	
 	// insert if not exists	
-	sqlite3_prepare_v2(db_, INSERT_CO_QUERY, std::string(INSERT_CO_QUERY).size(), &stmt, nullptr);	
-	sqlite3_bind_text(stmt, 1, label.c_str(), label.size(), SQLITE_STATIC);
-	sqlite3_bind_int(stmt, 2, handle);	
-	sqlite3_step(stmt); // Verify for errors...
-	sqlite3_finalize(stmt);
+	sqlite3_bind_text(insertCryptoObjectStmt, 1, label.c_str(), label.size(), SQLITE_STATIC);
+	sqlite3_bind_int(insertCryptoObjectStmt, 2, handle);	
+	sqlite3_step(insertCryptoObjectStmt); // Verify for errors...
+	sqlite3_reset(insertCryptoObjectStmt);
 	
 	// clean previously stored attributes...
-	sqlite3_prepare_v2(db_, CLEAN_ATTRIBUTES_QUERY, std::string(CLEAN_ATTRIBUTES_QUERY).size(), &stmt, nullptr);	
-	sqlite3_bind_text(stmt, 1, label.c_str(), label.size(), SQLITE_STATIC);
-	sqlite3_bind_int(stmt, 2, handle);	
-	sqlite3_step(stmt); // Verify for errors...
-	sqlite3_finalize(stmt);
+	sqlite3_bind_text(cleanAttributesStmt, 1, label.c_str(), label.size(), SQLITE_STATIC);
+	sqlite3_bind_int(cleanAttributesStmt, 2, handle);	
+	sqlite3_step(cleanAttributesStmt); // Verify for errors...
+	sqlite3_reset(cleanAttributesStmt);
 	
 	for (auto const& attributePair : pair.second->getAttributes()) {	    	    
-	    sqlite3_prepare_v2(db_, INSERT_ATTRIBUTE_QUERY, std::string(INSERT_ATTRIBUTE_QUERY).size(), &stmt, nullptr);	
 	    CK_ATTRIBUTE_TYPE type = attributePair.first;
 	    CK_ATTRIBUTE const& attribute = attributePair.second;	
 	    
-	    sqlite3_bind_text(stmt, 1, label.c_str(), label.size(), SQLITE_STATIC);
-	    sqlite3_bind_int(stmt, 2, handle);	
-	    sqlite3_bind_int(stmt, 3, type);
-	    sqlite3_bind_blob(stmt, 4, attribute.pValue, attribute.ulValueLen, SQLITE_STATIC);
-	    sqlite3_step(stmt); // Verify for errors...	    
-	    sqlite3_finalize(stmt);
+	    sqlite3_bind_text(insertAttributesStmt, 1, label.c_str(), label.size(), SQLITE_STATIC);
+	    sqlite3_bind_int(insertAttributesStmt, 2, handle);	
+	    sqlite3_bind_int(insertAttributesStmt, 3, type);
+	    sqlite3_bind_blob(insertAttributesStmt, 4, attribute.pValue, attribute.ulValueLen, SQLITE_STATIC);
+	    sqlite3_step(insertAttributesStmt); // Verify for errors...	    
+	    sqlite3_reset(insertAttributesStmt);
 	}
     }
+    sqlite3_exec(db_, "END TRANSACTION", nullptr, nullptr, nullptr);
+    sqlite3_finalize(insertCryptoObjectStmt);
+    sqlite3_finalize(cleanAttributesStmt);
+    sqlite3_finalize(insertAttributesStmt);
 }
 
 void Database::saveCryptoObject(Token& token, CryptoObject& object)

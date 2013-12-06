@@ -17,13 +17,13 @@ class Database : public hsm::TokenSerializer
 {
     // TODO: GET MAX CRYPTO OBJECT ID
     sqlite3 * db_;    
+    
 public:
     Database(Configuration::DatabaseConf const& conf);
     Database() = default;
     virtual ~Database();
     Database(Database &) = default;
-    Database(Database &&) = default;
-    
+    Database(Database &&) = default;    
     Database & operator=(Database &) = default;
     Database & operator=(Database &&) = default;
     

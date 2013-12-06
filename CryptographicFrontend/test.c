@@ -347,6 +347,7 @@ main ( int argc, char **argv )
         login ( session, user_pin );
     }
     
+    read_private_keys( session );
     create_key_pair ( session );
     
     sign_data ( session, input_file, output_file );
