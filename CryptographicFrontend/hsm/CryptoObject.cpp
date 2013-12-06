@@ -88,8 +88,8 @@ void copyAttribute ( CK_ATTRIBUTE const* src, CK_ATTRIBUTE* dst )
 
     if ( dst->ulValueLen >= src->ulValueLen ) {
         dst->type = src->type;
-        dst->pValue = src->pValue;
         dst->ulValueLen = src->ulValueLen;
+	std::memcpy(dst->pValue, src->pValue, src->ulValueLen);
     } else {
         CK_LONG* ulValueLen = reinterpret_cast<CK_LONG*> ( & ( dst->ulValueLen ) );
         *ulValueLen = -1;
