@@ -7,14 +7,16 @@ import cl.niclabs.cb.jcrypto.SessionManagerImpl;
 
 public class CloseSessionMethodImpl implements CloseSessionMethod {
     private String sessionHandler;
+    private SessionManager sessionManager;
 
-    public CloseSessionMethodImpl(Args args) {
+    public CloseSessionMethodImpl(Args args, SessionManager sessionManager) {
         sessionHandler = args.sessionHandler;
+        this.sessionManager = sessionManager;
     }
 
     @Override
     public ResponseMessage execute() {
-        SessionManager sm = SessionManagerImpl.getInstance();
+        SessionManager sm = sessionManager;
         sm.deleteSession(sessionHandler);
         return ResponseMessage.OKMessage();
     }

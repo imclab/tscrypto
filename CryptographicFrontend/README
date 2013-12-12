@@ -2,7 +2,6 @@ Dependencias:
  - boost
  - rabbitmq-c
 
- 
 Ejemplo de estructura de los mensajes:
  
  - Para ejecutar el RPC:

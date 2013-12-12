@@ -11,16 +11,18 @@ class SignInitMethodImpl implements SignInitMethod {
     private final String sessionHandler;
     private final String mechanism;
     private final String privateKeyHandler;
+    private final SessionManager sessionManager;
 
-    public SignInitMethodImpl(Args args) {
+    public SignInitMethodImpl(Args args, SessionManager sessionManager) {
         sessionHandler = args.sessionHandler;
         mechanism = args.mechanism;
         privateKeyHandler = args.keyHandler;
+        this.sessionManager = sessionManager;
     }
 
     @Override
     public ResponseMessage execute() {
-        SessionManager sm = SessionManagerImpl.getInstance();
+        SessionManager sm = sessionManager;
         Session session = sm.getSession(sessionHandler);
 
         if (session == null) {

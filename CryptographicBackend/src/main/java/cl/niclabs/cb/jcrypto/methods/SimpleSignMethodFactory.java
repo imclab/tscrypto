@@ -2,6 +2,7 @@ package cl.niclabs.cb.jcrypto.methods;
 
 import cl.niclabs.cb.backend.Method;
 import cl.niclabs.cb.backend.methods.*;
+import cl.niclabs.cb.jcrypto.SessionManagerImpl;
 
 public class SimpleSignMethodFactory implements MethodFactory {
 
@@ -59,21 +60,21 @@ public class SimpleSignMethodFactory implements MethodFactory {
 
     @Override
     public Method makeSeedRandomMethod(SeedRandomMethod.Args args) {
-        return new SeedRandomMethodImpl(args);
+        return new SeedRandomMethodImpl(args, SessionManagerImpl.getInstance());
     }
 
     @Override
     public Method makeGenerateRandomMethod(GenerateRandomMethod.Args args) {
-        return new GenerateRandomMethodImpl(args);
+        return new GenerateRandomMethodImpl(args, SessionManagerImpl.getInstance());
     }
 
     @Override
     public Method makeDigestInitMethod(DigestInitMethod.Args args) {
-        return new DigestInitMethodImpl(args);
+        return new DigestInitMethodImpl(args, SessionManagerImpl.getInstance());
     }
 
     @Override
     public Method makeDigestMethod(DigestMethod.Args args) {
-        return new DigestMethodImpl(args);
+        return new DigestMethodImpl(args, SessionManagerImpl.getInstance());
     }
 }

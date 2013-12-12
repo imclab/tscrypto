@@ -1,64 +1,57 @@
 package cl.niclabs.cb.tscrypto.methods;
 
+import cl.inria.tscrypto.keyFactory.KeyDispatchRequestManager;
 import cl.inria.tscrypto.keyFactory.KeyDispatcher;
 import cl.inria.tscrypto.keyFactory.KeyManagementCollector;
-import cl.inria.tscrypto.node.KeyManager;
+import cl.inria.tscrypto.sigDealer.KeyManager;
 import cl.inria.tscrypto.sigDealer.Dispatcher;
 import cl.inria.tscrypto.sigDealer.RequestManager;
 import cl.inria.tscrypto.sigDealer.ResultsCollector;
 import cl.inria.tscrypto.sigDealer.SDConfig;
 import cl.niclabs.cb.backend.Method;
+import cl.niclabs.cb.backend.SessionManager;
 import cl.niclabs.cb.backend.methods.*;
+import cl.niclabs.cb.jcrypto.SessionManagerImpl;
 import cl.niclabs.cb.jcrypto.methods.DigestInitMethodImpl;
 import cl.niclabs.cb.jcrypto.methods.DigestMethodImpl;
 import cl.niclabs.cb.jcrypto.methods.GenerateRandomMethodImpl;
 import cl.niclabs.cb.jcrypto.methods.SeedRandomMethodImpl;
 import com.rabbitmq.client.Connection;
 
+import java.io.Closeable;
 import java.io.IOException;
 
-@SuppressWarnings("UnusedDeclaration")
 public class TsCryptoMethodFactory implements MethodFactory {
-    /*
-        Esta versión ocupa algunas clases de jcrypto...
-     */
+    // Esta versión ocupa algunas clases de jcrypto...
+    private KeyManager keyManager;
+    private int k;
+    private int l;
 
-    private final KeyManager keyManager;
+    private KeyDispatchRequestManager keyRequestManager;
+    private RequestManager requestManager;
+    private SessionManager sessionManager;
 
-    private final RequestManager requestManager;
-
-    private ResultsCollector resultsCollector;
-    private Dispatcher dispatcher;
-
-    private KeyManagementCollector keyManagementCollector;
-    private KeyDispatcher keyDispatcher;
-
-    public TsCryptoMethodFactory(Connection connection, SDConfig config) throws IOException {
-
+    public TsCryptoMethodFactory(SDConfig config, RequestManager requestManager, KeyDispatchRequestManager keyRequestManager) throws IOException {
         keyManager = new KeyManager();
-        requestManager = RequestManager.getInstance();
-        resultsCollector = new ResultsCollector(config, connection, requestManager);
-        dispatcher = new Dispatcher(config.getRabbitMQConfig(), connection);
-        keyManagementCollector = new KeyManagementCollector(config, connection);
-        keyDispatcher = new KeyDispatcher(connection, config.getRabbitMQConfig());
+        sessionManager = new SessionManagerImpl();
 
-        requestManager.init(
-                dispatcher,
-                config.getRabbitMQConfig().getClientQueue(),
-                config.getRabbitMQConfig().getSignRequestAlias()
-        );
+        this.keyRequestManager = keyRequestManager;
+        this.requestManager = requestManager;
+
+        k = config.getK();
+        l = config.getL();
     }
 
     @Override
     public Method makeOpenSessionMethod() {
         // Uses SessionManager from jcrypto
-        return new OpenSessionMethodImpl(keyManager, requestManager);
+        return new OpenSessionMethodImpl(keyManager, requestManager, sessionManager);
     }
 
     @Override
     public Method makeCloseSessionMethod(CloseSessionMethod.Args args) {
         // Uses SessionManager from jcrypto
-        return new CloseSessionMethodImpl(args);
+        return new CloseSessionMethodImpl(args, sessionManager);
     }
 
     @Override
@@ -73,44 +66,37 @@ public class TsCryptoMethodFactory implements MethodFactory {
 
     @Override
     public Method makeGenerateKeyPairMethod(GenerateKeyPairMethod.Args args) {
-        return new GenerateKeyPairMethodImpl(args, keyManager, keyDispatcher);
+        return new GenerateKeyPairMethodImpl(args, keyManager, keyRequestManager, k, l);
     }
 
     @Override
     public Method makeSignInitMethod(SignInitMethod.Args args) {
-        return new SignInitMethodImpl(args);
+        return new SignInitMethodImpl(args, sessionManager);
     }
 
     @Override
     public Method makeSignMethod(SignMethod.Args args) {
-        return new SignMethodImpl(args);
-    }
-
-    public ResultsCollector getResultsCollector() {
-        return resultsCollector;
-    }
-
-    public KeyManagementCollector getKeyManagementCollector() {
-        return keyManagementCollector;
+        return new SignMethodImpl(args, sessionManager);
     }
 
     @Override
     public Method makeSeedRandomMethod(SeedRandomMethod.Args args) {
-        return new SeedRandomMethodImpl(args);
+        return new SeedRandomMethodImpl(args, sessionManager);
     }
 
     @Override
     public Method makeGenerateRandomMethod(GenerateRandomMethod.Args args) {
-        return new GenerateRandomMethodImpl(args);
+        return new GenerateRandomMethodImpl(args, sessionManager);
     }
 
     @Override
     public Method makeDigestInitMethod(DigestInitMethod.Args args) {
-        return new DigestInitMethodImpl(args);
+        return new DigestInitMethodImpl(args, sessionManager);
     }
 
     @Override
     public Method makeDigestMethod(DigestMethod.Args args) {
-        return new DigestMethodImpl(args);
+        return new DigestMethodImpl(args, sessionManager);
     }
+
 }

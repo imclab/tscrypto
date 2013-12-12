@@ -2,7 +2,7 @@ package cl.niclabs.cb.tscrypto;
 
 import cl.inria.tscrypto.common.algorithms.SignatureRequest;
 import cl.inria.tscrypto.common.datatypes.Ticket;
-import cl.inria.tscrypto.node.KeyManager;
+import cl.inria.tscrypto.sigDealer.KeyManager;
 import cl.inria.tscrypto.sigDealer.RequestManager;
 import cl.niclabs.cb.backend.Signer;
 
@@ -57,19 +57,9 @@ public class SignerImpl implements Signer {
         Ticket ticket = requestManager.sign(hashAlgorithm, data, privateKeyHandler);
 
         SignatureRequest request = requestManager.getSignatureRequest(ticket);
-
+        request.waitUntilReady();
         BigInteger signature = request.getSignature();
 
-        while (signature == null) {
-            //noinspection SynchronizationOnLocalVariableOrMethodParameter
-            synchronized (request) { // Double-checked locking... // TODO: Review if it's necessary
-                while (signature == null) {
-                    System.out.println("Waiting for signature ticket " + ticket.getId());
-                    request.wait(5000);
-                    signature = request.getSignature();
-                }
-            }
-        }
         requestManager.removeKey(privateKeyHandler);
         algorithm = "";
         privateKeyHandler = "";

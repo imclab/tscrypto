@@ -1,7 +1,7 @@
 
 package cl.niclabs.cb.tscrypto;
 
-import cl.inria.tscrypto.node.KeyManager;
+import cl.inria.tscrypto.sigDealer.KeyManager;
 import cl.inria.tscrypto.sigDealer.RequestManager;
 import cl.niclabs.cb.backend.Digester;
 import cl.niclabs.cb.backend.RandomGenerator;

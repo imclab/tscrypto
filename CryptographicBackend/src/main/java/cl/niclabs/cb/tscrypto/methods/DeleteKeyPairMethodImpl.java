@@ -1,6 +1,6 @@
 package cl.niclabs.cb.tscrypto.methods;
 
-import cl.inria.tscrypto.node.KeyManager;
+import cl.inria.tscrypto.sigDealer.KeyManager;
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.DeleteKeyPairMethod;
 

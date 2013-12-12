@@ -1,6 +1,7 @@
 package cl.niclabs.cb.backend.methods;
 
 import cl.inria.tscrypto.common.utils.TSConnection;
+import cl.inria.tscrypto.keyFactory.KeyDispatcher;
 import cl.inria.tscrypto.sigDealer.SDConfig;
 import cl.niclabs.cb.backend.Method;
 import cl.niclabs.cb.backend.ResponseMessage;
@@ -22,12 +23,15 @@ public class TsCryptoSigner {
 
     @Test
     public void testAlgorithms() throws Exception {
+        /*
         MethodFactory methodFactory;
         Gson gson;
 
         SDConfig config = new SDConfig();
         Connection connection = TSConnection.getConnection(config.getRabbitMQConfig());
-        methodFactory = new TsCryptoMethodFactory(connection, config);
+        KeyDispatcher keyDispatcher = new KeyDispatcher(connection, config.getRabbitMQConfig());
+
+        methodFactory = new TsCryptoMethodFactory(connection, config, requestManager, keyDispatcher);
         gson = new Gson();
 
         Method method = methodFactory.makeGenerateKeyPairMethod(new GenerateKeyPairMethod.Args("RSA", 1024, "65537"));
@@ -59,13 +63,16 @@ public class TsCryptoSigner {
         System.out.println(gson.toJson(rm));
 
         Assert.assertEquals(rm.getReturnCode(), "OK");
+        */
     }
 
     @Ignore
     @Test
     public void methodDispatcherTest() throws IOException {
+        /*
         SDConfig config = new SDConfig();
         Connection connection = TSConnection.getConnection(config.getRabbitMQConfig());
+        KeyDispatcher keyDispatcher = new KeyDispatcher(connection, config.getRabbitMQConfig());
 
         String s = "{ \"method\":\"GenerateKeyPair\", "
                 + " \"args\": { "
@@ -77,7 +84,8 @@ public class TsCryptoSigner {
                 + " } "
                 + "}";
 
-        String ret = MethodDispatcher.dispatch(s, new TsCryptoMethodFactory(connection, config));
+        String ret = MethodDispatcher.dispatch(s, new TsCryptoMethodFactory(connection, config, requestManager, keyDispatcher));
         System.out.println(ret);
+        */
     }
 }

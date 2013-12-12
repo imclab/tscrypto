@@ -9,7 +9,7 @@ import java.util.Map;
 // Singleton
 public class SessionManagerImpl implements SessionManager {
     private static SessionManager instance = null;
-    public static SessionManager getInstance() {
+    public static SessionManager getInstance() { // For use on jcrypto
         if (instance == null) {
             synchronized (SessionManagerImpl.class) {
                 if (instance == null) {

@@ -12,14 +12,18 @@ import javax.xml.bind.DatatypeConverter;
 class SignMethodImpl implements SignMethod {
     private final String sessionHandler;
     private final byte[] data;
-    public SignMethodImpl(Args args) {
+    private final SessionManager sessionManager;
+
+    public SignMethodImpl(Args args, SessionManager sessionManager) {
         sessionHandler = args.sessionHandler;
         data = DatatypeConverter.parseBase64Binary(args.data);
+
+        this.sessionManager = sessionManager;
     }
 
     @Override
     public ResponseMessage execute() {
-        SessionManager sm = SessionManagerImpl.getInstance();
+        SessionManager sm = sessionManager;
         Session session = sm.getSession(sessionHandler);
 
         if (session == null) {
