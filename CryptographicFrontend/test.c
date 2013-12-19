@@ -348,7 +348,7 @@ main ( int argc, char **argv )
     }
     
     read_private_keys( session );
-    create_key_pair ( session );
+    // create_key_pair ( session );
     
     sign_data ( session, input_file, output_file );
     if ( user_pin ) {

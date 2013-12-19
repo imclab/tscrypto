@@ -35,6 +35,11 @@ public class SignatureDealerImpl implements SignatureDealer {
 		this.keyMetaInfo = key.getKeyMetaInfo();
 		this.publicKey = key.getPublicKey();
 	}
+
+    public SignatureDealerImpl(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey) {
+        this.keyMetaInfo = keyMetaInfo;
+        this.publicKey = publicKey;
+    }
 	
 	/* (non-Javadoc)
 	 * @see SignatureDealer#prepareSignature(byte[], java.lang.String)

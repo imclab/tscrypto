@@ -17,7 +17,7 @@ import java.util.concurrent.Executors;
 public class MethodCollector extends DefaultConsumer {
 
     private ExecutorService executor;
-    private MethodFactory methodFactory;
+    private TsCryptoMethodFactory methodFactory;
 
     public MethodCollector(SDConfig config, Connection connection, RequestManager requestManager, KeyDispatchRequestManager keyRequestManager) throws IOException {
         super(connection.createChannel());
@@ -41,6 +41,7 @@ public class MethodCollector extends DefaultConsumer {
         try {
             getChannel().close();
             getChannel().getConnection().close();
+            methodFactory.close();
             executor.shutdown();
         }  catch (IOException e) {
             e.printStackTrace();

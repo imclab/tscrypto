@@ -23,10 +23,6 @@ public class Collector extends DefaultConsumer {
     private Signer signer;
     private Dispatcher dispatcher;
 
-	public Collector(NodeConfig config, Connection connection, Dispatcher dispatcher) throws IOException {
-        this(config, connection, dispatcher,new KeyShareManager());
-	}
-
     public Collector(NodeConfig config, Connection connection, Dispatcher dispatcher, KeyShareManager keyShareManager) throws IOException {
         super(connection.createChannel());
 

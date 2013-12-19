@@ -8,6 +8,8 @@ import cl.inria.tscrypto.common.algorithms.SignatureDealer;
 import cl.inria.tscrypto.common.algorithms.SignatureDealerImpl;
 import cl.inria.tscrypto.common.algorithms.SignatureRequest;
 import cl.inria.tscrypto.common.datatypes.KeyInfo;
+import cl.inria.tscrypto.common.datatypes.KeyMetaInfo;
+import cl.inria.tscrypto.common.datatypes.TSPublicKey;
 import cl.inria.tscrypto.common.datatypes.Ticket;
 import cl.inria.tscrypto.common.exceptions.InvalidKey;
 import cl.inria.tscrypto.common.messages.SignShareQuery;
@@ -27,7 +29,6 @@ public class RequestManager {
 	private String replyTo;
 
 	// key=alias
-	private Map<String, KeyInfo> keys = new Hashtable<>();
     private String signRequestAlias;
 
     public RequestManager(Dispatcher dispatcher, String replyTo, String signRequestAlias) {
@@ -36,21 +37,11 @@ public class RequestManager {
         this.signRequestAlias = signRequestAlias;
     }
 
-	public void addKey(KeyInfo keyInfo) {
-        synchronized (keys) {
-		    this.keys.put(keyInfo.getKeyMetaInfo().getAlias(), keyInfo);
-        }
-	}
-
-    private void submitRequest(String hashAlgorithm, byte[] blob, String alias, Ticket ticket)
+    private void submitRequest(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey, String hashAlgorithm, byte[] blob, String alias, Ticket ticket)
             throws IOException, InvalidKey, NoSuchAlgorithmException {
-        KeyInfo key = keys.get(alias);
+        //SignatureDealerImpl signatureDealer = new SignatureDealerImpl(key);
+        SignatureDealerImpl signatureDealer = new SignatureDealerImpl(keyMetaInfo, publicKey);
 
-        if (key == null) {
-            throw new InvalidKey(alias);
-        }
-
-        SignatureDealerImpl signatureDealer = new SignatureDealerImpl(key);
         SignatureRequest request = signatureDealer.prepareSignature(blob, hashAlgorithm);
 
         synchronized (signingRequests){
@@ -101,12 +92,12 @@ public class RequestManager {
 	 * @throws InvalidKey
 	 *             could not public key 'alias'
 	 */
-	public Ticket sign(byte[] dataToBeSigned, String alias) throws IOException,
+	public Ticket sign(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey, byte[] dataToBeSigned, String alias) throws IOException,
             InvalidKey {
 
 		Ticket ticket = Ticket.getNextTicket();
         try {
-		    submitRequest("Sha1", dataToBeSigned, alias, ticket);
+		    submitRequest(keyMetaInfo, publicKey, "Sha1", dataToBeSigned, alias, ticket);
         } catch (NoSuchAlgorithmException e) {
 
         }
@@ -124,17 +115,11 @@ public class RequestManager {
      * @throws InvalidKey
      * @throws NoSuchAlgorithmException when it can't use the requested hashAlgorithm
      */
-    public Ticket sign(String hashAlgorithm, byte[] dataToBeSigned, String alias) throws IOException,
+    public Ticket sign(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey, String hashAlgorithm, byte[] dataToBeSigned, String alias) throws IOException,
             InvalidKey, NoSuchAlgorithmException {
 
         Ticket ticket = Ticket.getNextTicket();
-        submitRequest(hashAlgorithm, dataToBeSigned, alias, ticket);
+        submitRequest(keyMetaInfo, publicKey, hashAlgorithm, dataToBeSigned, alias, ticket);
         return ticket;
-    }
-
-    public synchronized void removeKey(String privateKeyHandler) {
-        synchronized (keys) {
-            keys.remove(privateKeyHandler);
-        }
     }
 }

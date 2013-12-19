@@ -1,37 +1,17 @@
 package cl.inria.tscrypto.sigDealer;
 
 import cl.inria.tscrypto.common.datatypes.KeyInfo;
+import cl.inria.tscrypto.common.datatypes.KeyMetaInfo;
 import cl.inria.tscrypto.common.datatypes.TSPublicKey;
 
-import java.math.BigInteger;
-import java.util.Hashtable;
+public interface KeyManager {
+    void addKey(KeyInfo key);
 
-public class KeyManager {
-    private Hashtable<String, KeyInfo> keys = new Hashtable<>();
+    void removeKey(String label);
 
-    public void addKey(String label, KeyInfo key) {
-        keys.put(label, key);
-    }
+    boolean containsKey(String label);
 
-    public void addKey(KeyInfo key) {
-        addKey(key.getKeyMetaInfo().getAlias(), key);
-    }
+    TSPublicKey getPublicKey(String label);
 
-    public void removeKey(String label) {
-        if (keys.contains(label)) {
-            keys.remove(label);
-        }
-    }
-
-    public TSPublicKey getPublicKey(String label) {
-        return keys.get(label).getPublicKey();
-    }
-
-    public BigInteger getKeyShare(String label, int id) {
-        return keys.get(label).getKeyShares().getSecret(id);
-    }
-
-    public KeyInfo getKeyInfo(String label) {
-        return keys.get(label);
-    }
+    KeyMetaInfo getKeyMetaInfo(String label);
 }

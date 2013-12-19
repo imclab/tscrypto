@@ -11,8 +11,7 @@ public class KeyInfo extends JsonFormat {
 	/**
 	 * Empty no-args constructor needed by Gson
 	 */
-	public KeyInfo() {
-	}
+	public KeyInfo() {}
 
 	public KeyInfo(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey) {
 		this.keyMetaInfo = keyMetaInfo;

@@ -1,6 +1,8 @@
 package cl.niclabs.cb.tscrypto;
 
 import cl.inria.tscrypto.common.algorithms.SignatureRequest;
+import cl.inria.tscrypto.common.datatypes.KeyMetaInfo;
+import cl.inria.tscrypto.common.datatypes.TSPublicKey;
 import cl.inria.tscrypto.common.datatypes.Ticket;
 import cl.inria.tscrypto.sigDealer.KeyManager;
 import cl.inria.tscrypto.sigDealer.RequestManager;
@@ -19,6 +21,7 @@ public class SignerImpl implements Signer {
     private String algorithm;
     private String privateKeyHandler;
     private final RequestManager requestManager;
+    private boolean initialized;
 
     private final static Map<String, String> algorithms = new Hashtable<String, String>() {{
         put("Sha1WithRSA", "Sha1");
@@ -28,13 +31,14 @@ public class SignerImpl implements Signer {
     public SignerImpl(KeyManager keyManager, RequestManager requestManager) {
         this.keyManager = keyManager;
         this.requestManager = requestManager;
+        initialized = false;
     }
 
-	public void init (String algorithm, String privateKeyHandler)
+	public void init (String algorithm, String keyHandler)
             throws NoSuchAlgorithmException, InvalidKeyException, NoSuchPaddingException
     {
-        if (keyManager.getKeyInfo(privateKeyHandler) == null) {
-            throw new InvalidKeyException("Not exists any key with handler: " + privateKeyHandler);
+        if (keyManager.containsKey(keyHandler)) {
+            throw new InvalidKeyException("Not exists any key with handler: " + keyHandler);
         }
 
         this.algorithm = algorithm;
@@ -43,24 +47,27 @@ public class SignerImpl implements Signer {
             throw new NoSuchAlgorithmException("No such algorithm: " + algorithm);
         }
 
-        this.privateKeyHandler = privateKeyHandler;
+        this.privateKeyHandler = keyHandler;
+
+        initialized = true;
 	}
 	
 	public byte[] sign (byte[] data) throws Exception {
-        if(!algorithms.containsKey(algorithm)) {
+        if(!initialized) {
             throw new Exception("SignerImpl no iniciado.");
         }
 
         String hashAlgorithm = algorithms.get(algorithm);
 
-        requestManager.addKey(keyManager.getKeyInfo(privateKeyHandler));
-        Ticket ticket = requestManager.sign(hashAlgorithm, data, privateKeyHandler);
+        KeyMetaInfo keyMetaInfo = keyManager.getKeyMetaInfo(privateKeyHandler);
+        TSPublicKey publicKey = keyManager.getPublicKey(privateKeyHandler);
+
+        Ticket ticket = requestManager.sign(keyMetaInfo, publicKey, hashAlgorithm, data, privateKeyHandler);
 
         SignatureRequest request = requestManager.getSignatureRequest(ticket);
         request.waitUntilReady();
         BigInteger signature = request.getSignature();
 
-        requestManager.removeKey(privateKeyHandler);
         algorithm = "";
         privateKeyHandler = "";
 

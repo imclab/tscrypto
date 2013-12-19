@@ -1,8 +1,8 @@
 package cl.inria.tscrypto.node;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
-import cl.inria.tscrypto.common.encryption.KeyChain;
 import cl.inria.tscrypto.common.utils.TSConnection;
 import cl.inria.tscrypto.common.utils.TSLogger;
 
@@ -17,7 +17,7 @@ public class NodeController extends Thread {
     private KeyShareManager keyManager;
     private KeyCollector keyCollector;
 
-	public NodeController(NodeConfig config) throws IOException {
+	public NodeController(NodeConfig config) throws IOException, SQLException, ClassNotFoundException {
         this.config = config;
 
         // KeyChain.consoleSetup(config.getKeyStore());
@@ -27,7 +27,7 @@ public class NodeController extends Thread {
         TSLogger.node.debug(String.format("Connected to RabbitMQ Server: %s", config.getRabbitMQConfig()));
 
         dispatcher = new Dispatcher(connection);
-        keyManager = new KeyShareManager();
+        keyManager = new H2KeyShareManager(this.config);
         collector = new Collector(this.config, connection, dispatcher, keyManager);
         keyCollector = new KeyCollector(config, connection, dispatcher, keyManager);
 
@@ -70,7 +70,7 @@ public class NodeController extends Thread {
      * @throws IOException
      * @throws Exception
      */
-    public static void main(String[] args) throws IOException, InterruptedException {
+    public static void main(String[] args) throws IOException, InterruptedException, SQLException, ClassNotFoundException {
 		NodeController controller = new NodeController(new NodeConfig());
 		controller.start();
 		controller.join();

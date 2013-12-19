@@ -34,7 +34,9 @@ class GenerateKeyPairMethodImpl implements GenerateKeyPairMethod {
     @Override
     public ResponseMessage execute() {
         try {
+            TSLogger.keyFactory.debug("KeyPair Generation with k="+k+" and l="+l);
             KeyInfo keyInfo = KeyFactory.generateKeys(this.keySize, k, l);
+            TSLogger.keyFactory.debug("KeyPair Generation successful");
             String handler = keyInfo.getKeyMetaInfo().getAlias();
             Ticket ticket = keyRequestDispatcher.dispatch(keyInfo);
             KeyDispatchRequest request = keyRequestDispatcher.getKeyDispatchRequest(ticket);
@@ -42,8 +44,8 @@ class GenerateKeyPairMethodImpl implements GenerateKeyPairMethod {
             request.waitUntilReady();
 
             keyRequestDispatcher.removeRequest(ticket);
-
             keyManager.addKey(keyInfo);
+
             return ResponseMessage.OKMessage(new ReturnValue(handler));
         } catch (IOException e) {
             return ResponseMessage.ErrorMessage(e.getMessage());
