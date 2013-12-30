@@ -23,8 +23,10 @@ public class ResultsCollector extends DefaultConsumer {
 	private ExecutorService executor;
 	private RequestManager manager;
 
-	public ResultsCollector(SDConfig config, Connection connection, RequestManager requestManager) throws IOException {
+	public ResultsCollector(Connection connection, RequestManager requestManager) throws IOException {
         super(connection.createChannel());
+
+        SDConfig config = SDConfig.getInstance();
 
         RabbitMQConfig rconfig = config.getRabbitMQConfig();
 
@@ -36,7 +38,7 @@ public class ResultsCollector extends DefaultConsumer {
 
         boolean autoAck = true;
         getChannel().basicConsume(
-                config.getRabbitMQConfig().getClientQueue(),
+                rconfig.getClientQueue(),
                 autoAck,
                 this
         );

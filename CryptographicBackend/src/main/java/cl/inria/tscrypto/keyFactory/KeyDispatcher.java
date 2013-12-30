@@ -4,9 +4,13 @@ import cl.inria.tscrypto.common.config.RabbitMQConfig;
 import cl.inria.tscrypto.common.datatypes.KeyInfo;
 import cl.inria.tscrypto.common.datatypes.KeyShareInfo;
 import cl.inria.tscrypto.common.datatypes.Ticket;
+import cl.inria.tscrypto.common.messages.DeleteKeyQuery;
+import cl.inria.tscrypto.common.messages.MessageAsync;
 import cl.inria.tscrypto.common.messages.SendKeyQuery;
+import cl.inria.tscrypto.common.messages.TSMessage;
 import cl.inria.tscrypto.common.utils.TSLogger;
 import cl.inria.tscrypto.common.utils.Util;
+import cl.inria.tscrypto.sigDealer.SDConfig;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 
@@ -16,6 +20,7 @@ import java.math.BigInteger;
 
 public class KeyDispatcher implements Closeable {
 
+    // Dispatch to each node the information that they want to have...
     private final Channel channel;
     private final RabbitMQConfig config;
 
@@ -24,12 +29,22 @@ public class KeyDispatcher implements Closeable {
         this.config = config;
     }
 
-    public void dispatch(KeyInfo keyInfo, Ticket ticket) throws IOException {
-        String alias = keyInfo.getKeyMetaInfo().getAlias();
-
-        for(int i=0; i<keyInfo.getKeyMetaInfo().getL(); i++) {
+    public void dispatch(TSMessage[] messages) throws IOException {
+        for(int i=0; i<messages.length; i++) {
             String queue = Util.keyQueueName(config, i);
+            String message = messages[i].toJson();
 
+            TSLogger.keyFactory.debug("Sending message: " + message);
+            channel.queueDeclare(queue, false, false, false, null);
+            channel.basicPublish("", queue, null, message.getBytes());
+        }
+    }
+
+
+    public void dispatch(KeyInfo keyInfo, Ticket ticket) throws IOException {
+        String label = keyInfo.getKeyMetaInfo().getAlias();
+        TSMessage[] messages = new TSMessage[keyInfo.getKeyMetaInfo().getL()];
+        for(int i=0; i<messages.length; i++) {
             KeyShareInfo keyShareInfo = new KeyShareInfo(
                     keyInfo.getKeyMetaInfo(),
                     keyInfo.getPublicKey(),
@@ -38,17 +53,24 @@ public class KeyDispatcher implements Closeable {
 
             SendKeyQuery query = new SendKeyQuery(
                     ticket,
-                    alias,
+                    label,
                     keyShareInfo,
                     config.getKeyManagementQueue()
             );
 
-            String message = query.toJson();
+            messages[i] = query;
+        }
 
-            TSLogger.keyFactory.debug("Sending keyShareInfo: " + message);
+        dispatch(messages);
+    }
 
-            channel.queueDeclare(queue, false, false, false, null);
-            channel.basicPublish("", queue, null, message.getBytes());
+    public void dispatchDeleteKey(String label, Ticket ticket) throws IOException {
+        int l = SDConfig.getInstance().getL();
+
+        DeleteKeyQuery query = new DeleteKeyQuery(label, ticket, config.getKeyManagementQueue());
+        TSMessage[] messages = new TSMessage[l];
+        for (int i=0; i<l; i++) {
+            messages[i] = query;
         }
     }
 

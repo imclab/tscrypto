@@ -27,15 +27,6 @@ public class SignatureDealerImpl implements SignatureDealer {
 
 	private SignatureRequest request;
 
-	/**
-	 * Constructor
-	 * @param key key to be used
-	 */
-	public SignatureDealerImpl(KeyInfo key) {
-		this.keyMetaInfo = key.getKeyMetaInfo();
-		this.publicKey = key.getPublicKey();
-	}
-
     public SignatureDealerImpl(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey) {
         this.keyMetaInfo = keyMetaInfo;
         this.publicKey = publicKey;

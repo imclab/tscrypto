@@ -3,6 +3,7 @@ package cl.inria.tscrypto.node;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import cl.inria.tscrypto.common.config.RabbitMQConfig;
 import cl.inria.tscrypto.common.utils.TSConnection;
 import cl.inria.tscrypto.common.utils.TSLogger;
 
@@ -10,26 +11,24 @@ import com.rabbitmq.client.Connection;
 
 public class NodeController extends Thread {
 
-	private NodeConfig config;
 	private boolean running;
 	private Dispatcher dispatcher;
 	private Collector collector;
     private KeyShareManager keyManager;
     private KeyCollector keyCollector;
 
-	public NodeController(NodeConfig config) throws IOException, SQLException, ClassNotFoundException {
-        this.config = config;
+	public NodeController() throws IOException, SQLException, ClassNotFoundException {
+        RabbitMQConfig rconfig = NodeConfig.getInstance().getRabbitMQConfig();
 
         // KeyChain.consoleSetup(config.getKeyStore());
 
-        Connection connection = TSConnection.getConnection(config.getRabbitMQConfig());
-
-        TSLogger.node.debug(String.format("Connected to RabbitMQ Server: %s", config.getRabbitMQConfig()));
+        Connection connection = TSConnection.getConnection(rconfig);
+        TSLogger.node.debug(String.format("Connected to RabbitMQ Server: %s", rconfig));
 
         dispatcher = new Dispatcher(connection);
-        keyManager = new H2KeyShareManager(this.config);
-        collector = new Collector(this.config, connection, dispatcher, keyManager);
-        keyCollector = new KeyCollector(config, connection, dispatcher, keyManager);
+        keyManager = new H2KeyShareManager();
+        collector = new Collector(connection, dispatcher, keyManager);
+        keyCollector = new KeyCollector(connection, dispatcher, keyManager);
 
         running = true;
 
@@ -71,7 +70,7 @@ public class NodeController extends Thread {
      * @throws Exception
      */
     public static void main(String[] args) throws IOException, InterruptedException, SQLException, ClassNotFoundException {
-		NodeController controller = new NodeController(new NodeConfig());
+		NodeController controller = new NodeController();
 		controller.start();
 		controller.join();
 	}

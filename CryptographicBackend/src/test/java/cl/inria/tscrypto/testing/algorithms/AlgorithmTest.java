@@ -70,7 +70,7 @@ public class AlgorithmTest {
 
 
         for (int[] set:subsets) {
-            SignatureDealer sd = new SignatureDealerImpl(keyInfo);
+            SignatureDealer sd = new SignatureDealerImpl(keyInfo.getKeyMetaInfo(), keyInfo.getPublicKey());
 
             SignatureRequest sr = sd.prepareSignature(data, "Sha1");
 

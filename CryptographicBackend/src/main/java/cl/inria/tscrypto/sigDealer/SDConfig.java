@@ -11,13 +11,34 @@ import cl.inria.tscrypto.common.utils.TSLogger;
 import cl.inria.tscrypto.common.utils.Util;
 
 public class SDConfig {
+
+    // Configuration now is a singleton.
+    private static SDConfig instance = null;
+
+    public static SDConfig getInstance() {
+        if (instance == null) {
+            synchronized (SDConfig.class) {
+                if (instance == null) {
+                    try {
+                        instance = new SDConfig();
+                    } catch (IOException e) {
+                        throw new RuntimeException("Cannot open SD configuration", e);
+                    }
+                }
+            }
+        }
+
+        return instance;
+    }
+
+
     public static final String DEFAULT_CONFIG_PROPERTY = "cl.inria.tscrypto.sd.config";
 
 	Properties conf;
 	
 	private RabbitMQConfig rconfig;
 
-	public SDConfig() throws IOException {
+	private SDConfig() throws IOException {
         TSLogger.sd.info("Running with config: " + System.getProperty(DEFAULT_CONFIG_PROPERTY));
 
         this.conf = Util.loadTrimedProperties(System.getProperty(DEFAULT_CONFIG_PROPERTY));

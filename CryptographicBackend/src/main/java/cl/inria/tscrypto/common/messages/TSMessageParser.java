@@ -31,12 +31,15 @@ public class TSMessageParser implements JsonDeserializer<TSMessage> {
 
     private TSMessage parseQuery(String type, String version, JsonElement json, JsonDeserializationContext context) {
 
-        if (type.equals("ping-query")) {
-            return context.deserialize(json, PingQuery.class);
-        } else if (type.equals("signShare-query")) {
-            return context.deserialize(json, SignShareQuery.class);
-        } else if (type.equals("sendKey-query")) {
-            return context.deserialize(json, SendKeyQuery.class);
+        switch (type) {
+            case "ping-query":
+                return context.deserialize(json, PingQuery.class);
+            case "signShare-query":
+                return context.deserialize(json, SignShareQuery.class);
+            case "sendKey-query":
+                return context.deserialize(json, SendKeyQuery.class);
+            case "deleteKey-query":
+                return context.deserialize(json, DeleteKeyQuery.class);
         }
         
         throw new JsonParseException("Illegal TSMessage Query type/version:" + type + "/" + version);
@@ -52,6 +55,8 @@ public class TSMessageParser implements JsonDeserializer<TSMessage> {
                 return context.deserialize(json, SignShareAnswer.class);
             case "sendKey-answer":
                 return context.deserialize(json, SendKeyAnswer.class);
+            case "deleteKey-answer":
+                return context.deserialize(json, DeleteKeyAnswer.class);
         }
         
         throw new JsonParseException("Illegal TSMessage Answer type/version:" + type + "/" + version);

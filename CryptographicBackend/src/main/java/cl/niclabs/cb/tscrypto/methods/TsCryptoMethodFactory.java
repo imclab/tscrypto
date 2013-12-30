@@ -25,7 +25,7 @@ public class TsCryptoMethodFactory implements MethodFactory, Closeable {
     private RequestManager requestManager;
     private SessionManager sessionManager;
 
-    public TsCryptoMethodFactory(SDConfig config, RequestManager requestManager, KeyDispatchRequestManager keyRequestManager) throws IOException {
+    public TsCryptoMethodFactory(RequestManager requestManager, KeyDispatchRequestManager keyRequestManager) throws IOException {
         //keyManager = new HashTableKeyManager();
         try {
             keyManager = new H2KeyManager();
@@ -38,8 +38,8 @@ public class TsCryptoMethodFactory implements MethodFactory, Closeable {
         this.keyRequestManager = keyRequestManager;
         this.requestManager = requestManager;
 
-        k = config.getK();
-        l = config.getL();
+        k = SDConfig.getInstance().getK();
+        l = SDConfig.getInstance().getL();
     }
 
     @Override

@@ -22,7 +22,8 @@ public class Backend extends Thread {
     private ResultsCollector resultsCollector;
     private KeyManagementCollector keyManagementCollector;
 
-    public Backend(SDConfig config) throws IOException {
+    public Backend() throws IOException {
+        SDConfig config = SDConfig.getInstance();
         Connection connection = TSConnection.getConnection(config.getRabbitMQConfig());
 
         TSLogger.sd.debug(String.format("Connected to RabbitMQ Server: %s", config.getRabbitMQConfig()));
@@ -39,9 +40,9 @@ public class Backend extends Thread {
                 new KeyDispatchRequestManager(keyDispatcher);
 
 
-        methodCollector = new MethodCollector(config, connection, requestManager, keyRequestManager);
-        resultsCollector = new ResultsCollector(config, connection, requestManager);
-        keyManagementCollector = new KeyManagementCollector(config, connection, keyRequestManager);
+        methodCollector = new MethodCollector(connection, requestManager, keyRequestManager);
+        resultsCollector = new ResultsCollector(connection, requestManager);
+        keyManagementCollector = new KeyManagementCollector(connection, keyRequestManager);
         running = true;
 
         TSLogger.sd.info("Initialization: Done");
@@ -76,7 +77,7 @@ public class Backend extends Thread {
     }
 
     public static void main(String[] args) throws InterruptedException, IOException {
-        Backend backend = new Backend(new SDConfig());
+        Backend backend = new Backend();
         backend.start();
         backend.join();
     }

@@ -46,17 +46,17 @@ public class AbstractRabbitConnectedServlet extends HttpServlet {
         super.init(servletConfig);
 
         try {
-            config=new NodeConfig();
             //new File(servletConfig.getInitParameter("config-file"))
-            init(config);
+            init();
         } catch (Exception ex) {
             logger.fatal(ex.getMessage(), ex);
             throw new ServletException(ex);
         }
     }
 
-    protected void init(NodeConfig config) throws IOException {
-        this.config = config;
+
+    public void init() {
+        this.config = NodeConfig.getInstance();
 
         this.queueTimeout = config.getRabbitMQConfig().getQueueDeclareTimeout();
     }

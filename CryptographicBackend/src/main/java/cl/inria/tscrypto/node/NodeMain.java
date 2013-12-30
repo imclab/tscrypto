@@ -13,18 +13,16 @@ import cl.inria.tscrypto.common.utils.TSLogger;
  * @author acansado
  */
 public class NodeMain implements Daemon {
-    private NodeConfig config;
     private NodeController controller;
 
     @Override
-    public void init(DaemonContext dc) throws DaemonInitException, Exception {
-        config = new NodeConfig();
+    public void init(DaemonContext dc) throws DaemonInitException {
     }
 
     @Override
     public void start() throws Exception {
         TSLogger.node.info("Starting Node");
-        controller = new NodeController(config);
+        controller = new NodeController();
         controller.start();
         controller.join();
     }

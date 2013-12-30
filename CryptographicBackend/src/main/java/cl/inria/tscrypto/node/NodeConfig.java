@@ -19,8 +19,6 @@ import cl.inria.tscrypto.common.utils.Util;
 
 /**
  * Loads default configurations from {@code -Dcl.niclabs.threshsig.node.config}.
- * 
- * @throws IOException if configuration files can't be read
  */
 public class NodeConfig {
     public static final String DEFAULT_CONFIG_PROPERTY = "cl.inria.tscrypto.node.config";
@@ -29,7 +27,25 @@ public class NodeConfig {
 	
 	private RabbitMQConfig rconfig;
 
-	public NodeConfig() throws IOException {
+    private static NodeConfig instance = null;
+
+    public static NodeConfig getInstance() {
+        if (instance == null) {
+            synchronized (NodeConfig.class) {
+                if (instance == null) {
+                    try {
+                        instance = new NodeConfig();
+                    } catch (IOException e) {
+                        throw new RuntimeException("Cannot open node configuration.", e);
+                    }
+                }
+            }
+        }
+        return instance;
+    }
+
+
+	private NodeConfig() throws IOException {
         TSLogger.node.info("Running with config: " + System.getProperty(DEFAULT_CONFIG_PROPERTY));
 
         this.conf = Util.loadTrimedProperties(System.getProperty(DEFAULT_CONFIG_PROPERTY));

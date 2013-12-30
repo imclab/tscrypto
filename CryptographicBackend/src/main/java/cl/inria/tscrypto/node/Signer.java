@@ -7,24 +7,21 @@ import cl.inria.tscrypto.common.datatypes.SignatureShare;
 import cl.inria.tscrypto.common.utils.TSLogger;
 
 public class Signer {
+    private KeyShareManager keyManager;
 
-	private NodeConfig config;
-    private  KeyShareManager keyManager;
-
-    public Signer(NodeConfig config, KeyShareManager keyManager) {
-        this.config = config;
+    public Signer(KeyShareManager keyManager) {
         this.keyManager = keyManager;
     }
 		
 	public int getId() {
-		return config.getNodeId();
+		return NodeConfig.getInstance().getNodeId();
 	}
 
     public SignatureShare sign(BigInteger document, String alias) {
         SignatureShare signatureShare = null;
         TSLogger.node.info("document: " + document);
 
-        PlayerSigner playerSigner = new PlayerSignerImpl(keyManager.getKeyShareInfo(alias), config.getNodeId());
+        PlayerSigner playerSigner = new PlayerSignerImpl(keyManager.getKeyShareInfo(alias), getId());
 
         try {
             signatureShare = playerSigner.sign(document);

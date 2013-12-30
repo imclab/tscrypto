@@ -19,12 +19,12 @@ public class MethodCollector extends DefaultConsumer {
     private ExecutorService executor;
     private TsCryptoMethodFactory methodFactory;
 
-    public MethodCollector(SDConfig config, Connection connection, RequestManager requestManager, KeyDispatchRequestManager keyRequestManager) throws IOException {
+    public MethodCollector(Connection connection, RequestManager requestManager, KeyDispatchRequestManager keyRequestManager) throws IOException {
         super(connection.createChannel());
 
-        methodFactory = new TsCryptoMethodFactory(config, requestManager, keyRequestManager);
+        methodFactory = new TsCryptoMethodFactory(requestManager, keyRequestManager);
 
-        String queue = config.getRpcQueue();
+        String queue = SDConfig.getInstance().getRpcQueue();
 
         // TODO: Put this on config file
         executor = Executors.newScheduledThreadPool(1);

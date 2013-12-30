@@ -14,14 +14,13 @@ import java.util.concurrent.Executors;
 public class KeyCollector extends DefaultConsumer {
 
     private ExecutorService executor;
-    private NodeConfig config;
     private KeyShareManager manager;
     private Dispatcher dispatcher;
 
-    public KeyCollector(NodeConfig config, Connection connection, Dispatcher dispatcher, KeyShareManager manager) throws IOException {
+    public KeyCollector(Connection connection, Dispatcher dispatcher, KeyShareManager manager) throws IOException {
         super(connection.createChannel());
 
-        this.config = config;
+        NodeConfig config = NodeConfig.getInstance();
         this.dispatcher = dispatcher;
         this.manager = manager;
         this.executor = Executors.newScheduledThreadPool(config.getNumThreads());
@@ -63,6 +62,8 @@ public class KeyCollector extends DefaultConsumer {
 
         @Override
         public void run() {
+            NodeConfig config = NodeConfig.getInstance();
+
             String jsonText = new String(body);
             SendKeyQuery message = TSMessage.fromJson(jsonText);
             manager.addKey(message.getLabel(), message.getKeyInfo());

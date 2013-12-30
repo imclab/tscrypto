@@ -20,9 +20,9 @@ public class KeyManagementCollector extends DefaultConsumer {
     private ExecutorService executor;
     private KeyDispatchRequestManager keyDispatchRequestManager;
 
-    public KeyManagementCollector(SDConfig config, Connection connection, KeyDispatchRequestManager keyRequestManager) throws IOException {
+    public KeyManagementCollector(Connection connection, KeyDispatchRequestManager keyRequestManager) throws IOException {
         super(connection.createChannel());
-
+        SDConfig config = SDConfig.getInstance();
         this.keyDispatchRequestManager = keyRequestManager;
         this.executor = Executors.newScheduledThreadPool(config.getThreadsResults());
 

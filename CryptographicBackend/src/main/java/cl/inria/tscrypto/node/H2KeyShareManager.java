@@ -13,7 +13,8 @@ import java.sql.*;
 public class H2KeyShareManager implements KeyShareManager, Closeable {
     Connection connection;
 
-    public H2KeyShareManager(NodeConfig config) throws ClassNotFoundException, SQLException {
+    public H2KeyShareManager() throws ClassNotFoundException, SQLException, IOException {
+        NodeConfig config = NodeConfig.getInstance();
         String fileName = "node" + config.getNodeId();
         String path = "jdbc:h2:" + fileName;
 

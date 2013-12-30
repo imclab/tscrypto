@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
+import cl.inria.tscrypto.common.config.RabbitMQConfig;
 import cl.inria.tscrypto.common.messages.MessageAsync;
 import cl.inria.tscrypto.common.messages.TSMessage;
 import cl.inria.tscrypto.common.utils.TSLogger;
@@ -23,20 +24,22 @@ public class Collector extends DefaultConsumer {
     private Signer signer;
     private Dispatcher dispatcher;
 
-    public Collector(NodeConfig config, Connection connection, Dispatcher dispatcher, KeyShareManager keyShareManager) throws IOException {
+    public Collector(Connection connection, Dispatcher dispatcher, KeyShareManager keyShareManager) throws IOException {
         super(connection.createChannel());
+        NodeConfig config = NodeConfig.getInstance();
+        RabbitMQConfig rconfig = config.getRabbitMQConfig();
 
-        this.signer = new Signer(config, keyShareManager);
+        this.signer = new Signer(keyShareManager);
         this.dispatcher = dispatcher;
         this.executor = Executors.newScheduledThreadPool(config.getNumThreads());
 
         String alias = config.getRabbitMQConfig().getSignRequestAlias();
-        RabbitMQDeclare.declareExchanges(getChannel(), config.getRabbitMQConfig(), alias);
-        RabbitMQDeclare.declareAndBindQueues(getChannel(), config.getRabbitMQConfig(), config.getNodeId(), alias);
+        RabbitMQDeclare.declareExchanges(getChannel(), rconfig, alias);
+        RabbitMQDeclare.declareAndBindQueues(getChannel(), rconfig, config.getNodeId(), alias);
 
         boolean autoAck = true;
         getChannel().basicConsume(
-                config.getRabbitMQConfig().getRequestsQueue(config.getNodeId()),
+                rconfig.getRequestsQueue(config.getNodeId()),
                 autoAck,
                 this
         );
