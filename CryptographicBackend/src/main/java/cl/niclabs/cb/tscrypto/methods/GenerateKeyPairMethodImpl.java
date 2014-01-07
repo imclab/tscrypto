@@ -1,32 +1,46 @@
+/*
+    Copyright 2013 NIC Chile Research Labs
+    This file is part of TsCrypto.
+
+    TsCrypto is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TsCrypto is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package cl.niclabs.cb.tscrypto.methods;
 
-import cl.inria.tscrypto.common.datatypes.KeyInfo;
-import cl.inria.tscrypto.common.datatypes.Ticket;
-import cl.inria.tscrypto.common.utils.TSLogger;
-import cl.inria.tscrypto.keyFactory.KeyDispatchRequest;
-import cl.inria.tscrypto.keyFactory.KeyDispatchRequestManager;
-import cl.inria.tscrypto.keyFactory.algorithm.KeyFactory;
-import cl.inria.tscrypto.sigDealer.KeyManager;
+import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
+import cl.niclabs.tscrypto.common.datatypes.Ticket;
+import cl.niclabs.tscrypto.common.utils.TSLogger;
+import cl.niclabs.tscrypto.sigDealer.KeyDispatchRequest;
+import cl.niclabs.tscrypto.keyFactory.algorithm.KeyFactory;
+import cl.niclabs.tscrypto.sigDealer.KeyManager;
+import cl.niclabs.tscrypto.sigDealer.RequestManager;
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.GenerateKeyPairMethod;
 
 import java.io.IOException;
 
 class GenerateKeyPairMethodImpl implements GenerateKeyPairMethod {
-    protected final String keyType;
-    protected final int keySize;
-    protected final String publicExponent;
+    private final int keySize;
     private final KeyManager keyManager;
-    private final KeyDispatchRequestManager keyRequestDispatcher;
+    private final RequestManager requestManager;
     private final int k;
     private final int l;
 
-    public GenerateKeyPairMethodImpl(Args args, KeyManager keyManager, KeyDispatchRequestManager keyRequestManager, int k, int l) {
-        keyType = args.keyType;
+    public GenerateKeyPairMethodImpl(Args args, KeyManager keyManager, RequestManager requestManager, int k, int l) {
         keySize = args.keySize;
-        publicExponent = args.publicExponent;
         this.keyManager = keyManager;
-        this.keyRequestDispatcher = keyRequestManager;
+        this.requestManager = requestManager;
         this.k = k;
         this.l = l;
     }
@@ -38,19 +52,17 @@ class GenerateKeyPairMethodImpl implements GenerateKeyPairMethod {
             KeyInfo keyInfo = KeyFactory.generateKeys(this.keySize, k, l);
             TSLogger.keyFactory.debug("KeyPair Generation successful");
             String handler = keyInfo.getKeyMetaInfo().getAlias();
-            Ticket ticket = keyRequestDispatcher.dispatch(keyInfo);
-            KeyDispatchRequest request = keyRequestDispatcher.getKeyDispatchRequest(ticket);
+            Ticket ticket = requestManager.dispatchKey(keyInfo);
+            KeyDispatchRequest request = requestManager.getKeyDispatchRequest(ticket);
 
             request.waitUntilReady();
 
-            keyRequestDispatcher.removeRequest(ticket);
+            requestManager.removeRequest(ticket);
             keyManager.addKey(keyInfo);
 
             return ResponseMessage.OKMessage(new ReturnValue(handler));
-        } catch (IOException e) {
-            return ResponseMessage.ErrorMessage(e.getMessage());
-        } catch (InterruptedException e) {
-            return ResponseMessage.ErrorMessage(e.getMessage());
+        } catch (IOException | InterruptedException e) {
+            return  ResponseMessage.ErrorMessage(e.getMessage());
         }
     }
 }

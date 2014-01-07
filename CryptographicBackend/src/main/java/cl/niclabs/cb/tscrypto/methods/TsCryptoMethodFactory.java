@@ -1,7 +1,25 @@
+/*
+    Copyright 2013 NIC Chile Research Labs
+    This file is part of TsCrypto.
+
+    TsCrypto is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TsCrypto is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package cl.niclabs.cb.tscrypto.methods;
 
-import cl.inria.tscrypto.keyFactory.KeyDispatchRequestManager;
-import cl.inria.tscrypto.sigDealer.*;
+
+import cl.niclabs.tscrypto.sigDealer.*;
 import cl.niclabs.cb.backend.Method;
 import cl.niclabs.cb.backend.SessionManager;
 import cl.niclabs.cb.backend.methods.*;
@@ -21,11 +39,10 @@ public class TsCryptoMethodFactory implements MethodFactory, Closeable {
     private int k;
     private int l;
 
-    private KeyDispatchRequestManager keyRequestManager;
     private RequestManager requestManager;
     private SessionManager sessionManager;
 
-    public TsCryptoMethodFactory(RequestManager requestManager, KeyDispatchRequestManager keyRequestManager) throws IOException {
+    public TsCryptoMethodFactory(RequestManager requestManager) throws IOException {
         //keyManager = new HashTableKeyManager();
         try {
             keyManager = new H2KeyManager();
@@ -35,7 +52,6 @@ public class TsCryptoMethodFactory implements MethodFactory, Closeable {
 
         sessionManager = new SessionManagerImpl();
 
-        this.keyRequestManager = keyRequestManager;
         this.requestManager = requestManager;
 
         k = SDConfig.getInstance().getK();
@@ -56,7 +72,7 @@ public class TsCryptoMethodFactory implements MethodFactory, Closeable {
 
     @Override
     public Method makeDeleteKeyMethod(DeleteKeyPairMethod.Args args) {
-        return new DeleteKeyPairMethodImpl(args, keyManager);
+        return new DeleteKeyPairMethodImpl(args, keyManager, requestManager);
     }
 
     @Override
@@ -66,7 +82,7 @@ public class TsCryptoMethodFactory implements MethodFactory, Closeable {
 
     @Override
     public Method makeGenerateKeyPairMethod(GenerateKeyPairMethod.Args args) {
-        return new GenerateKeyPairMethodImpl(args, keyManager, keyRequestManager, k, l);
+        return new GenerateKeyPairMethodImpl(args, keyManager, requestManager, k, l);
     }
 
     @Override

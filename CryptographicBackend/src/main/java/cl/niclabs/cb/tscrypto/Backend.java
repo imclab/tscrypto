@@ -1,14 +1,30 @@
+/*
+    Copyright 2013 NIC Chile Research Labs
+    This file is part of TsCrypto.
+
+    TsCrypto is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    TsCrypto is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
+ */
+
 package cl.niclabs.cb.tscrypto;
 
-import cl.inria.tscrypto.common.utils.TSConnection;
-import cl.inria.tscrypto.common.utils.TSLogger;
-import cl.inria.tscrypto.keyFactory.KeyDispatchRequestManager;
-import cl.inria.tscrypto.keyFactory.KeyDispatcher;
-import cl.inria.tscrypto.keyFactory.KeyManagementCollector;
-import cl.inria.tscrypto.sigDealer.Dispatcher;
-import cl.inria.tscrypto.sigDealer.RequestManager;
-import cl.inria.tscrypto.sigDealer.ResultsCollector;
-import cl.inria.tscrypto.sigDealer.SDConfig;
+import cl.niclabs.tscrypto.common.utils.TSConnection;
+import cl.niclabs.tscrypto.common.utils.TSLogger;
+import cl.niclabs.tscrypto.sigDealer.KeyDispatcher;
+import cl.niclabs.tscrypto.sigDealer.Dispatcher;
+import cl.niclabs.tscrypto.sigDealer.RequestManager;
+import cl.niclabs.tscrypto.sigDealer.ResultsCollector;
+import cl.niclabs.tscrypto.sigDealer.SDConfig;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
@@ -20,7 +36,6 @@ public class Backend extends Thread {
     private KeyDispatcher keyDispatcher;
     private MethodCollector methodCollector;
     private ResultsCollector resultsCollector;
-    private KeyManagementCollector keyManagementCollector;
 
     public Backend() throws IOException {
         SDConfig config = SDConfig.getInstance();
@@ -32,17 +47,13 @@ public class Backend extends Thread {
         keyDispatcher = new KeyDispatcher(connection, config.getRabbitMQConfig());
 
         RequestManager requestManager = new RequestManager(
-                dispatcher,
+                dispatcher, keyDispatcher,
                 config.getRabbitMQConfig().getClientQueue(),
                 config.getRabbitMQConfig().getSignRequestAlias()
         );
-        KeyDispatchRequestManager keyRequestManager =
-                new KeyDispatchRequestManager(keyDispatcher);
 
-
-        methodCollector = new MethodCollector(connection, requestManager, keyRequestManager);
+        methodCollector = new MethodCollector(connection, requestManager);
         resultsCollector = new ResultsCollector(connection, requestManager);
-        keyManagementCollector = new KeyManagementCollector(connection, keyRequestManager);
         running = true;
 
         TSLogger.sd.info("Initialization: Done");
@@ -67,7 +78,6 @@ public class Backend extends Thread {
         this.notifyAll();
         methodCollector.handleShutdownSignal(null, null);
         resultsCollector.handleShutdownSignal(null, null);
-        keyManagementCollector.handleShutdownSignal(null, null);
         try {
             dispatcher.close();
             keyDispatcher.close();

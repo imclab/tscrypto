@@ -214,10 +214,11 @@ create_key_pair ( CK_SESSION_HANDLE session )
     CK_BYTE subject[] = LABEL;
     CK_BYTE id[] = ID;
     CK_BBOOL true = CK_TRUE;
+    CK_BBOOL false = CK_FALSE;
     CK_ATTRIBUTE publicKeyTemplate[] = {
         {CKA_ID, id, sizeof ( id ) },
         {CKA_LABEL, subject, LABEL_LENGTH},
-        {CKA_TOKEN, &true, sizeof ( true ) },
+        {CKA_TOKEN, &false, sizeof ( false ) },
         {CKA_ENCRYPT, &true, sizeof ( true ) },
         {CKA_VERIFY, &true, sizeof ( true ) },
         {CKA_WRAP, &true, sizeof ( true ) },
@@ -227,7 +228,7 @@ create_key_pair ( CK_SESSION_HANDLE session )
     CK_ATTRIBUTE privateKeyTemplate[] = {
         {CKA_ID, id, sizeof ( id ) },
         {CKA_LABEL, subject, LABEL_LENGTH},
-        {CKA_TOKEN, &true, sizeof ( true ) },
+        {CKA_TOKEN, &false, sizeof ( false ) },
         {CKA_PRIVATE, &true, sizeof ( true ) },
         {CKA_SENSITIVE, &true, sizeof ( true ) },
         {CKA_DECRYPT, &true, sizeof ( true ) },
@@ -366,7 +367,7 @@ main ( int argc, char **argv )
     }
     
     read_private_keys( session );
-    // create_key_pair ( session );
+    create_key_pair ( session );
     
     sign_data ( session, input_file, output_file );
     if ( user_pin ) {

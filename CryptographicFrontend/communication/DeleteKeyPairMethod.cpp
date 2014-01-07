@@ -24,7 +24,7 @@ using namespace communication;
 DeleteKeyPairMethod::DeleteKeyPairMethod ( std::string handler )
     : Method ( "DeleteKeyPair" )
 {
-    addArgument ( "handler", handler );
+    addArgument ( "keyHandler", handler );
 }
 
 ResponseMessage DeleteKeyPairMethod::parseResponse ( const Json::Value& value )
