@@ -87,6 +87,7 @@ public class PlayerSignerImpl implements PlayerSigner {
 
 		this.delta = ThreshUtil.factorial(key.getKeyMetaInfo().getL());
 		this.e_prime = ThreshUtil.FOUR.multiply(delta).multiply(secretShare);
+        //this.e_prime = ThreshUtil.TWO.multiply(delta).multiply(secretShare);
 	}
 
 	// Public Methods
@@ -130,6 +131,8 @@ public class PlayerSignerImpl implements PlayerSigner {
 
 		BigInteger c = null, z = null;
 
+        final BigInteger xi = x.modPow(ThreshUtil.TWO.multiply(delta).multiply(secretShare), n);
+
 		// Try to generate C and Z
 		synchronized (lockMd) {
 			md = MessageDigest.getInstance("SHA");
@@ -138,8 +141,7 @@ public class PlayerSignerImpl implements PlayerSigner {
 			md.update(groupVerifier.mod(n).toByteArray());
 			md.update(x_tilde.toByteArray());
 			md.update(shareVerifier.mod(n).toByteArray());
-			md.update(x.modPow(e_prime, n).modPow(ThreshUtil.TWO, n)
-					.toByteArray());
+			md.update(xi.modPow(ThreshUtil.TWO, n).toByteArray());
 			md.update(v_prime.toByteArray());
 			md.update(x_prime.toByteArray());
 
@@ -147,7 +149,8 @@ public class PlayerSignerImpl implements PlayerSigner {
 		}
 
 		z = (c.multiply(secretShare)).add(r);
-		BigInteger signature = x.modPow(e_prime, n);
+		//BigInteger signature = x.modPow(e_prime, n);
+        BigInteger signature = new BigInteger(xi.toByteArray()); // TODO: clean this.
 
         long endTime = System.currentTimeMillis();
         TSLogger.node.info("Took " + (endTime - initTime) + "ms to complete the signature.");

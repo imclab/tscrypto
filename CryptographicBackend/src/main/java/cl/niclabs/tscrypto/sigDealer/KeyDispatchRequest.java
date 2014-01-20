@@ -53,7 +53,7 @@ public class KeyDispatchRequest implements Request {
             synchronized (this) {
                 while (!isReady()) {
                     TSLogger.keyFactory.info("Waiting nodes to notify they added the key...");
-                    wait();
+                    wait(2000);
                 }
             }
         }

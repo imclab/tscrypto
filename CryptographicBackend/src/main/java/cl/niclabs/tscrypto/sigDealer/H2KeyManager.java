@@ -52,8 +52,8 @@ public class H2KeyManager implements KeyManager, Closeable {
 
     @Override
     public void addKey(KeyInfo key) {
-        String label = key.getKeyMetaInfo().getAlias();
         KeyMetaInfo keyMetaInfo = key.getKeyMetaInfo();
+        String label = keyMetaInfo.getAlias();
         TSPublicKey publicKey = key.getPublicKey();
 
         TSLogger.keyFactory.debug("Trying to add key...");

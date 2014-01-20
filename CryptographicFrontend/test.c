@@ -20,6 +20,7 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 // text has to freed by the user.
 int read_all_file ( FILE *fp, unsigned char **text )
@@ -218,7 +219,7 @@ create_key_pair ( CK_SESSION_HANDLE session )
     CK_ATTRIBUTE publicKeyTemplate[] = {
         {CKA_ID, id, sizeof ( id ) },
         {CKA_LABEL, subject, LABEL_LENGTH},
-        {CKA_TOKEN, &false, sizeof ( false ) },
+        {CKA_TOKEN, &true, sizeof ( true ) },
         {CKA_ENCRYPT, &true, sizeof ( true ) },
         {CKA_VERIFY, &true, sizeof ( true ) },
         {CKA_WRAP, &true, sizeof ( true ) },
@@ -228,7 +229,7 @@ create_key_pair ( CK_SESSION_HANDLE session )
     CK_ATTRIBUTE privateKeyTemplate[] = {
         {CKA_ID, id, sizeof ( id ) },
         {CKA_LABEL, subject, LABEL_LENGTH},
-        {CKA_TOKEN, &false, sizeof ( false ) },
+        {CKA_TOKEN, &true, sizeof ( true ) },
         {CKA_PRIVATE, &true, sizeof ( true ) },
         {CKA_SENSITIVE, &true, sizeof ( true ) },
         {CKA_DECRYPT, &true, sizeof ( true ) },
@@ -346,30 +347,56 @@ main ( int argc, char **argv )
     FILE *input_file = NULL;
     FILE *output_file = NULL;
     CK_BYTE *user_pin = NULL;
-
-    if ( argc < 2 ) {
-        printf ( "Usage: pkcs11_example3 <input file> <pin>\n" );
-        exit ( 0 );
-    }
-    if ( argc > 2 ) {
-        user_pin = ( CK_BYTE * ) argv[2];
+    
+    char * howManyValue = NULL;
+    char * filename = NULL;
+    char * pinValue = NULL;
+    int createKeys = 0;
+    int howMany = 1;
+    
+    int c;
+    while ((c = getopt(argc, argv, "cn:p:f:")) != -1) {
+	switch (c) {
+	    case 'c':
+		createKeys = 1;
+		break;
+	    case 'n':
+		howManyValue = optarg;
+		howMany = atoi(howManyValue);
+		break;
+	    case 'f':
+		filename = strdup(optarg);
+		break;
+	    case 'p':
+		pinValue = strdup(optarg);
+		break;
+	    default:
+		abort();
+	}
     }
 
     initialize();
     slot = get_slot();
 
     /* signing */
-    input_file = fopen ( argv[1], "r" );
+    input_file = fopen ( filename, "r" );
     output_file = stdout;
     session = start_session ( slot );
-    if ( user_pin ) {
-        login ( session, user_pin );
+    if ( pinValue) {
+        login ( session, pinValue );
     }
     
     read_private_keys( session );
-    create_key_pair ( session );
     
-    sign_data ( session, input_file, output_file );
+    if (createKeys) {
+	create_key_pair ( session );
+    }
+    
+    int i;
+    for (i=0; i<howMany; i++) {
+	sign_data ( session, input_file, output_file );
+    }
+    
     if ( user_pin ) {
         logout ( session );
     }

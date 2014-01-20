@@ -1,6 +1,6 @@
 {
   "rabbitmq" : {
-    "hostname" : "localhost",
+    "hostname" : "172.30.65.17",
     "port" : "5672",
     "rpc_queue" : "rpc_queue"
   },

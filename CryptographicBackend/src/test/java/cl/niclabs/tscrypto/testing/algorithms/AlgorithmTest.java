@@ -74,7 +74,7 @@ public class AlgorithmTest {
         List<int[]> subsets = processSubsets(superset,k);
 
 
-        for (int[] set:subsets) {
+        for (int[] set: subsets) {
             SignatureDealer sd = new SignatureDealerImpl(keyInfo.getKeyMetaInfo(), keyInfo.getPublicKey());
 
             SignatureRequest sr = sd.prepareSignature(data, "Sha1");

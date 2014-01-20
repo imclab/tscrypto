@@ -111,8 +111,10 @@ public class SignatureRequest {
 		signatureShares[id] = signatureShare;
 		synchronized (lockStats) {
 			if (isValidSignature) {
+                System.err.println("Share es valido.");
 				stats.markValid(id);
 			} else {
+                System.err.println("Share es invalido.");
 				stats.markInvalid(id);
 			}
 		}
@@ -148,7 +150,7 @@ public class SignatureRequest {
             synchronized (this) {
                 while(signature == null) {
                     TSLogger.sd.info("Waiting for signature share.");
-                    wait();
+                    wait(2000);
                 }
             }
         }

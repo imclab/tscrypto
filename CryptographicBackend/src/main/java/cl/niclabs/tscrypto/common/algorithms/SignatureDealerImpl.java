@@ -156,14 +156,11 @@ public class SignatureDealerImpl implements SignatureDealer {
 		final BigInteger vz = v.modPow(z, publicKey.n);
 		final BigInteger vinegc = vi.modPow(c, publicKey.n).modInverse(publicKey.n);
 
-		// TODO: CHECK PAPER!
-		final BigInteger xineg2c = xi.modPow(c, publicKey.n).modInverse(publicKey.n);
-		// According to Shoup, pg. 8 this should be:
-		// xi.modPow(TWO,n).modPow(ver.getC(),n).modInverse(n);
+        final BigInteger xineg2c = xi
+                .modPow(TWO, publicKey.n)
+                .modPow(c, publicKey.n)
+                .modInverse(publicKey.n);
 
-		// Something to do with working in Q_n since every
-		// element is a square
-		
 		BigInteger result = null;
 		// Message Digest is not thread-safe
 		synchronized (lockMd) {
@@ -205,7 +202,8 @@ public class SignatureDealerImpl implements SignatureDealer {
 
 	private synchronized void generateEprime() {
 		if (eprime == null) {
-			eprime = delta.multiply(delta).shiftLeft(2);
+			//eprime = delta.multiply(delta).shiftLeft(2);
+            eprime = ThreshUtil.FOUR.multiply(delta.modPow(ThreshUtil.TWO, publicKey.n)).mod(publicKey.n);
 		}
 	}
 
@@ -225,8 +223,8 @@ public class SignatureDealerImpl implements SignatureDealer {
 			
 			for (int i = 0; i < keyMetaInfo.getK(); i++) {
 				int id = validIds[i];
-				w = w.multiply(request.getSignatureShare(id).signature.modPow(lambda(id + 1, validIds,
-						delta), publicKey.n));
+                BigInteger lambda2 = ThreshUtil.TWO.multiply(lambda(id + 1, validIds, delta));
+				w = w.multiply(request.getSignatureShare(id).signature.modPow(lambda2, publicKey.n));
 			}
 
 			w = w.mod(publicKey.n);

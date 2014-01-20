@@ -52,7 +52,7 @@ public class DeleteKeyRequest implements Request {
             synchronized (this) {
                 while (!isReady()) {
                     TSLogger.sd.info("Waiting nodes to notify they've delete the key...");
-                    wait();
+                    wait(2000); // TODO: refactor this.
                 }
             }
         }
