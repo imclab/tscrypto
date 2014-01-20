@@ -102,6 +102,12 @@ void copyAttribute ( CK_ATTRIBUTE const* src, CK_ATTRIBUTE* dst )
         CK_LONG* ulValueLen = reinterpret_cast<CK_LONG*> ( & ( dst->ulValueLen ) );
         *ulValueLen = -1;
     }
+    
+    // TODO: Review the semantics of this...
+    if ( dst->pValue == nullptr ) {
+	dst->ulValueLen = src->ulValueLen;
+	return;
+    }
 
 
     if ( dst->ulValueLen >= src->ulValueLen ) {
