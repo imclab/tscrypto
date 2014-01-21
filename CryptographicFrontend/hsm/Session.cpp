@@ -185,7 +185,7 @@ CK_OBJECT_HANDLE Session::createObject ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ul
         throw TcbError ( "Session::createObject", "pTemplate es nullptr.", CKR_ARGUMENTS_BAD );
     }
 
-    // Copiado de SoftHSM, valores por defecto:
+    // Original from SoftHSM...
     CK_BBOOL isToken = CK_FALSE;
     CK_BBOOL isPrivate = CK_TRUE;
     CK_OBJECT_CLASS oClass = CKO_VENDOR_DEFINED;
@@ -244,7 +244,11 @@ CK_OBJECT_HANDLE Session::createObject ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ul
 
             CryptoObject * object = new CryptoObject ( pTemplate, ulCount, objectType );
 
-            return token.addObject ( object );
+            CK_OBJECT_HANDLE handle = token.addObject ( object );
+            // Update the database
+            // TODO: reorder this...
+            getCurrentSlot().getApplication().getDatabase().saveToken(token);
+            return handle;
         } else {
             throw TcbError ( "Session::createObject",
                              "keyType != CKK_RSA",
@@ -287,6 +291,7 @@ void Session::destroyObject ( CK_OBJECT_HANDLE hObject )
         }
 
         objectContainer.erase ( it );
+        getCurrentSlot().getApplication().getDatabase().saveToken(token);
     } else {
         throw TcbError ( "Session::destroyObject", "Objeto no encontrado.", CKR_OBJECT_HANDLE_INVALID );
     }
@@ -410,17 +415,19 @@ namespace
 CK_OBJECT_HANDLE createPublicKey ( Session &session,
                                    CK_ATTRIBUTE_PTR pPublicKeyTemplate,
                                    CK_ULONG ulPublicKeyAttributeCount,
-                                   std::string const * rabbitHandler )
+                                   std::string const & rabbitHandler,
+				   std::string const & modulus,
+				   std::string const & publicExponent
+ 				)
 {
-    // NOTE: Esto está mas o menos copiado de SoftHSM...
+    // NOTE: This comes in some way from SoftHSM...
     CK_OBJECT_CLASS oClass = CKO_PUBLIC_KEY;
     CK_KEY_TYPE keyType = CKK_RSA;
     CK_MECHANISM_TYPE mechType = CKM_RSA_PKCS_KEY_PAIR_GEN;
     CK_BBOOL ckTrue = CK_TRUE, ckFalse = CK_FALSE;
     CK_DATE emptyDate;
 
-    // Atributos genéricos...
-    // TODO: verificar que se copien los atributos y no solo su puntero...
+    // Generic attributes...
     CK_ATTRIBUTE aClass = { CKA_CLASS, &oClass, sizeof ( oClass ) };
     CK_ATTRIBUTE aKeyType = { CKA_KEY_TYPE, &keyType, sizeof ( keyType ) };
     CK_ATTRIBUTE aMechType = { CKA_KEY_GEN_MECHANISM, &mechType, sizeof ( mechType ) };
@@ -440,18 +447,27 @@ CK_OBJECT_HANDLE createPublicKey ( Session &session,
     CK_ATTRIBUTE aTrusted = { CKA_TRUSTED, &ckFalse, sizeof ( ckFalse ) };
     CK_ATTRIBUTE aStartDate = { CKA_START_DATE, &emptyDate, 0 };
     CK_ATTRIBUTE aEndDate = { CKA_END_DATE, &emptyDate, 0 };
+    CK_ATTRIBUTE aModulusBits = { CKA_MODULUS_BITS, NULL_PTR, 0 };
 
-    // NOTE: CKA_VENDOR_DEFINED = CKA_RABBIT_HANDLER :D.
-    // i.e. si está ocupado se ocupa rabbit :P.
-
+    // NOTE: CKA_VENDOR_DEFINED = CKA_RABBIT_HANDLER.
     CK_ATTRIBUTE aValue = {
         .type=CKA_VENDOR_DEFINED,
-        .pValue=reinterpret_cast<void*> ( const_cast<char *> ( rabbitHandler->c_str() ) ),
-        // Guardo el puntero, el objeto ya está guardado en el set...
-        .ulValueLen=rabbitHandler->size()
+        .pValue=reinterpret_cast<void*> ( const_cast<char *> ( rabbitHandler.c_str() ) ),
+        .ulValueLen=rabbitHandler.size()
+    };
+    
+    CK_ATTRIBUTE aModulus = {
+	.type = CKA_MODULUS,
+	.pValue = reinterpret_cast<void*> ( const_cast<char *> ( modulus.c_str() ) ),
+	.ulValueLen = modulus.size()
+    };
+    
+    CK_ATTRIBUTE aExponent = {
+	.type = CKA_PUBLIC_EXPONENT,
+	.pValue = reinterpret_cast<void*> ( const_cast<char*> (publicExponent.c_str())),
+	.ulValueLen = modulus.size()
     };
 
-    // Se sobre escriben los datos...
     for ( CK_ULONG i = 0; i < ulPublicKeyAttributeCount; i++ ) {
         switch ( pPublicKeyTemplate[i].type ) {
         case CKA_LABEL:
@@ -496,6 +512,9 @@ CK_OBJECT_HANDLE createPublicKey ( Session &session,
         case CKA_END_DATE:
             aEndDate = pPublicKeyTemplate[i];
             break;
+	case CKA_MODULUS_BITS:
+	    aModulusBits = pPublicKeyTemplate[i];
+	    break;
         default:
             break;
         }
@@ -520,7 +539,9 @@ CK_OBJECT_HANDLE createPublicKey ( Session &session,
         aTrusted,
         aStartDate,
         aEndDate,
-        aValue
+        aValue,
+	aModulus,
+	aExponent
     };
 
     return session.createObject ( attributes, sizeof ( attributes ) /sizeof ( attributes[0] ) );
@@ -529,7 +550,10 @@ CK_OBJECT_HANDLE createPublicKey ( Session &session,
 CK_OBJECT_HANDLE createPrivateKey ( Session &session,
                                     CK_ATTRIBUTE_PTR pPrivateKeyTemplate,
                                     CK_ULONG ulPrivateKeyAttributeCount,
-                                    std::string const * rabbitHandler )
+                                    std::string const & rabbitHandler,
+				    std::string const & modulus,
+				    std::string const & publicExponent
+ 				 )
 {
     CK_OBJECT_CLASS oClass = CKO_PRIVATE_KEY;
     CK_KEY_TYPE keyType = CKK_RSA;
@@ -537,7 +561,7 @@ CK_OBJECT_HANDLE createPrivateKey ( Session &session,
     CK_BBOOL ckTrue = CK_TRUE, ckFalse = CK_FALSE;
     CK_DATE emptyDate;
 
-    // Atributos genéricos...
+    // Generic attributes...
     CK_ATTRIBUTE aClass = { CKA_CLASS, &oClass, sizeof ( oClass ) };
     CK_ATTRIBUTE aKeyType = { CKA_KEY_TYPE, &keyType, sizeof ( keyType ) };
     CK_ATTRIBUTE aMechType = { CKA_KEY_GEN_MECHANISM, &mechType, sizeof ( mechType ) };
@@ -566,15 +590,25 @@ CK_OBJECT_HANDLE createPrivateKey ( Session &session,
     CK_ATTRIBUTE aEndDate = { CKA_END_DATE, &emptyDate, 0 };
 
 
-    // NOTE: CKA_VENDOR_DEFINED = CKA_RABBIT_HANDLER :D.
-    // i.e. si está ocupado se ocupa rabbit :P.
+    // NOTE: CKA_VENDOR_DEFINED = CKA_RABBIT_HANDLER.
     CK_ATTRIBUTE aValue = {
         .type=CKA_VENDOR_DEFINED,
-        .pValue=reinterpret_cast<void*> ( const_cast<char *> ( rabbitHandler->c_str() ) ),
-        .ulValueLen=rabbitHandler->size()
+        .pValue=reinterpret_cast<void*> ( const_cast<char *> ( rabbitHandler.c_str() ) ),
+        .ulValueLen=rabbitHandler.size()
+    };    
+    
+    CK_ATTRIBUTE aModulus = {
+	.type = CKA_MODULUS,
+	.pValue = reinterpret_cast<void*> ( const_cast<char *> ( modulus.c_str() ) ),
+	.ulValueLen = modulus.size()
+    };
+    
+    CK_ATTRIBUTE aExponent = {
+	.type = CKA_PUBLIC_EXPONENT,
+	.pValue = reinterpret_cast<void*> ( const_cast<char*> (publicExponent.c_str())),
+	.ulValueLen = modulus.size()
     };
 
-    // Se sobre escriben los datos...
     for ( CK_ULONG i = 0; i < ulPrivateKeyAttributeCount; i++ ) {
         switch ( pPrivateKeyTemplate[i].type ) {
         case CKA_LABEL:
@@ -651,6 +685,8 @@ CK_OBJECT_HANDLE createPrivateKey ( Session &session,
         aExtractable,
         aNeverExtractable,
         aValue,
+	aModulus,
+	aExponent,
 
         aStartDate,
         aEndDate
@@ -728,17 +764,28 @@ KeyPair Session::generateKeyPair ( CK_MECHANISM_PTR pMechanism,
         try {
             Connection const & connection ( getConnection(*this) );
 
-            GenerateKeyPairMethod method ( "RSA", modulusBits, exponent ); // Unico metodo aceptado :B...
-            std::string keyHandler = method.execute ( connection ).getResponse().getValue<std::string> ( "keyHandler" );
+            // RSA is the only accepted method...
+            GenerateKeyPairMethod method ( "RSA", modulusBits, exponent ); 
+            const ResponseMessage & response = method.execute ( connection ).getResponse();
+            std::string keyHandler = response.getValue<std::string> ( "keyHandler" );
+            std::string modulusB64 = response.getValue<std::string>( "modulus" );
+            std::string publicExponentB64 = response.getValue<std::string>( "publicExponent" );
 
+            std::string modulus = base64::decode(modulusB64);
+            std::string publicExponent = base64::decode(publicExponentB64);
+            
             CK_OBJECT_HANDLE publicKeyHandle = createPublicKey ( *this, pPublicKeyTemplate,
-                                               ulPublicKeyAttributeCount,
-                                               &keyHandler );
+						ulPublicKeyAttributeCount,
+                                                keyHandler,
+						modulus,
+						publicExponent );
             CK_OBJECT_HANDLE privateKeyHandle = createPrivateKey ( *this, pPrivateKeyTemplate,
                                                 ulPrivateKeyAttributeCount,
-                                                &keyHandler );
+                                                keyHandler,
+						modulus,
+						publicExponent );
 
-            return KeyPair ( privateKeyHandle, publicKeyHandle );
+            return KeyPair { privateKeyHandle, publicKeyHandle };
 
         } catch ( TcbError & e ) {
             throw e;

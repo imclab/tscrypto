@@ -45,7 +45,7 @@ using SessionPtr = std::unique_ptr<Session>;
 class Slot
 {
     CK_SLOT_ID slotId_;
-    Application const & application_;
+    Application & application_;
     CK_FLAGS slotFlags_;
     
     std::map<CK_SESSION_HANDLE, SessionPtr> sessions_;
@@ -68,7 +68,7 @@ public:
     virtual bool hasSession ( CK_SESSION_HANDLE handle );
     virtual CK_ULONG sessionsCount() const;
 
-    virtual Application const & getApplication() const;
+    virtual Application & getApplication();
     virtual CK_SLOT_ID getId() const;
     virtual void getInfo ( CK_SLOT_INFO_PTR pInfo ) const; // throws exception
     virtual void insertToken ( Token * token );

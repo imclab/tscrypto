@@ -41,7 +41,7 @@ namespace {
     char const * INSERT_CO_QUERY = "INSERT OR IGNORE INTO CRYPTO_OBJECT (TKN_LABEL, CO_HANDLE) VALUES (?, ?)";
     char const * INSERT_ATTRIBUTE_QUERY = "INSERT OR REPLACE INTO ATTRIBUTE (TKN_LABEL, CO_HANDLE, ATT_TYPE, ATT_VALUE) VALUES (?,?,?,?)";
     
-    char const * CLEAN_ATTRIBUTES_QUERY = "DELETE FROM ATTRIBUTE WHERE TKN_LABEL=? AND CO_HANDLE=?";
+    char const * CLEAN_ATTRIBUTES_QUERY = "DELETE FROM ATTRIBUTE WHERE TKN_LABEL=?";
 
 }
 
@@ -146,7 +146,12 @@ void Database::saveToken(hsm::Token& token)
     
     std::string label (token.getLabel());       
     
-    sqlite3_exec(db_, "BEGIN TRANSACTION", nullptr, nullptr, nullptr);
+    sqlite3_exec(db_, "BEGIN TRANSACTION", nullptr, nullptr, nullptr);    
+    // clean previously stored attributes...
+    sqlite3_bind_text(cleanAttributesStmt, 1, label.c_str(), label.size(), SQLITE_STATIC);
+    sqlite3_step(cleanAttributesStmt); // TODO: Verify for errors...
+    sqlite3_reset(cleanAttributesStmt);
+    
     for (auto & pair : token.getObjects()) {
 	CK_OBJECT_HANDLE handle = pair.first;
 	
@@ -154,13 +159,7 @@ void Database::saveToken(hsm::Token& token)
 	sqlite3_bind_text(insertCryptoObjectStmt, 1, label.c_str(), label.size(), SQLITE_STATIC);
 	sqlite3_bind_int(insertCryptoObjectStmt, 2, handle);	
 	sqlite3_step(insertCryptoObjectStmt); // TODO: Verify for errors...
-	sqlite3_reset(insertCryptoObjectStmt);
-	
-	// clean previously stored attributes...
-	sqlite3_bind_text(cleanAttributesStmt, 1, label.c_str(), label.size(), SQLITE_STATIC);
-	sqlite3_bind_int(cleanAttributesStmt, 2, handle);	
-	sqlite3_step(cleanAttributesStmt); // TODO: Verify for errors...
-	sqlite3_reset(cleanAttributesStmt);
+	sqlite3_reset(insertCryptoObjectStmt);	
 	
 	for (auto const& attributePair : pair.second->getAttributes()) {	    	    
 	    CK_ATTRIBUTE_TYPE type = attributePair.first;

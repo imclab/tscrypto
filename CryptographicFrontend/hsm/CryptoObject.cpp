@@ -70,10 +70,20 @@ CryptoObject::~CryptoObject()
 }
 
 bool CryptoObject::match ( CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount ) const
-{    
+{       
     for (CK_ULONG i = 0; i<ulCount; i++) {
-	if(attributes_.count(pTemplate[i].type) == 0) {
+	CK_ATTRIBUTE templateAttr = pTemplate[i];
+	auto attrIt = attributes_.find(templateAttr.type);	
+	
+	if(attrIt == attributes_.end()) {
 	    return false;
+	} else { // Verify that are a byte-to-byte match...
+	    CK_ATTRIBUTE attr = attrIt->second;
+	    for ( CK_ULONG j = 0; j < attr.ulValueLen; ++j ) {
+		if ( reinterpret_cast<char*>(attr.pValue)[j] != reinterpret_cast<char*>(templateAttr.pValue)[j] ) {
+		    return false;
+		}
+	    }
 	}
     }
     

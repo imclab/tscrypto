@@ -40,6 +40,8 @@ ResponseMessage GenerateKeyPairMethod::parseResponse ( const Json::Value& value 
 {
     ResponseMessage response;
     response.addValue ( "keyHandler", value["keyHandler"].asString() );
+    response.addValue ( "modulus", value["modulus"].asString() );
+    response.addValue ( "publicExponent", value["publicExponent"].asString() );
     return response;
 }
 // kate: indent-mode cstyle; replace-tabs on; 

@@ -721,7 +721,7 @@ extern "C" {
         return CKR_OK;
     }
 
-    // NOTE: FUNCIONES NO IMPLEMENTADAS
+    // NOTE: Not implemented functions...
     CK_RV C_GetMechanismList ( CK_SLOT_ID slotID, CK_MECHANISM_TYPE_PTR pMechanismList, CK_ULONG_PTR pulCount )
     {
         return CKR_FUNCTION_NOT_SUPPORTED;

@@ -144,7 +144,7 @@ void Slot::insertToken ( Token * token )
     token_.reset ( token );
 }
 
-const Application& Slot::getApplication() const
+Application& Slot::getApplication()
 {
     return application_;
 }

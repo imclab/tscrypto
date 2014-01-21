@@ -111,6 +111,12 @@ Slot & Application::getSessionSlot ( CK_SESSION_HANDLE handle )
                      CKR_SESSION_HANDLE_INVALID );
 }
 
+Database& Application::getDatabase()
+{
+    return database_;
+}
+
+
 ConnectionManager const & Application::getConnectionManager() const
 {
     return connectionManager_;

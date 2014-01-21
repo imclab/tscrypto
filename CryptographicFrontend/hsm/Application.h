@@ -51,6 +51,7 @@ public:
 
     virtual Slot & getSessionSlot ( CK_SESSION_HANDLE handle );
     virtual Session & getSession ( CK_SESSION_HANDLE session ); // throws exception
+    virtual Database & getDatabase ();
 
     virtual ConnectionManager const & getConnectionManager() const;
     virtual void errorLog ( std::string message ) const;
