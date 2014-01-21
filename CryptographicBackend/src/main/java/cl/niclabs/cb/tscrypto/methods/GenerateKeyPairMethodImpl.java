@@ -28,6 +28,7 @@ import cl.niclabs.tscrypto.sigDealer.RequestManager;
 import cl.niclabs.cb.backend.ResponseMessage;
 import cl.niclabs.cb.backend.methods.GenerateKeyPairMethod;
 
+import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
 
 class GenerateKeyPairMethodImpl implements GenerateKeyPairMethod {
@@ -59,8 +60,9 @@ class GenerateKeyPairMethodImpl implements GenerateKeyPairMethod {
 
             requestManager.removeRequest(ticket);
             keyManager.addKey(keyInfo);
-
-            return ResponseMessage.OKMessage(new ReturnValue(handler));
+            String modulus = DatatypeConverter.printBase64Binary(keyInfo.getPublicKey().getModulus().toByteArray());
+            String publicExponent = DatatypeConverter.printBase64Binary(keyInfo.getPublicKey().getExponent().toByteArray());
+            return ResponseMessage.OKMessage(new ReturnValue(handler, modulus, publicExponent));
         } catch (IOException | InterruptedException e) {
             return  ResponseMessage.ErrorMessage(e.getMessage());
         }

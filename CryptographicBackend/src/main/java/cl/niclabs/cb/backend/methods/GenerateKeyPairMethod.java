@@ -24,9 +24,13 @@ public interface GenerateKeyPairMethod extends Method {
 
   public static class ReturnValue {
     public final String keyHandler;
+    public final String modulus;
+      public final String publicExponent;
 
-      public ReturnValue(String keyHandler) {
+      public ReturnValue(String keyHandler, String modulus, String publicExponent) {
           this.keyHandler = keyHandler;
+          this.modulus = modulus;
+          this.publicExponent = publicExponent;
       }
   }
 

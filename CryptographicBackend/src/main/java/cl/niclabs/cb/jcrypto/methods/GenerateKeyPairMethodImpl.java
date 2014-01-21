@@ -23,8 +23,10 @@ import cl.niclabs.cb.backend.methods.GenerateKeyPairMethod;
 import cl.niclabs.cb.jcrypto.KeyStorage;
 import cl.niclabs.cb.jcrypto.MapKeyStorage;
 
+import javax.xml.bind.DatatypeConverter;
 import java.math.BigInteger;
 import java.security.*;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.AlgorithmParameterSpec;
 import java.security.spec.RSAKeyGenParameterSpec;
 
@@ -53,9 +55,13 @@ class GenerateKeyPairMethodImpl implements GenerateKeyPairMethod {
         kpg.initialize(rsaParams, random);
 
         KeyPair pair = kpg.generateKeyPair();
+        RSAPublicKey publicKey = (RSAPublicKey) pair.getPublic();
         String handler = ks.storeKeyPair(keyType, keySize, pair);
 
-        return ResponseMessage.OKMessage(new ReturnValue(handler));
+        String modulus = DatatypeConverter.printBase64Binary(publicKey.getModulus().toByteArray());
+        String publicExponent = DatatypeConverter.printBase64Binary(publicKey.getPublicExponent().toByteArray());
+
+        return ResponseMessage.OKMessage(new ReturnValue(handler, modulus, publicExponent));
       } catch (NoSuchAlgorithmException | InvalidAlgorithmParameterException e) {
         return ResponseMessage.ErrorMessage(e.getLocalizedMessage());
       }
