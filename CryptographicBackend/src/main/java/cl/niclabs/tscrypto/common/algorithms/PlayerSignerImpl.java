@@ -29,7 +29,7 @@ import cl.niclabs.tscrypto.common.datatypes.SignatureShare;
 import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
 import cl.niclabs.tscrypto.common.utils.ThreshUtil;
-
+import cl.niclabs.tscrypto.node.NodeConfig;
 /**
  * A Secret Key Share for an RSA (k,l) Threshold Scheme
  * 
@@ -43,7 +43,6 @@ import cl.niclabs.tscrypto.common.utils.ThreshUtil;
  * @author acansado
  */
 public class PlayerSignerImpl implements PlayerSigner {
-
 	/** player id */
 	private int id;
 
@@ -116,8 +115,15 @@ public class PlayerSignerImpl implements PlayerSigner {
 
 	private SignatureShare sign(BigInteger document, BigInteger r) throws NoSuchAlgorithmException {
 
-        long initTime = System.currentTimeMillis();
-
+        	long initTime = System.currentTimeMillis();
+		NodeConfig config = NodeConfig.getInstance();
+		final boolean useJNI = config.getUseJNI();
+		if(useJNI){
+		    TSLogger.node.debug("Estoy usando JNI");
+		}
+		else{
+		    TSLogger.node.debug("No estoy usando JNI");
+		}
 		BigInteger groupVerifier = publicKey.getGroupVerifier();
 		BigInteger shareVerifier = publicKey.getShareVerifier(id);
 		
@@ -126,13 +132,34 @@ public class PlayerSignerImpl implements PlayerSigner {
 		final BigInteger x = document.mod(n);
 
 		final BigInteger v_prime = groupVerifier.modPow(r, n);
-		final BigInteger x_tilde = x.modPow(ThreshUtil.FOUR.multiply(delta), n);
-		final BigInteger x_prime = x_tilde.modPow(r, n);
+        final BigInteger x_tilde;
+        if(useJNI){
+            x_tilde = ModPowWrapper.modPowWrapper(x, ThreshUtil.FOUR.multiply(delta), n);
+        }
+        else{
+            x_tilde = x.modPow(ThreshUtil.FOUR.multiply(delta), n);
+        }
+
+		final BigInteger x_prime;
+		long uno = System.currentTimeMillis();
+		if(useJNI){
+            x_prime = ModPowWrapper.modPowWrapper(x_tilde,r,n);
+		}
+		else{
+		    x_prime = x_tilde.modPow(r, n);
+		}
+		long dos = System.currentTimeMillis();
 
 		BigInteger c = null, z = null;
+        final BigInteger xi;
+        if(useJNI){
+            xi = ModPowWrapper.modPowWrapper(x, ThreshUtil.TWO.multiply(delta).multiply(secretShare), n);
+        }
+        else{
+            xi = x.modPow(ThreshUtil.TWO.multiply(delta).multiply(secretShare), n);
+        }
 
-        final BigInteger xi = x.modPow(ThreshUtil.TWO.multiply(delta).multiply(secretShare), n);
-
+		long tres, cuatro;
 		// Try to generate C and Z
 		synchronized (lockMd) {
 			md = MessageDigest.getInstance("SHA");
@@ -141,7 +168,15 @@ public class PlayerSignerImpl implements PlayerSigner {
 			md.update(groupVerifier.mod(n).toByteArray());
 			md.update(x_tilde.toByteArray());
 			md.update(shareVerifier.mod(n).toByteArray());
-			md.update(xi.modPow(ThreshUtil.TWO, n).toByteArray());
+            final BigInteger xi2n;
+            if(useJNI){
+                xi2n = ModPowWrapper.modPowWrapper(xi,ThreshUtil.TWO,n);
+            }
+            else{
+                xi2n = xi.modPow(ThreshUtil.TWO, n);
+            }
+			md.update(xi2n.toByteArray());
+
 			md.update(v_prime.toByteArray());
 			md.update(x_prime.toByteArray());
 

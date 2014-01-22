@@ -90,6 +90,10 @@ public class NodeConfig {
         return Integer.parseInt(conf.getProperty("node.threads"));
 	}
 
+	public boolean getUseJNI(){
+        	return "true".equals(conf.getProperty("node.useJNI"));
+    	}
+
 	// TODO should not be here
 	public KeyInfo getKey(String alias) throws IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
 		
