@@ -110,20 +110,52 @@ public class PlayerSignerImpl implements PlayerSigner {
 
 		final int randbits = publicKey.getModulus().bitLength() + 3 * ThreshUtil.L1;
 		final BigInteger r = (new BigInteger(randbits, random));
-		return sign(document, r);
+        NodeConfig config = NodeConfig.getInstance();
+        System.out.println(config.getUseJNI());
+        if(config.getUseJNI()){
+            return jniSign(document, r);
+        }
+        else{
+            return sign(document, r);
+        }
+
 	}
 
-	private SignatureShare sign(BigInteger document, BigInteger r) throws NoSuchAlgorithmException {
+    private SignatureShare jniSign(BigInteger document, BigInteger r)throws NoSuchAlgorithmException{
+        long initTime = System.currentTimeMillis();
+        TSLogger.node.debug("Estoy usando JNI");
+        BigInteger groupVerifier = publicKey.getGroupVerifier();
+        BigInteger shareVerifier = publicKey.getShareVerifier(id);
+        final BigInteger n = publicKey.getModulus();
+        final BigInteger x = document.mod(n);
 
-        	long initTime = System.currentTimeMillis();
-		NodeConfig config = NodeConfig.getInstance();
-		final boolean useJNI = config.getUseJNI();
-		if(useJNI){
-		    TSLogger.node.debug("Estoy usando JNI");
-		}
-		else{
-		    TSLogger.node.debug("No estoy usando JNI");
-		}
+        BigInteger [] res = (BigInteger[])JniSignWrapper.signWrapper(groupVerifier, shareVerifier, n, x, r, delta, secretShare);
+        BigInteger c = null, z = null;
+        synchronized (lockMd){
+            md = MessageDigest.getInstance("SHA");
+            md.reset();
+            md.update(groupVerifier.mod(n).toByteArray());
+            md.update(res[2].toByteArray());//x_tilde
+            md.update(shareVerifier.mod(n).toByteArray());
+            md.update(res[1].toByteArray());//xi2n
+            md.update(res[3].toByteArray());//v_prime
+            md.update(res[4].toByteArray());//x_prime
+            c = new BigInteger(md.digest()).mod(n);
+        }
+        z = (c.multiply(secretShare)).add(r);
+        BigInteger signature = new BigInteger(res[0].toByteArray()); // TODO: clean this.
+
+        long endTime = System.currentTimeMillis();
+        TSLogger.node.info("Took " + (endTime - initTime) + "ms to complete the signature (1 call to JNI).");
+
+        return new SignatureShare(signature, c, z);
+    }
+
+
+	private SignatureShare sign(BigInteger document, BigInteger r) throws NoSuchAlgorithmException {
+        long initTime = System.currentTimeMillis();
+	    TSLogger.node.debug("No estoy usando JNI");
+        final boolean useJNI = false;
 		BigInteger groupVerifier = publicKey.getGroupVerifier();
 		BigInteger shareVerifier = publicKey.getShareVerifier(id);
 		
@@ -134,7 +166,7 @@ public class PlayerSignerImpl implements PlayerSigner {
 		final BigInteger v_prime = groupVerifier.modPow(r, n);
         final BigInteger x_tilde;
         if(useJNI){
-            x_tilde = ModPowWrapper.modPowWrapper(x, ThreshUtil.FOUR.multiply(delta), n);
+            x_tilde = JniSignWrapper.modPowWrapper(x, ThreshUtil.FOUR.multiply(delta), n);
         }
         else{
             x_tilde = x.modPow(ThreshUtil.FOUR.multiply(delta), n);
@@ -143,7 +175,7 @@ public class PlayerSignerImpl implements PlayerSigner {
 		final BigInteger x_prime;
 		long uno = System.currentTimeMillis();
 		if(useJNI){
-            x_prime = ModPowWrapper.modPowWrapper(x_tilde,r,n);
+            x_prime = JniSignWrapper.modPowWrapper(x_tilde, r, n);
 		}
 		else{
 		    x_prime = x_tilde.modPow(r, n);
@@ -153,7 +185,7 @@ public class PlayerSignerImpl implements PlayerSigner {
 		BigInteger c = null, z = null;
         final BigInteger xi;
         if(useJNI){
-            xi = ModPowWrapper.modPowWrapper(x, ThreshUtil.TWO.multiply(delta).multiply(secretShare), n);
+            xi = JniSignWrapper.modPowWrapper(x, ThreshUtil.TWO.multiply(delta).multiply(secretShare), n);
         }
         else{
             xi = x.modPow(ThreshUtil.TWO.multiply(delta).multiply(secretShare), n);
@@ -170,7 +202,7 @@ public class PlayerSignerImpl implements PlayerSigner {
 			md.update(shareVerifier.mod(n).toByteArray());
             final BigInteger xi2n;
             if(useJNI){
-                xi2n = ModPowWrapper.modPowWrapper(xi,ThreshUtil.TWO,n);
+                xi2n = JniSignWrapper.modPowWrapper(xi, ThreshUtil.TWO, n);
             }
             else{
                 xi2n = xi.modPow(ThreshUtil.TWO, n);
