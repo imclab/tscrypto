@@ -416,8 +416,8 @@ CK_OBJECT_HANDLE createPublicKey ( Session &session,
                                    CK_ATTRIBUTE_PTR pPublicKeyTemplate,
                                    CK_ULONG ulPublicKeyAttributeCount,
                                    std::string const & rabbitHandler,
-				   std::string const & modulus,
-				   std::string const & publicExponent
+                                   std::vector<CK_BYTE> const & modulus,
+                                   std::vector<CK_BYTE> const & publicExponent
  				)
 {
     // NOTE: This comes in some way from SoftHSM...
@@ -458,14 +458,14 @@ CK_OBJECT_HANDLE createPublicKey ( Session &session,
     
     CK_ATTRIBUTE aModulus = {
 	.type = CKA_MODULUS,
-	.pValue = reinterpret_cast<void*> ( const_cast<char *> ( modulus.c_str() ) ),
+	.pValue = (void*) modulus.data() ,
 	.ulValueLen = modulus.size()
     };
     
     CK_ATTRIBUTE aExponent = {
 	.type = CKA_PUBLIC_EXPONENT,
-	.pValue = reinterpret_cast<void*> ( const_cast<char*> (publicExponent.c_str())),
-	.ulValueLen = modulus.size()
+	.pValue = (void*) publicExponent.data(),
+	.ulValueLen = publicExponent.size()
     };
 
     for ( CK_ULONG i = 0; i < ulPublicKeyAttributeCount; i++ ) {
@@ -551,8 +551,8 @@ CK_OBJECT_HANDLE createPrivateKey ( Session &session,
                                     CK_ATTRIBUTE_PTR pPrivateKeyTemplate,
                                     CK_ULONG ulPrivateKeyAttributeCount,
                                     std::string const & rabbitHandler,
-				    std::string const & modulus,
-				    std::string const & publicExponent
+                                    std::vector<CK_BYTE> const & modulus,
+                                    std::vector<CK_BYTE> const & publicExponent
  				 )
 {
     CK_OBJECT_CLASS oClass = CKO_PRIVATE_KEY;
@@ -599,14 +599,14 @@ CK_OBJECT_HANDLE createPrivateKey ( Session &session,
     
     CK_ATTRIBUTE aModulus = {
 	.type = CKA_MODULUS,
-	.pValue = reinterpret_cast<void*> ( const_cast<char *> ( modulus.c_str() ) ),
+	.pValue = (void*) modulus.data(),
 	.ulValueLen = modulus.size()
     };
     
     CK_ATTRIBUTE aExponent = {
 	.type = CKA_PUBLIC_EXPONENT,
-	.pValue = reinterpret_cast<void*> ( const_cast<char*> (publicExponent.c_str())),
-	.ulValueLen = modulus.size()
+	.pValue = (void*) publicExponent.data(),
+	.ulValueLen = publicExponent.size()
     };
 
     for ( CK_ULONG i = 0; i < ulPrivateKeyAttributeCount; i++ ) {
@@ -771,8 +771,8 @@ KeyPair Session::generateKeyPair ( CK_MECHANISM_PTR pMechanism,
             std::string modulusB64 = response.getValue<std::string>( "modulus" );
             std::string publicExponentB64 = response.getValue<std::string>( "publicExponent" );
 
-            std::string modulus = base64::decode(modulusB64);
-            std::string publicExponent = base64::decode(publicExponentB64);
+            std::vector<CK_BYTE> modulus = base64::decodeToBytes(modulusB64);
+            std::vector<CK_BYTE> publicExponent = base64::decodeToBytes(publicExponentB64);
             
             CK_OBJECT_HANDLE publicKeyHandle = createPublicKey ( *this, pPublicKeyTemplate,
 						ulPublicKeyAttributeCount,

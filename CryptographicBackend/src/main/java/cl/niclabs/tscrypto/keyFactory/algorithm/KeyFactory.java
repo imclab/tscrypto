@@ -33,14 +33,14 @@ public class KeyFactory {
 	 * Generate a group public key and l shares for a (k,l) <BR>
 	 * threshold signatures scheme<BR>
 	 * 
-	 * @param keysize bit length that the returned strong prime should have
+	 * @param primesize bit length that the returned strong prime should have
 	 * @param k minimum number of honest players
 	 * @param l total number of players
 	 *
 	 */
-	public static KeyInfo generateKeys(int keysize, int k, int l) {
+	public static KeyInfo generateKeys(int primesize, int k, int l) {
 
-		KeyMetaInfo keyMetaInfo = new KeyMetaInfo(k, l, keysize);
+		KeyMetaInfo keyMetaInfo = new KeyMetaInfo(k, l, primesize*2);
 		
 		BigInteger pr, qr, p, q, d, e;
 		BigInteger groupSize;
@@ -52,8 +52,8 @@ public class KeyFactory {
 		/* Generate a Sophie Germain prime keypair */
 		// pr = generateSophieGermainPrime();
 		// qr = generateSophieGermainPrime();
-		p = SafePrimeGen.generateStrongPrime(keysize, ThreshUtil.getRandom());
-		q = SafePrimeGen.generateStrongPrime(keysize, ThreshUtil.getRandom());
+		p = SafePrimeGen.generateStrongPrime(primesize, ThreshUtil.getRandom());
+		q = SafePrimeGen.generateStrongPrime(primesize, ThreshUtil.getRandom());
 
 		pr = (p.subtract(ThreshUtil.ONE)).divide(ThreshUtil.TWO);
 		qr = (q.subtract(ThreshUtil.ONE)).divide(ThreshUtil.TWO);
