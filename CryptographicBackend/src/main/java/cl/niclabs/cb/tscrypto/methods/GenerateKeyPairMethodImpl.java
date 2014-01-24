@@ -50,7 +50,7 @@ class GenerateKeyPairMethodImpl implements GenerateKeyPairMethod {
     public ResponseMessage execute() {
         try {
             TSLogger.keyFactory.debug("KeyPair Generation with k="+k+" and l="+l);
-            KeyInfo keyInfo = KeyFactory.generateKeys(this.keySize, k, l);
+            KeyInfo keyInfo = KeyFactory.generateKeys(this.keySize /  2, k, l);
             TSLogger.keyFactory.debug("KeyPair Generation successful");
             String handler = keyInfo.getKeyMetaInfo().getAlias();
             Ticket ticket = requestManager.dispatchKey(keyInfo);

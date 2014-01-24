@@ -31,6 +31,7 @@ import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.datatypes.KeyShareInfo;
 import cl.niclabs.tscrypto.keyFactory.algorithm.KeyFactory;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -38,6 +39,7 @@ import org.junit.runners.JUnit4;
 
 import java.math.BigInteger;
 import java.security.*;
+import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.util.ArrayList;
 import java.util.List;
@@ -51,13 +53,14 @@ public class AlgorithmTest {
     static int l = 9;
     static int keysize = 512;
 
-    PublicKey pKey;
+
 
     @Test
+    @Ignore
     public void KeySharesFactoryTest() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
-
+        PublicKey pKey;
         KeyInfo keyInfo = KeyFactory.generateKeys(keysize, k, l);
-        this.pKey = keyInfo.getPublicKey().convertoToPublicKey();
+        pKey = keyInfo.getPublicKey().convertoToPublicKey();
 
         int[] superset = new int[l];
         KeyShareInfo[] keyShareInfos = new KeyShareInfo[l];
@@ -93,6 +96,36 @@ public class AlgorithmTest {
 
             Assert.assertTrue(sign.verify(signature.toByteArray()));
         }
+    }
+
+    @Test
+    public void keySizeTest() throws InvalidKeySpecException, NoSuchAlgorithmException {
+        KeyInfo keyInfo = KeyFactory.generateKeys(keysize/2, k, l);
+        RSAPublicKey pKey = (RSAPublicKey) keyInfo.getPublicKey().convertoToPublicKey();
+        int[] superset = new int[l];
+        KeyShareInfo[] keyShareInfos = new KeyShareInfo[l];
+
+        for (int i = 0; i < superset.length; i++) {
+            superset[i] = i;
+            keyShareInfos[i] = new KeyShareInfo(
+                    keyInfo.getKeyMetaInfo(),
+                    keyInfo.getPublicKey(),
+                    keyInfo.getKeyShares().getSecret(i)
+            );
+        }
+
+        SignatureDealer sd = new SignatureDealerImpl(keyInfo.getKeyMetaInfo(), keyInfo.getPublicKey());
+        SignatureRequest sr = sd.prepareSignature(data, "NONE");
+        for (int i=0; i<l; i++) {
+            PlayerSigner ps = new PlayerSignerImpl(keyShareInfos[i], i);
+            sd.joinSignatureShare(ps.sign(sr.getHashedDocument()), i);
+        }
+
+        BigInteger signature = sd.getSignature();
+        long length = signature.toByteArray().length;
+
+        System.out.println(length*8);
+        Assert.assertTrue(keysize == length*8);
     }
 
 
