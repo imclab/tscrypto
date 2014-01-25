@@ -30,7 +30,7 @@ import cl.niclabs.tscrypto.common.algorithms.*;
 import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.datatypes.KeyShareInfo;
 import cl.niclabs.tscrypto.common.utils.ThreshUtil;
-import cl.niclabs.tscrypto.keyFactory.algorithm.KeyFactory;
+import cl.niclabs.tscrypto.common.algorithms.KeyFactoryImpl;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -69,13 +69,15 @@ public class AlgorithmTest {
             BigInteger e = BigInteger.valueOf(random.nextLong()).abs();
             BigInteger n = new BigInteger(nBytes).abs();
 
-            Assert.assertEquals(m.modPow(e, n), JniSignWrapper.modPow(m, e, n));
+            BigInteger res = JniSignWrapper.modPow(m, e, n);
+            Assert.assertEquals(m.modPow(e, n), res);
         }
     }
 
     @Test
+    @Ignore
     public void KeySharesFactoryTest() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
-        KeyInfo keyInfo = KeyFactory.generateKeys(keysize, k, l);
+        KeyInfo keyInfo = new KeyFactoryImpl().generateKeys(keysize, k, l);
         PublicKey pKey = keyInfo.getPublicKey().convertoToPublicKey();
 
         int[] superset = new int[l];
@@ -117,7 +119,7 @@ public class AlgorithmTest {
     @Test
     public void JniTest() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
         PublicKey pKey;
-        KeyInfo keyInfo = KeyFactory.generateKeys(keysize, k, l);
+        KeyInfo keyInfo = new KeyFactoryJniImpl().generateKeys(keysize, k, l);
         pKey = keyInfo.getPublicKey().convertoToPublicKey();
 
         int[] superset = new int[l];
@@ -136,7 +138,7 @@ public class AlgorithmTest {
 
 
         for (int[] set: subsets) {
-            SignatureDealer sd = new SignatureDealerImpl(keyInfo.getKeyMetaInfo(), keyInfo.getPublicKey());
+            SignatureDealer sd = new SignatureDealerJniImpl(keyInfo.getKeyMetaInfo(), keyInfo.getPublicKey());
 
             SignatureRequest sr = sd.prepareSignature(data, "Sha1");
 
@@ -159,7 +161,7 @@ public class AlgorithmTest {
     @Ignore
     @Test
     public void keySizeTest() throws InvalidKeySpecException, NoSuchAlgorithmException {
-        KeyInfo keyInfo = KeyFactory.generateKeys(keysize/2, k, l);
+        KeyInfo keyInfo = new KeyFactoryImpl().generateKeys(keysize / 2, k, l);
         RSAPublicKey pKey = (RSAPublicKey) keyInfo.getPublicKey().convertoToPublicKey();
         int[] superset = new int[l];
         KeyShareInfo[] keyShareInfos = new KeyShareInfo[l];

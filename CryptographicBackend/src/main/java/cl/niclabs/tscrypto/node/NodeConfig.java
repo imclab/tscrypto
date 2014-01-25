@@ -82,34 +82,11 @@ public class NodeConfig {
         return conf.getProperty("node.password");
 	}
 
-	public String getKeyPath() {
-        return conf.getProperty("key.path");
-	}
-
 	public int getNumThreads() {
         return Integer.parseInt(conf.getProperty("node.threads"));
 	}
 
 	public boolean getUseJNI(){
-        	return "true".equals(conf.getProperty("node.useJNI"));
-    	}
-
-	// TODO should not be here
-	public KeyInfo getKey(String alias) throws IOException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
-		
-		KeyMetaInfo keyMetaInfo = Util.loadKeyMetaInfoFromFile(getKeyPath() + "/" + alias + ".metainfo");
-		TSPublicKey publicKey = Util.loadPublicKeyFromFile(getKeyPath() + "/" + alias + ".publickey");
-		KeyShares keyShares = Util.loadKeySharesFromFile(getKeyPath() + "/" + alias + ".keyshare-" + getNodeId(), keyMetaInfo, getNodeId());
-		
-		return new KeyInfo(keyMetaInfo, publicKey, keyShares);
-	}
-
-	public String getDefaultKey() {
-		return conf.getProperty("key.defaultKey");
-	}
-	
-	public String getKeyStore() {
-		return conf.getProperty("keystore.filename");
-	}
-
+        return Boolean.parseBoolean(conf.getProperty("node.useJNI"));
+    }
 }

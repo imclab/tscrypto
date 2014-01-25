@@ -18,55 +18,55 @@
 
 package cl.niclabs.tscrypto.common.algorithms;
 
-import java.math.BigInteger;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
-
 import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
 import cl.niclabs.tscrypto.common.datatypes.SignatureShare;
 import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
 import cl.niclabs.tscrypto.common.utils.ThreshUtil;
 
-public class SignatureDealerImpl implements SignatureDealer {
+import java.math.BigInteger;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+public class SignatureDealerJniImpl implements SignatureDealer {
     private static final BigInteger TWO = ThreshUtil.TWO;
     private static final BigInteger FOUR = ThreshUtil.FOUR;
 
 	/** meta information about the TS-RSA key used */
 	private final KeyMetaInfo keyMetaInfo;
-	
+
 	/** TS-RSA public key */
 	private final TSPublicKey publicKey;
-	
+
 	/** lock for Message Digest -- needed because it is not thread-safe */
 	private static Object lockMd = new Object();
-	
+
 	// cached computations
 	private BigInteger w, eprime, x, delta;
 	private BigInteger xtilde;
 
 	private SignatureRequest request;
 
-    public SignatureDealerImpl(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey) {
+    public SignatureDealerJniImpl(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey) {
         this.keyMetaInfo = keyMetaInfo;
         this.publicKey = publicKey;
     }
-	
+
 	/* (non-Javadoc)
 	 * @see SignatureDealer#prepareSignature(byte[], java.lang.String)
 	 */
 	@Override
 	public SignatureRequest prepareSignature(byte[] document, String hashAlgorithm) throws NoSuchAlgorithmException {
 		reset();
-		
+
 		request = new SignatureRequest(keyMetaInfo, publicKey);
 		request.setDocument(document, hashAlgorithm);
 		generateX();
 		generateDelta();
-		xtilde = x.modPow(BigInteger.valueOf(4l).multiply(delta), publicKey.n);
+		xtilde = JniSignWrapper.modPow(x, BigInteger.valueOf(4l).multiply(delta), publicKey.n);
 
 		return request;
 	}
-	
+
 	/**
 	 * Cleans-up the player's state, except the key.
 	 * This must be called before signing another document
@@ -87,7 +87,7 @@ public class SignatureDealerImpl implements SignatureDealer {
 		boolean isValidSignature = verifySignatureShare(signature, id);
 
 		request.signatureShareReceived(signature, id, isValidSignature);
-		
+
 		if (request.hasPendingSignature()) {
 			request.setSignature(generateSignature());
 		}
@@ -110,7 +110,7 @@ public class SignatureDealerImpl implements SignatureDealer {
 
 		generateW();
 		final BigInteger wa = w.modPow(a, publicKey.n);
-		final BigInteger xb = x.modPow(b, publicKey.n);
+		final BigInteger xb = JniSignWrapper.modPow(x, b, publicKey.n);
 		return wa.multiply(xb).mod(publicKey.n);
 	}
 
@@ -128,11 +128,11 @@ public class SignatureDealerImpl implements SignatureDealer {
 		if (!request.isReady()) {
 			return false;
 		}
-		
+
 		generateEprime();
 		generateW();
 
-		final BigInteger xeprime = x.modPow(eprime, publicKey.n);
+		final BigInteger xeprime = JniSignWrapper.modPow(x, eprime, publicKey.n);
 		final BigInteger we = w.modPow(publicKey.e, publicKey.n);
 
 		return (xeprime.compareTo(we) == 0);
@@ -141,7 +141,7 @@ public class SignatureDealerImpl implements SignatureDealer {
 	/**
 	 * Checks if the signature share is valid
 	 * @param id player id
-	 * @throws NoSuchAlgorithmException hash digest cannot be found
+	 * @throws java.security.NoSuchAlgorithmException hash digest cannot be found
 	 */
 	private boolean verifySignatureShare(SignatureShare signatureShare, int id) throws NoSuchAlgorithmException {
 
@@ -155,12 +155,11 @@ public class SignatureDealerImpl implements SignatureDealer {
 		BigInteger z = signatureShare.z;
 		final BigInteger xi = signatureShare.signature;
 
-		final BigInteger vz = v.modPow(z, publicKey.n);
-		final BigInteger vinegc = vi.modPow(c, publicKey.n).modInverse(publicKey.n);
+		final BigInteger vz = JniSignWrapper.modPow(v, z, publicKey.n);
+		final BigInteger vinegc = JniSignWrapper.modPow(vi, c, publicKey.n).modInverse(publicKey.n);
 
-        final BigInteger xineg2c = xi
-                .modPow(TWO, publicKey.n)
-                .modPow(c, publicKey.n)
+        final BigInteger xi2 = JniSignWrapper.modPow(xi, TWO, publicKey.n);
+        final BigInteger xineg2c = JniSignWrapper.modPow(xi2, c, publicKey.n)
                 .modInverse(publicKey.n);
 
 		BigInteger result = null;
@@ -179,12 +178,12 @@ public class SignatureDealerImpl implements SignatureDealer {
 			md.update(vi.toByteArray());
 
 			// debug("xi^2 :" + xi.modPow(TWO,n));
-			md.update(xi.modPow(TWO, publicKey.n).toByteArray());
+			md.update(xi2.toByteArray());
 
 			// debug("v^z*v^-c :" + vz.multiply(vinegc).mod(n));
 			md.update(vz.multiply(vinegc).mod(publicKey.n).toByteArray());
 
-			final BigInteger xtildez = xtilde.modPow(z, publicKey.n);
+			final BigInteger xtildez = JniSignWrapper.modPow(xtilde, z, publicKey.n);
 
 			// debug("xi^-2cx: " + xineg2c.multiply(xtildez).mod(n));
 			md.update(xineg2c.multiply(xtildez).mod(publicKey.n).toByteArray());
@@ -204,7 +203,7 @@ public class SignatureDealerImpl implements SignatureDealer {
 
 	private synchronized void generateEprime() {
 		if (eprime == null) {
-            eprime = FOUR.multiply(delta.modPow(TWO, publicKey.n)).mod(publicKey.n);
+            eprime = FOUR.multiply(JniSignWrapper.modPow(delta, TWO, publicKey.n)).mod(publicKey.n);
 		}
 	}
 
@@ -224,8 +223,13 @@ public class SignatureDealerImpl implements SignatureDealer {
 			
 			for (int i = 0; i < keyMetaInfo.getK(); i++) {
 				int id = validIds[i];
-                BigInteger lambda2 = TWO.multiply(lambda(id + 1, validIds, delta));
-				w = w.multiply(request.getSignatureShare(id).signature.modPow(lambda2, publicKey.n));
+                final BigInteger si = request.getSignatureShare(id).signature;
+                // 2 * lambda
+                BigInteger lambda2 = lambda(id + 1, validIds, delta).shiftLeft(1);
+
+                // s_i^{2*lambda} % n
+                final BigInteger silambda2 = si.modPow(lambda2, publicKey.n);
+				w = w.multiply(silambda2).mod(publicKey.n);
 			}
 
 			w = w.mod(publicKey.n);

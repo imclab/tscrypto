@@ -20,8 +20,6 @@ package cl.niclabs.tscrypto.node;
 
 import java.math.BigInteger;
 import cl.niclabs.tscrypto.common.algorithms.PlayerSigner;
-import cl.niclabs.tscrypto.common.algorithms.PlayerSignerFactory;
-import cl.niclabs.tscrypto.common.algorithms.PlayerSignerImpl;
 import cl.niclabs.tscrypto.common.datatypes.SignatureShare;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
 

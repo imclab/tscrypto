@@ -44,7 +44,7 @@ public class RequestManager {
 	// public static final long SIGNING_TIMEOUT = 40 * 1000;
 
     // Refactor this. // Make a proxy that implements the Request interface
-	private final HashMap<String, SignatureDealerImpl> signingRequests = new LinkedHashMap<>();
+	private final HashMap<String, SignatureDealer> signingRequests = new LinkedHashMap<>();
     private final Map<String, Request> requests = new Hashtable<>();
 
 	// TODO unused - should be used by the garbage collector
@@ -70,7 +70,7 @@ public class RequestManager {
     private void submitRequest(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey, String hashAlgorithm, byte[] blob, String alias, Ticket ticket)
             throws IOException, InvalidKey, NoSuchAlgorithmException {
 
-        SignatureDealerImpl signatureDealer = new SignatureDealerImpl(keyMetaInfo, publicKey);
+        SignatureDealer signatureDealer = SignatureDealerFactory.getInstance(keyMetaInfo, publicKey);
 
         SignatureRequest request = signatureDealer.prepareSignature(blob, hashAlgorithm);
 

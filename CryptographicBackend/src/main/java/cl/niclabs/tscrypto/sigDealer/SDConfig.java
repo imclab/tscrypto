@@ -80,4 +80,8 @@ public class SDConfig {
     public int getL() {
         return Integer.parseInt(conf.getProperty("sd.l"));
     }
+
+    public boolean getUseJni() {
+        return Boolean.parseBoolean(conf.getProperty("sd.useJNI"));
+    }
 }

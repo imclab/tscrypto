@@ -111,10 +111,8 @@ public class SignatureRequest {
 		signatureShares[id] = signatureShare;
 		synchronized (lockStats) {
 			if (isValidSignature) {
-                System.err.println("Share es valido.");
 				stats.markValid(id);
 			} else {
-                System.err.println("Share es invalido.");
 				stats.markInvalid(id);
 			}
 		}
