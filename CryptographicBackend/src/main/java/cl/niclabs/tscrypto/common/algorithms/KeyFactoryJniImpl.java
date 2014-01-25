@@ -16,9 +16,7 @@
     along with TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cl.niclabs.tscrypto.keyFactory.algorithm;
-
-import java.math.BigInteger;
+package cl.niclabs.tscrypto.common.algorithms;
 
 import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
@@ -27,7 +25,9 @@ import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
 import cl.niclabs.tscrypto.common.utils.ThreshUtil;
 
-public class KeyFactory {
+import java.math.BigInteger;
+
+public class KeyFactoryJniImpl implements KeyFactory {
 
 	/**
 	 * Generate a group public key and l shares for a (k,l) <BR>
@@ -38,7 +38,8 @@ public class KeyFactory {
 	 * @param l total number of players
 	 *
 	 */
-	public static KeyInfo generateKeys(int primesize, int k, int l) {
+    @Override
+	public KeyInfo generateKeys(int primesize, int k, int l) {
 
 		KeyMetaInfo keyMetaInfo = new KeyMetaInfo(k, l, primesize*2);
 		
@@ -52,8 +53,8 @@ public class KeyFactory {
 		/* Generate a Sophie Germain prime keypair */
 		// pr = generateSophieGermainPrime();
 		// qr = generateSophieGermainPrime();
-		p = SafePrimeGen.generateStrongPrime(primesize, ThreshUtil.getRandom());
-		q = SafePrimeGen.generateStrongPrime(primesize, ThreshUtil.getRandom());
+		p = SafePrimeGenImpl.generateStrongPrime(primesize, ThreshUtil.getRandom());
+		q = SafePrimeGenImpl.generateStrongPrime(primesize, ThreshUtil.getRandom());
 
 		pr = (p.subtract(ThreshUtil.ONE)).divide(ThreshUtil.TWO);
 		qr = (q.subtract(ThreshUtil.ONE)).divide(ThreshUtil.TWO);
@@ -142,7 +143,7 @@ public class KeyFactory {
 		BigInteger[] verifiers = new BigInteger[keyMetaInfo.getL()];
 		for (int i = 0; i < keyMetaInfo.getL(); i++) {
 			// v_i = v^{s_i} in Q_n
-			verifiers[i] = groupVerifier.modPow(keyShares.getSecret(i), n);
+			verifiers[i] = JniSignWrapper.modPow(groupVerifier, keyShares.getSecret(i), n);
 		}
 		
 		return verifiers;

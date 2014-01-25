@@ -16,7 +16,7 @@
     along with TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cl.niclabs.tscrypto.keyFactory.algorithm;
+package cl.niclabs.tscrypto.common.algorithms;
 
 import java.math.BigInteger;
 

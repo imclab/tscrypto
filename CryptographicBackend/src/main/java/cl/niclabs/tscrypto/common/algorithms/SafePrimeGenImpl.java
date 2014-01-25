@@ -16,7 +16,7 @@
     along with TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cl.niclabs.tscrypto.keyFactory.algorithm;
+package cl.niclabs.tscrypto.common.algorithms;
 
 /**
  *	Safe Prime Generation
@@ -52,14 +52,14 @@ import java.util.logging.Logger;
 import cl.niclabs.tscrypto.common.utils.ThreshUtil;
 
 
-class SafePrimeGen {
+class SafePrimeGenImpl implements SafePrimeGen {
 
 	/*
 	 * First we declare all Stuff needed for logging with java.util.logging.*
 	 */
 
 	/** The logger for this class. */
-	private static final Logger log = Logger.getLogger(SafePrimeGen.class
+	private static final Logger log = Logger.getLogger(SafePrimeGenImpl.class
 			.getName());
 
 	/**

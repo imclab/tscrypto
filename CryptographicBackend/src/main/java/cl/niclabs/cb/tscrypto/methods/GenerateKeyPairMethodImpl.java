@@ -18,11 +18,13 @@
 
 package cl.niclabs.cb.tscrypto.methods;
 
+import cl.niclabs.tscrypto.common.algorithms.KeyFactory;
 import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.datatypes.Ticket;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
+import cl.niclabs.tscrypto.common.algorithms.KeyFactoryImpl;
 import cl.niclabs.tscrypto.sigDealer.KeyDispatchRequest;
-import cl.niclabs.tscrypto.keyFactory.algorithm.KeyFactory;
+import cl.niclabs.tscrypto.sigDealer.KeyFactoryFactory;
 import cl.niclabs.tscrypto.sigDealer.KeyManager;
 import cl.niclabs.tscrypto.sigDealer.RequestManager;
 import cl.niclabs.cb.backend.ResponseMessage;
@@ -50,7 +52,8 @@ class GenerateKeyPairMethodImpl implements GenerateKeyPairMethod {
     public ResponseMessage execute() {
         try {
             TSLogger.keyFactory.debug("KeyPair Generation with k="+k+" and l="+l);
-            KeyInfo keyInfo = KeyFactory.generateKeys(this.keySize /  2, k, l);
+            KeyFactory keyFactory = KeyFactoryFactory.getInstance();
+            KeyInfo keyInfo = keyFactory.generateKeys(this.keySize / 2, k, l);
             TSLogger.keyFactory.debug("KeyPair Generation successful");
             String handler = keyInfo.getKeyMetaInfo().getAlias();
             Ticket ticket = requestManager.dispatchKey(keyInfo);

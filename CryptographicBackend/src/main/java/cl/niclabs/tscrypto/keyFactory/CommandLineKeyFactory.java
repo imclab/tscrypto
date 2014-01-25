@@ -18,12 +18,13 @@
 
 package cl.niclabs.tscrypto.keyFactory;
 
+import cl.niclabs.tscrypto.common.algorithms.KeyFactoryImpl;
+import cl.niclabs.tscrypto.common.algorithms.KeyFactoryJniImpl;
 import org.apache.commons.cli.*;
 
 import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
 import cl.niclabs.tscrypto.common.utils.Util;
-import cl.niclabs.tscrypto.keyFactory.algorithm.KeyFactory;
 
 /**
  * Command Line KeyFactory.
@@ -84,7 +85,7 @@ public class CommandLineKeyFactory {
 		}
 
 		// generate keys
-		KeyInfo key = KeyFactory.generateKeys(keysize, k, l);
+		KeyInfo key = new KeyFactoryImpl().generateKeys(keysize, k, l);
 		TSLogger.keyFactory.info("Done... writting key with alias " + key.getKeyMetaInfo().getAlias());
 		
 		// write to files
