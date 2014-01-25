@@ -1,5 +1,8 @@
-package cl.niclabs.tscrypto.common.algorithms;
+package cl.niclabs.tscrypto.node;
 
+import cl.niclabs.tscrypto.common.algorithms.PlayerSigner;
+import cl.niclabs.tscrypto.common.algorithms.PlayerSignerImpl;
+import cl.niclabs.tscrypto.common.algorithms.PlayerSignerJniImpl;
 import cl.niclabs.tscrypto.common.datatypes.KeyShareInfo;
 import cl.niclabs.tscrypto.node.NodeConfig;
 

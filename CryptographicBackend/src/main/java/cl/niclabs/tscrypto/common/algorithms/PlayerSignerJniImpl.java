@@ -70,20 +70,18 @@ public class PlayerSignerJniImpl implements PlayerSigner {
     private SignatureShare jniSign(BigInteger document, BigInteger r)throws NoSuchAlgorithmException{
         long initTime = System.currentTimeMillis();
         TSLogger.node.debug("Estoy usando JNI");
-        BigInteger groupVerifier = publicKey.getGroupVerifier();
-        BigInteger shareVerifier = publicKey.getShareVerifier(id);
+        final BigInteger groupVerifier = publicKey.getGroupVerifier();
+        final BigInteger shareVerifier = publicKey.getShareVerifier(id);
         final BigInteger n = publicKey.getModulus();
         final BigInteger x = document.mod(n);
 
-        BigInteger x_tilde = JniSignWrapper.modPow(x, FOUR.multiply(delta), n);
-        BigInteger xi = JniSignWrapper.modPow(x, TWO.multiply(delta).multiply(secretShare), n);
-        BigInteger xi2n = JniSignWrapper.modPow(xi, TWO, n);
-        BigInteger v_prime = JniSignWrapper.modPow(groupVerifier, r, n);
-        BigInteger x_prime = JniSignWrapper.modPow(x_tilde, r, n);
+        final BigInteger x_tilde = JniSignWrapper.modPow(x, FOUR.multiply(delta), n);
+        final BigInteger xi = JniSignWrapper.modPow(x, TWO.multiply(delta).multiply(secretShare), n);
+        final BigInteger xi2n = JniSignWrapper.modPow(xi, TWO, n);
+        final BigInteger v_prime = JniSignWrapper.modPow(groupVerifier, r, n);
+        final BigInteger x_prime = JniSignWrapper.modPow(x_tilde, r, n);
 
-        BigInteger [] res = JniSignWrapper.signWrapper(groupVerifier, shareVerifier, n, x, r, delta, secretShare);
-
-        BigInteger c, z;
+        final BigInteger c;
         synchronized (lockMd){
             md = MessageDigest.getInstance("SHA");
             md.reset();
@@ -95,8 +93,9 @@ public class PlayerSignerJniImpl implements PlayerSigner {
             md.update(x_prime.toByteArray());
             c = new BigInteger(md.digest()).mod(n);
         }
-        z = (c.multiply(secretShare)).add(r);
-        BigInteger signature = new BigInteger(res[0].toByteArray()); // TODO: clean this.
+        final BigInteger z = (c.multiply(secretShare)).add(r);
+
+        final BigInteger signature = xi;
 
         long endTime = System.currentTimeMillis();
         TSLogger.node.info("Took " + (endTime - initTime) + "ms to complete the signature (1 call to JNI).");
