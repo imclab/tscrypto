@@ -29,6 +29,7 @@ package cl.niclabs.tscrypto.testing.algorithms;
 import cl.niclabs.tscrypto.common.algorithms.*;
 import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.datatypes.KeyShareInfo;
+import cl.niclabs.tscrypto.common.utils.ThreshUtil;
 import cl.niclabs.tscrypto.keyFactory.algorithm.KeyFactory;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -54,9 +55,25 @@ public class AlgorithmTest {
     static int keysize = 512;
 
 
-
     @Test
     @Ignore
+    public void modPowTest() {
+        SecureRandom random = ThreshUtil.getRandom();
+        for(int i = 0; i < 100; i++) {
+            byte[] nBytes = new byte[1024];
+            random.nextBytes(nBytes);
+            byte[] mBytes = new byte[50];
+            random.nextBytes(mBytes);
+
+            BigInteger m = new BigInteger(mBytes).abs();
+            BigInteger e = BigInteger.valueOf(random.nextLong()).abs();
+            BigInteger n = new BigInteger(nBytes).abs();
+
+            Assert.assertEquals(m.modPow(e, n), JniSignWrapper.modPow(m, e, n));
+        }
+    }
+
+    @Test
     public void KeySharesFactoryTest() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
         PublicKey pKey;
         KeyInfo keyInfo = KeyFactory.generateKeys(keysize, k, l);
@@ -98,6 +115,50 @@ public class AlgorithmTest {
         }
     }
 
+    @Test
+    @Ignore
+    public void JniTest() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
+        PublicKey pKey;
+        KeyInfo keyInfo = KeyFactory.generateKeys(keysize, k, l);
+        pKey = keyInfo.getPublicKey().convertoToPublicKey();
+
+        int[] superset = new int[l];
+        KeyShareInfo[] keyShareInfos = new KeyShareInfo[l];
+
+        for (int i = 0; i < superset.length; i++) {
+            superset[i] = i;
+            keyShareInfos[i] = new KeyShareInfo(
+                    keyInfo.getKeyMetaInfo(),
+                    keyInfo.getPublicKey(),
+                    keyInfo.getKeyShares().getSecret(i)
+            );
+        }
+
+        List<int[]> subsets = processSubsets(superset,k);
+
+
+        for (int[] set: subsets) {
+            SignatureDealer sd = new SignatureDealerImpl(keyInfo.getKeyMetaInfo(), keyInfo.getPublicKey());
+
+            SignatureRequest sr = sd.prepareSignature(data, "Sha1");
+
+            for (int i = 0; i < set.length; i++) {
+                PlayerSigner ps = new PlayerSignerJniImpl(keyShareInfos[set[i]],set[i]);
+                BigInteger hash = sr.getHashedDocument();
+                sd.joinSignatureShare(ps.sign(hash), set[i]);
+            }
+
+            BigInteger signature = sd.getSignature();
+
+            Signature sign = Signature.getInstance("Sha1withRSA");
+            sign.initVerify(pKey);
+            sign.update(data);
+
+            Assert.assertTrue(sign.verify(signature.toByteArray()));
+        }
+    }
+
+    @Ignore
     @Test
     public void keySizeTest() throws InvalidKeySpecException, NoSuchAlgorithmException {
         KeyInfo keyInfo = KeyFactory.generateKeys(keysize/2, k, l);

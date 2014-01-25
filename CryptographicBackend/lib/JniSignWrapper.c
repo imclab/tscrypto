@@ -3,7 +3,7 @@
 #include <stdio.h>
 #include <openssl/bn.h>
 
-JNIEXPORT jstring JNICALL Java_cl_niclabs_tscrypto_common_algorithms_ModPowWrapper_mPow(JNIEnv * env, jclass jc, jstring num, jstring expo, jstring mod){
+JNIEXPORT jstring JNICALL Java_cl_niclabs_tscrypto_common_algorithms_JniSignWrapper_mPow(JNIEnv * env, jclass jc, jstring num, jstring expo, jstring mod){
 	const char *numC, *expC, *modC;
 	FILE *file;
 	char *string = (char *) malloc(8000);

@@ -37,8 +37,6 @@ public interface PlayerSigner {
 	 * Signs data and returns the signature share
 	 * that can be validated
 	 * @param document data to be signed (hashed document mod n)
-	 * @param shareVerifier share verifier (VKi)
-	 * @param groupVerifier group verifier (VK)
 	 * @return signature share
 	 * @throws NoSuchAlgorithmException
 	 */
