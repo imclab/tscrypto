@@ -7,15 +7,15 @@ public class JniSignWrapper {
         System.loadLibrary("jniSignWrapper");
         System.out.println("Library loaded...");
     }
-    private static native String mPow(String num, String expo, String mod);
+
+    private static native byte[] modPow(byte[] num, byte[] expo, byte[] mod);
     private static native String[] sign(String groupVerifier, String shareVerifier,
                                         String n, String x, String r, String delta,
                                         String secretShare);
-    private final static int numTest = 100;
 
     public static BigInteger modPow(BigInteger num, BigInteger exp, BigInteger mod){
-        String aux = mPow(num.toString(), exp.toString(), mod.toString());
-        return new BigInteger(aux.trim(),16);
+        // The sign is always positive.
+       return new BigInteger(1, modPow(num.toByteArray(), exp.toByteArray(), mod.toByteArray()));
     }
     public static BigInteger[] signWrapper(BigInteger groupVerifier, BigInteger shareVerifier,
                                            BigInteger n, BigInteger x, BigInteger r, BigInteger delta,

@@ -3,48 +3,58 @@
 #include <stdio.h>
 #include <openssl/bn.h>
 
-JNIEXPORT jstring JNICALL Java_cl_niclabs_tscrypto_common_algorithms_JniSignWrapper_mPow(JNIEnv * env, jclass jc, jstring num, jstring expo, jstring mod){
-	const char *numC, *expC, *modC;
-	FILE *file;
-	char *string = (char *) malloc(8000);
-    numC = (*env)->GetStringUTFChars( env, num , NULL );
-    expC = (*env)->GetStringUTFChars( env, expo , NULL );
-    modC = (*env)->GetStringUTFChars( env, mod , NULL );
-    BIGNUM *res = BN_new(), *number = BN_new(), *exponent = BN_new(), *modulo = BN_new();
-    BN_dec2bn(&number, numC);
-    BN_dec2bn(&exponent, expC);
-    BN_dec2bn(&modulo, modC);
 
-    BN_CTX *bnctx;
-    bnctx = BN_CTX_new();
+/* Returns the bytes of the result. In r_len, the output is the length */ 
+static unsigned char * 
+mod_pow(unsigned char * n, size_t n_len, unsigned char * e, size_t e_len, unsigned char * m, size_t m_len, size_t * r_len ) {
+    BIGNUM *res = BN_new();
+    BIGNUM *number = BN_new();
+    BIGNUM *exponent = BN_new();
+    BIGNUM *modulo = BN_new();
+    BN_bin2bn(n, n_len, number);
+    BN_bin2bn(e, e_len, exponent);
+    BN_bin2bn(m, m_len, modulo);
+
+    BN_CTX *bnctx = BN_CTX_new();
     BN_mod_exp(res, number, exponent, modulo, bnctx);
-    //TODO chequear si corresponde el end
-    //BM_CTX_end(bnctx);
-    BN_CTX_free(bnctx);
-    BN_free(exponent);
-    BN_free(modulo);
-    BN_free(number);
     
-    file = fmemopen(string, 8000, "r+");
-    if(file == NULL){
-    	fprintf(stderr, "fmemopen failed \n");
-    	exit(1);
-    }
-    BN_print_fp(file, res);
-    BN_free(res);
-    if(fclose(file)){
-    	fprintf(stderr, "fclose failed \n");
-    	exit(1);
-    }
-    //printf("%s\n", string);
-    (*env)->ReleaseStringUTFChars(env, num, NULL);
-    (*env)->ReleaseStringUTFChars(env, expo, NULL);
-    (*env)->ReleaseStringUTFChars(env, mod, NULL);
+    unsigned char * r = malloc(BN_num_bytes(res));
+    *r_len = BN_bn2bin(res, r);
 
-    jstring answer = (*env)->NewStringUTF(env, string);
-    free(string);
-    return answer;
+    BN_CTX_free(bnctx);
+    BN_free(modulo);
+    BN_free(exponent);
+    BN_free(number);
+    BN_free(res);
+
+    return r;
 }
+
+JNIEXPORT jbyteArray JNICALL 
+Java_cl_niclabs_tscrypto_common_algorithms_JniSignWrapper_modPow(JNIEnv * env, jclass jc, jbyteArray num, jbyteArray expo, jbyteArray mod){
+  jbyte * n = (*env)->GetByteArrayElements(env, num, 0);
+  jsize n_len = (*env)->GetArrayLength(env, num);
+  
+  jbyte * e = (*env)->GetByteArrayElements(env, expo, 0);
+  jsize e_len = (*env)->GetArrayLength(env, expo);  
+  
+  jbyte * m = (*env)->GetByteArrayElements(env, mod, 0);
+  jsize m_len = (*env)->GetArrayLength(env, mod);
+
+  size_t result_len = 0;
+  unsigned char * result = mod_pow(n, n_len, e, e_len, m, m_len, &result_len);
+
+  jbyteArray out = (*env)->NewByteArray(env, result_len);
+  (*env)->SetByteArrayRegion(env, out, 0, result_len, result);
+  free(result);
+
+  (*env)->ReleaseByteArrayElements(env, num, n, 0);
+  (*env)->ReleaseByteArrayElements(env, expo, e, 0);
+  (*env)->ReleaseByteArrayElements(env, mod, m, 0);
+
+  return out;
+}
+
 JNIEXPORT jobjectArray JNICALL Java_cl_niclabs_tscrypto_common_algorithms_JniSignWrapper_sign
   (JNIEnv *env, jclass jniSign, jstring sGroupVerifier, jstring sShareVerifier, 
                                 jstring sN, jstring sX, jstring sR, jstring sDelta, jstring sSecretShare){
