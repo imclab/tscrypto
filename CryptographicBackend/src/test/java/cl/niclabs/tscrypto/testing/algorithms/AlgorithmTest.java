@@ -75,9 +75,8 @@ public class AlgorithmTest {
 
     @Test
     public void KeySharesFactoryTest() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
-        PublicKey pKey;
         KeyInfo keyInfo = KeyFactory.generateKeys(keysize, k, l);
-        pKey = keyInfo.getPublicKey().convertoToPublicKey();
+        PublicKey pKey = keyInfo.getPublicKey().convertoToPublicKey();
 
         int[] superset = new int[l];
         KeyShareInfo[] keyShareInfos = new KeyShareInfo[l];

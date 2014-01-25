@@ -81,7 +81,7 @@ public class TSPublicKey extends JsonFormat {
 	public PublicKey convertoToPublicKey() throws NoSuchAlgorithmException, InvalidKeySpecException {
 		KeyFactory keyFactory = KeyFactory.getInstance("RSA");
 		RSAPublicKeySpec ks = new RSAPublicKeySpec(n, e);
-		return (RSAPublicKey) keyFactory.generatePublic(ks);
+		return keyFactory.generatePublic(ks);
 	}
 
 }

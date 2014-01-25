@@ -106,8 +106,6 @@ public class PlayerSignerImpl implements PlayerSigner {
 
 		final int randbits = publicKey.getModulus().bitLength() + 3 * ThreshUtil.L1;
 		final BigInteger r = (new BigInteger(randbits, random));
-        // NodeConfig config = NodeConfig.getInstance();
-        // System.out.println(config.getUseJNI());
 
         return sign(document, r);
 
@@ -124,10 +122,10 @@ public class PlayerSignerImpl implements PlayerSigner {
 		BigInteger shareVerifier = publicKey.getShareVerifier(id);
 		
 		final BigInteger n = publicKey.getModulus();
-		
-		final BigInteger x = document.mod(n);
-        final BigInteger xi = x.modPow(FOUR.multiply(delta).multiply(secretShare), n);
 
+        final BigInteger x = document.mod(n);
+        final BigInteger xi = x.modPow(TWO.multiply(delta).multiply(secretShare), n);
+        final BigInteger xi2n = xi.modPow(TWO, n);
         final BigInteger v_prime = groupVerifier.modPow(r, n);
         final BigInteger x_tilde = x.modPow(FOUR.multiply(delta), n);
         final BigInteger x_prime = x_tilde.modPow(r, n);
@@ -135,16 +133,15 @@ public class PlayerSignerImpl implements PlayerSigner {
 
         BigInteger c, z;
 
-		// Try to generate C and Z
-		synchronized (lockMd) {
-			md = MessageDigest.getInstance("SHA");
-			md.reset();
+        // Try to generate C and Z
+        synchronized (lockMd) {
+            md = MessageDigest.getInstance("SHA");
+            md.reset();
 
-			md.update(groupVerifier.mod(n).toByteArray());
-			md.update(x_tilde.toByteArray());
-			md.update(shareVerifier.mod(n).toByteArray());
+            md.update(groupVerifier.mod(n).toByteArray());
+            md.update(x_tilde.toByteArray());
+            md.update(shareVerifier.mod(n).toByteArray());
 
-            final BigInteger xi2n = xi.modPow(TWO, n);
 			md.update(xi2n.toByteArray());
 
 			md.update(v_prime.toByteArray());

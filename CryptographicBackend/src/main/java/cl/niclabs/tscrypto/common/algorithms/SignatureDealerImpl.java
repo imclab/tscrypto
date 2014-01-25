@@ -157,7 +157,7 @@ public class SignatureDealerImpl implements SignatureDealer {
 		final BigInteger vinegc = vi.modPow(c, publicKey.n).modInverse(publicKey.n);
 
         final BigInteger xineg2c = xi
-                // .modPow(TWO, publicKey.n)
+                .modPow(TWO, publicKey.n)
                 .modPow(c, publicKey.n)
                 .modInverse(publicKey.n);
 
@@ -202,8 +202,8 @@ public class SignatureDealerImpl implements SignatureDealer {
 
 	private synchronized void generateEprime() {
 		if (eprime == null) {
-			eprime = delta.multiply(delta).shiftLeft(2);
-            // eprime = ThreshUtil.FOUR.multiply(delta.modPow(ThreshUtil.TWO, publicKey.n)).mod(publicKey.n);
+			// eprime = delta.multiply(delta).shiftLeft(2);
+            eprime = ThreshUtil.FOUR.multiply(delta.modPow(ThreshUtil.TWO, publicKey.n)).mod(publicKey.n);
 		}
 	}
 
@@ -223,8 +223,7 @@ public class SignatureDealerImpl implements SignatureDealer {
 			
 			for (int i = 0; i < keyMetaInfo.getK(); i++) {
 				int id = validIds[i];
-                // BigInteger lambda2 = ThreshUtil.TWO.multiply(lambda(id + 1, validIds, delta));
-                BigInteger lambda2 = lambda(id + 1, validIds, delta);
+                BigInteger lambda2 = ThreshUtil.TWO.multiply(lambda(id + 1, validIds, delta));
 				w = w.multiply(request.getSignatureShare(id).signature.modPow(lambda2, publicKey.n));
 			}
 
