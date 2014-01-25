@@ -78,7 +78,7 @@ public class SignatureRequest {
 	 */
 	private BigInteger hashData(byte[] blob, String hashAlgorithm) throws NoSuchAlgorithmException {
 		BigInteger data;
-		int size = keyMetaInfo.getKeysize() / 4;
+		int size = keyMetaInfo.getKeysize() / 8;
 
         switch (hashAlgorithm) {
             case "NONE":

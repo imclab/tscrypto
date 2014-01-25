@@ -115,7 +115,6 @@ public class AlgorithmTest {
     }
 
     @Test
-    @Ignore
     public void JniTest() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
         PublicKey pKey;
         KeyInfo keyInfo = KeyFactory.generateKeys(keysize, k, l);
