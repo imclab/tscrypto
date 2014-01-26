@@ -7,25 +7,24 @@
 /* Returns the bytes of the result. In r_len, the output is the length */ 
 static unsigned char * 
 mod_pow(unsigned char * n, size_t n_len, unsigned char * e, size_t e_len, unsigned char * m, size_t m_len, size_t * r_len ) {
-    BIGNUM *res = BN_new();
-    BIGNUM *number = BN_new();
-    BIGNUM *exponent = BN_new();
-    BIGNUM *modulo = BN_new();
+    BN_CTX * ctx = BN_CTX_new();
+    BN_CTX_start(ctx);
+    BIGNUM * res = BN_CTX_get(ctx);
+    BIGNUM * number = BN_CTX_get(ctx);
+    BIGNUM * exponent = BN_CTX_get(ctx);
+    BIGNUM * modulo = BN_CTX_get(ctx);
+
     BN_bin2bn(n, n_len, number);
     BN_bin2bn(e, e_len, exponent);
     BN_bin2bn(m, m_len, modulo);
+  
+    BN_mod_exp(res, number, exponent, modulo, ctx);
 
-    BN_CTX *bnctx = BN_CTX_new();
-    BN_mod_exp(res, number, exponent, modulo, bnctx);
-    
     unsigned char * r = malloc(BN_num_bytes(res));
     *r_len = BN_bn2bin(res, r);
 
-    BN_CTX_free(bnctx);
-    BN_free(modulo);
-    BN_free(exponent);
-    BN_free(number);
-    BN_free(res);
+    BN_CTX_end(ctx);
+    BN_CTX_free(ctx);
 
     return r;
 }

@@ -4,7 +4,7 @@ import java.math.BigInteger;
 public class JniSignWrapper {
     static {
         System.out.println("Loading library...");
-        System.loadLibrary("jniSignWrapper");
+        System.loadLibrary("jniSignWrapper"); // TODO: this must not be hardcoded...
         System.out.println("Library loaded...");
     }
 
@@ -14,8 +14,17 @@ public class JniSignWrapper {
                                         String secretShare);
 
     public static BigInteger modPow(BigInteger num, BigInteger exp, BigInteger mod){
-        // The sign is always positive.
-       return new BigInteger(1, modPow(num.toByteArray(), exp.toByteArray(), mod.toByteArray()));
+        boolean invertedExponent = false;
+        if(exp.signum() < 0) {
+            invertedExponent = true;
+            exp = exp.negate();
+        }
+        byte[] mag = modPow(num.toByteArray(), exp.toByteArray(), mod.toByteArray());
+        if (invertedExponent) {
+            return new BigInteger(1, mag).modInverse(mod);
+        } else {
+            return new BigInteger(1, mag);
+        }
     }
     public static BigInteger[] signWrapper(BigInteger groupVerifier, BigInteger shareVerifier,
                                            BigInteger n, BigInteger x, BigInteger r, BigInteger delta,

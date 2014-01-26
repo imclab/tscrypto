@@ -63,7 +63,7 @@ public class SignatureDealerJniImpl implements SignatureDealer {
 		request.setDocument(document, hashAlgorithm);
 		generateX();
 		generateDelta();
-		xtilde = JniSignWrapper.modPow(x, BigInteger.valueOf(4l).multiply(delta), publicKey.n);
+		xtilde = JniSignWrapper.modPow(x, delta.shiftLeft(2), publicKey.n);
 
 		return request;
 	}
@@ -110,7 +110,7 @@ public class SignatureDealerJniImpl implements SignatureDealer {
 		// // y = w^a*x^b
 
 		generateW();
-		final BigInteger wa = w.modPow(a, publicKey.n);
+		final BigInteger wa = JniSignWrapper.modPow(w, a, publicKey.n);
 		final BigInteger xb = JniSignWrapper.modPow(x, b, publicKey.n);
 		return wa.multiply(xb).mod(publicKey.n);
 	}
@@ -134,7 +134,7 @@ public class SignatureDealerJniImpl implements SignatureDealer {
 		generateW();
 
 		final BigInteger xeprime = JniSignWrapper.modPow(x, eprime, publicKey.n);
-		final BigInteger we = w.modPow(publicKey.e, publicKey.n);
+		final BigInteger we = JniSignWrapper.modPow(w, publicKey.e, publicKey.n);
 
 		return (xeprime.compareTo(we) == 0);
 	}
@@ -229,7 +229,7 @@ public class SignatureDealerJniImpl implements SignatureDealer {
                 BigInteger lambda2 = lambda(id + 1, validIds, delta).shiftLeft(1);
 
                 // s_i^{2*lambda} % n
-                final BigInteger silambda2 = si.modPow(lambda2, publicKey.n);
+                final BigInteger silambda2 = JniSignWrapper.modPow(si, lambda2, publicKey.n);
 				w = w.multiply(silambda2).mod(publicKey.n);
 			}
 
