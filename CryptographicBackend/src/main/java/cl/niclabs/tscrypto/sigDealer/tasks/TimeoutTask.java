@@ -20,7 +20,7 @@ package cl.niclabs.tscrypto.sigDealer.tasks;
 
 import java.util.TimerTask;
 
-import cl.niclabs.tscrypto.common.algorithms.SignatureDealer;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureDealer;
 
 public class TimeoutTask extends TimerTask {
 

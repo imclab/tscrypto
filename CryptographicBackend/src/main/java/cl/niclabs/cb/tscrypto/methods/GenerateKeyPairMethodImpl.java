@@ -18,11 +18,10 @@
 
 package cl.niclabs.cb.tscrypto.methods;
 
-import cl.niclabs.tscrypto.common.algorithms.KeyFactory;
+import cl.niclabs.tscrypto.common.algorithms.keyfactory.KeyFactory;
 import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.datatypes.Ticket;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
-import cl.niclabs.tscrypto.common.algorithms.KeyFactoryImpl;
 import cl.niclabs.tscrypto.sigDealer.KeyDispatchRequest;
 import cl.niclabs.tscrypto.sigDealer.KeyFactoryFactory;
 import cl.niclabs.tscrypto.sigDealer.KeyManager;

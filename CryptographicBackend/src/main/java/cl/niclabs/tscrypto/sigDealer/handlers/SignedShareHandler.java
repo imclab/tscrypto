@@ -20,7 +20,7 @@ package cl.niclabs.tscrypto.sigDealer.handlers;
 
 import java.security.NoSuchAlgorithmException;
 
-import cl.niclabs.tscrypto.common.algorithms.SignatureDealer;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureDealer;
 import cl.niclabs.tscrypto.common.messages.SignShareAnswer;
 import cl.niclabs.tscrypto.common.messages.TSMessage;
 import cl.niclabs.tscrypto.common.utils.TSLogger;

@@ -19,13 +19,11 @@
 package cl.niclabs.tscrypto.sigDealer;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
-import cl.niclabs.tscrypto.common.algorithms.SignatureDealer;
-import cl.niclabs.tscrypto.common.algorithms.SignatureDealerImpl;
-import cl.niclabs.tscrypto.common.algorithms.SignatureRequest;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureDealer;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureRequest;
 import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
 import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;

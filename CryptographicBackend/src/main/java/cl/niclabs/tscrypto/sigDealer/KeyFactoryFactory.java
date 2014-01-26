@@ -1,8 +1,8 @@
 package cl.niclabs.tscrypto.sigDealer;
 
-import cl.niclabs.tscrypto.common.algorithms.KeyFactory;
-import cl.niclabs.tscrypto.common.algorithms.KeyFactoryImpl;
-import cl.niclabs.tscrypto.common.algorithms.KeyFactoryJniImpl;
+import cl.niclabs.tscrypto.common.algorithms.keyfactory.KeyFactory;
+import cl.niclabs.tscrypto.common.algorithms.keyfactory.KeyFactoryImpl;
+import cl.niclabs.tscrypto.common.algorithms.keyfactory.KeyFactoryJniImpl;
 
 public class KeyFactoryFactory {
     public static KeyFactory getInstance() {

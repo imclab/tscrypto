@@ -18,8 +18,7 @@
 
 package cl.niclabs.tscrypto.keyFactory;
 
-import cl.niclabs.tscrypto.common.algorithms.KeyFactoryImpl;
-import cl.niclabs.tscrypto.common.algorithms.KeyFactoryJniImpl;
+import cl.niclabs.tscrypto.common.algorithms.keyfactory.KeyFactoryImpl;
 import org.apache.commons.cli.*;
 
 import cl.niclabs.tscrypto.common.datatypes.KeyInfo;

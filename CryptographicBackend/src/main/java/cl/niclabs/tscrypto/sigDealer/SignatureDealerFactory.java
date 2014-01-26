@@ -1,9 +1,9 @@
 package cl.niclabs.tscrypto.sigDealer;
 
 
-import cl.niclabs.tscrypto.common.algorithms.SignatureDealer;
-import cl.niclabs.tscrypto.common.algorithms.SignatureDealerImpl;
-import cl.niclabs.tscrypto.common.algorithms.SignatureDealerJniImpl;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureDealer;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureDealerImpl;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureDealerJniImpl;
 import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
 import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
 

@@ -27,12 +27,19 @@
 package cl.niclabs.tscrypto.testing.algorithms;
 
 import cl.niclabs.tscrypto.common.algorithms.*;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureDealer;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureDealerImpl;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureDealerJniImpl;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureRequest;
+import cl.niclabs.tscrypto.common.algorithms.keyfactory.KeyFactoryJniImpl;
+import cl.niclabs.tscrypto.common.algorithms.signer.PlayerSigner;
+import cl.niclabs.tscrypto.common.algorithms.signer.PlayerSignerImpl;
+import cl.niclabs.tscrypto.common.algorithms.signer.PlayerSignerJniImpl;
 import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.datatypes.KeyShareInfo;
 import cl.niclabs.tscrypto.common.utils.ThreshUtil;
-import cl.niclabs.tscrypto.common.algorithms.KeyFactoryImpl;
+import cl.niclabs.tscrypto.common.algorithms.keyfactory.KeyFactoryImpl;
 import org.junit.Assert;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
@@ -56,7 +63,6 @@ public class AlgorithmTest {
 
 
     @Test
-    @Ignore
     public void modPowTest() {
         SecureRandom random = ThreshUtil.getRandom();
         for(int i = 0; i < 100; i++) {
@@ -75,7 +81,6 @@ public class AlgorithmTest {
     }
 
     @Test
-    @Ignore
     public void KeySharesFactoryTest() throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, SignatureException {
         KeyInfo keyInfo = new KeyFactoryImpl().generateKeys(keysize, k, l);
         PublicKey pKey = keyInfo.getPublicKey().convertoToPublicKey();
@@ -158,7 +163,6 @@ public class AlgorithmTest {
         }
     }
 
-    @Ignore
     @Test
     public void keySizeTest() throws InvalidKeySpecException, NoSuchAlgorithmException {
         KeyInfo keyInfo = new KeyFactoryImpl().generateKeys(keysize / 2, k, l);

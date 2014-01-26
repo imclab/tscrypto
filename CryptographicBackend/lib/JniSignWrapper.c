@@ -31,7 +31,10 @@ mod_pow(unsigned char * n, size_t n_len, unsigned char * e, size_t e_len, unsign
 }
 
 JNIEXPORT jbyteArray JNICALL 
-Java_cl_niclabs_tscrypto_common_algorithms_JniSignWrapper_modPow(JNIEnv * env, jclass jc, jbyteArray num, jbyteArray expo, jbyteArray mod){
+Java_cl_niclabs_tscrypto_common_algorithms_JniSignWrapper_modPow(
+    JNIEnv * env, jclass jc, jbyteArray num, jbyteArray expo, jbyteArray mod
+    )
+{
   jbyte * n = (*env)->GetByteArrayElements(env, num, 0);
   jsize n_len = (*env)->GetArrayLength(env, num);
   
@@ -55,9 +58,12 @@ Java_cl_niclabs_tscrypto_common_algorithms_JniSignWrapper_modPow(JNIEnv * env, j
   return out;
 }
 
-JNIEXPORT jobjectArray JNICALL Java_cl_niclabs_tscrypto_common_algorithms_JniSignWrapper_sign
-  (JNIEnv *env, jclass jniSign, jstring sGroupVerifier, jstring sShareVerifier, 
-                                jstring sN, jstring sX, jstring sR, jstring sDelta, jstring sSecretShare){
+JNIEXPORT jobjectArray JNICALL 
+Java_cl_niclabs_tscrypto_common_algorithms_JniSignWrapper_sign (
+    JNIEnv *env, jclass jniSign, jstring sGroupVerifier, jstring sShareVerifier, 
+    jstring sN, jstring sX, jstring sR, jstring sDelta, jstring sSecretShare
+    )
+{
     FILE *file1, *file2, *file3, *file4, *file5;
     char *buff1 = (char *) malloc(8000);
     char *buff2 = (char *) malloc(8000);

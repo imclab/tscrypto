@@ -18,7 +18,7 @@
 
 package cl.niclabs.cb.tscrypto;
 
-import cl.niclabs.tscrypto.common.algorithms.SignatureRequest;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureRequest;
 import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
 import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
 import cl.niclabs.tscrypto.common.datatypes.Ticket;
