@@ -25,8 +25,10 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 
 
 using namespace hsm;
+using std::string;
+using std::map;
 
-Token::Token ( std::string label, std::string userPin, std::string soPin )
+Token::Token ( string label, string userPin, string soPin )
     : userPin_ ( userPin ), soPin_ ( soPin )
     , securityLevel_ ( SecurityLevel::PUBLIC ), loggedIn_ ( false )
 {
@@ -35,8 +37,6 @@ Token::Token ( std::string label, std::string userPin, std::string soPin )
     } else {
         throw TcbError ( "Token::Token", "Etiqueta con mas de 32 caracteres", CKR_ARGUMENTS_BAD );
     }
-
-    // TODO: Deserialize Token Objects
 }
 
 Token::~Token()
@@ -89,7 +89,7 @@ void Token::getInfo ( CK_TOKEN_INFO_PTR pInfo ) const
     memcpy ( pInfo->utcTime, dateTime, 16 );
 }
 
-void Token::setUserPin ( std::string pin )
+void Token::setUserPin ( string pin )
 {
     userPin_ = pin;
 }
@@ -106,7 +106,7 @@ auto Token::getSecurityLevel() const -> SecurityLevel
 
 Token::SecurityLevel Token::checkUserPin ( CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen ) const
 {
-    std::string pin ( reinterpret_cast<char *> ( pPin ), ulPinLen );
+    string pin ( reinterpret_cast<char *> ( pPin ), ulPinLen );
     if ( userPin_ == pin ) {
         return SecurityLevel::USER;
     } else {
@@ -116,7 +116,7 @@ Token::SecurityLevel Token::checkUserPin ( CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinL
 
 Token::SecurityLevel Token::checkSecurityOfficerPin ( CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen ) const
 {
-    std::string pin ( reinterpret_cast<char *> ( pPin ), ulPinLen );
+    string pin ( reinterpret_cast<char *> ( pPin ), ulPinLen );
     if ( soPin_ == pin ) {
         return SecurityLevel::SECURITY_OFFICER;
     } else {
@@ -183,7 +183,7 @@ CK_OBJECT_HANDLE Token::addObject ( CryptoObject * object )
     return handle;
 }
 
-std::string Token::getLabel() const
+string Token::getLabel() const
 {
     return label_;
 }
@@ -193,7 +193,7 @@ CryptoObject & Token::getObject ( CK_OBJECT_HANDLE handle )
     return * ( objects_.at ( handle ) );
 }
 
-std::map<CK_OBJECT_HANDLE, CryptoObjectPtr> & Token::getObjects()
+map<CK_OBJECT_HANDLE, CryptoObjectPtr> & Token::getObjects()
 {
     return objects_;
 }

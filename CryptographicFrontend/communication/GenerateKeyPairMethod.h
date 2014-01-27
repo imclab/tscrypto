@@ -31,7 +31,7 @@ class GenerateKeyPairMethod : public Method
 {
 public:
     virtual ~GenerateKeyPairMethod() = default;
-    GenerateKeyPairMethod ( std::string keyType, int keySize, std::string publicExponent );
+    GenerateKeyPairMethod ( std::string keyType, long keySize, std::string publicExponent );
     virtual ResponseMessage parseResponse ( const Json::Value& value ) override;
 };
 

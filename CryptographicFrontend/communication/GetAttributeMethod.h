@@ -29,7 +29,6 @@ public:
     virtual ~GetAttributeMethod() = default;
     GetAttributeMethod ( std::string attribute, std::string handler );
     virtual ResponseMessage parseResponse ( const Json::Value& value ) override;
-
 };
 
 
