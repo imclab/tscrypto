@@ -33,13 +33,13 @@ import java.security.spec.RSAKeyGenParameterSpec;
 class GenerateKeyPairMethodImpl implements GenerateKeyPairMethod {
     private final String keyType;
     private final int keySize;
-    private final String publicExponent;
+    private final byte[] publicExponent;
     private final KeyStorage ks;
 
     public GenerateKeyPairMethodImpl(Args args) {
         keyType = args.keyType;
         keySize = args.keySize;
-        publicExponent = args.publicExponent;
+        publicExponent = DatatypeConverter.parseBase64Binary(args.publicExponent);
         ks = MapKeyStorage.getInstance();
     }
 

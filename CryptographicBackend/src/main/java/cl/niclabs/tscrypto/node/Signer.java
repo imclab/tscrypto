@@ -36,7 +36,7 @@ public class Signer {
 
     public SignatureShare sign(BigInteger document, String alias) {
         SignatureShare signatureShare = null;
-        TSLogger.node.info("document: " + document);
+        TSLogger.node.debug("document: " + document);
 
         PlayerSigner playerSigner = PlayerSignerFactory.getInstance(keyManager.getKeyShareInfo(alias), getId());
 

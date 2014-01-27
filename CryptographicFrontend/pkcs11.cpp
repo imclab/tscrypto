@@ -1,19 +1,20 @@
 /*
-Copyright 2013 NIC Chile Research Labs.
-This file is part of PKCS11-TsCrypto.
+   Copyright 2013 NIC Chile Research Labs.
+   This file is part of PKCS11-TsCrypto.
 
-PKCS11-TsCrypto is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+   PKCS11-TsCrypto is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-PKCS11-TsCrypto is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
+   PKCS11-TsCrypto is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU Lesser General Public License
+   along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
+
 */
 
 #include "config.h"
@@ -41,18 +42,18 @@ using namespace hsm;
 
 namespace
 {
-std::unique_ptr<Application> app;
+  std::unique_ptr<Application> app;
 
-bool appIsInited ( void )
-{
+  bool appIsInited ( void )
+  {
     return static_cast<bool> ( app );
-}
+  }
 
-CK_RV error ( TcbError &e )
-{
+  CK_RV error ( TcbError &e )
+  {
     app->errorLog ( e.what() );
     return e.getErrorCode();
-}
+  }
 }
 
 /***
@@ -67,860 +68,860 @@ CK_RV error ( TcbError &e )
 
 extern "C" {
 
-    CK_FUNCTION_LIST functionList = {
-        { 2, 20 },
-        C_Initialize,
-        C_Finalize,
-        C_GetInfo,
-        C_GetFunctionList,
-        C_GetSlotList,
-        C_GetSlotInfo,
-        C_GetTokenInfo,
-        C_GetMechanismList,
-        C_GetMechanismInfo,
-        C_InitToken,
-        C_InitPIN,
-        C_SetPIN,
-        C_OpenSession,
-        C_CloseSession,
-        C_CloseAllSessions,
-        C_GetSessionInfo,
-        C_GetOperationState,
-        C_SetOperationState,
-        C_Login,
-        C_Logout,
-        C_CreateObject,
-        C_CopyObject,
-        C_DestroyObject,
-        C_GetObjectSize,
-        C_GetAttributeValue,
-        C_SetAttributeValue,
-        C_FindObjectsInit,
-        C_FindObjects,
-        C_FindObjectsFinal,
-        C_EncryptInit,
-        C_Encrypt,
-        C_EncryptUpdate,
-        C_EncryptFinal,
-        C_DecryptInit,
-        C_Decrypt,
-        C_DecryptUpdate,
-        C_DecryptFinal,
-        C_DigestInit,
-        C_Digest,
-        C_DigestUpdate,
-        C_DigestKey,
-        C_DigestFinal,
-        C_SignInit,
-        C_Sign,
-        C_SignUpdate,
-        C_SignFinal,
-        C_SignRecoverInit,
-        C_SignRecover,
-        C_VerifyInit,
-        C_Verify,
-        C_VerifyUpdate,
-        C_VerifyFinal,
-        C_VerifyRecoverInit,
-        C_VerifyRecover,
-        C_DigestEncryptUpdate,
-        C_DecryptDigestUpdate,
-        C_SignEncryptUpdate,
-        C_DecryptVerifyUpdate,
-        C_GenerateKey,
-        C_GenerateKeyPair,
-        C_WrapKey,
-        C_UnwrapKey,
-        C_DeriveKey,
-        C_SeedRandom,
-        C_GenerateRandom,
-        C_GetFunctionStatus,
-        C_CancelFunction,
-        C_WaitForSlotEvent
-    };
-
-    extern CK_FUNCTION_LIST functionList;
-
-    CK_RV C_Initialize ( CK_VOID_PTR pInitArgs )
-    {
-        CK_C_INITIALIZE_ARGS_PTR args =
-            reinterpret_cast<CK_C_INITIALIZE_ARGS_PTR> ( pInitArgs );
-
-        if ( appIsInited() ) {
-            return CKR_CRYPTOKI_ALREADY_INITIALIZED;
-        }
+  CK_FUNCTION_LIST functionList = {
+    { 2, 20 },
+    C_Initialize,
+    C_Finalize,
+    C_GetInfo,
+    C_GetFunctionList,
+    C_GetSlotList,
+    C_GetSlotInfo,
+    C_GetTokenInfo,
+    C_GetMechanismList,
+    C_GetMechanismInfo,
+    C_InitToken,
+    C_InitPIN,
+    C_SetPIN,
+    C_OpenSession,
+    C_CloseSession,
+    C_CloseAllSessions,
+    C_GetSessionInfo,
+    C_GetOperationState,
+    C_SetOperationState,
+    C_Login,
+    C_Logout,
+    C_CreateObject,
+    C_CopyObject,
+    C_DestroyObject,
+    C_GetObjectSize,
+    C_GetAttributeValue,
+    C_SetAttributeValue,
+    C_FindObjectsInit,
+    C_FindObjects,
+    C_FindObjectsFinal,
+    C_EncryptInit,
+    C_Encrypt,
+    C_EncryptUpdate,
+    C_EncryptFinal,
+    C_DecryptInit,
+    C_Decrypt,
+    C_DecryptUpdate,
+    C_DecryptFinal,
+    C_DigestInit,
+    C_Digest,
+    C_DigestUpdate,
+    C_DigestKey,
+    C_DigestFinal,
+    C_SignInit,
+    C_Sign,
+    C_SignUpdate,
+    C_SignFinal,
+    C_SignRecoverInit,
+    C_SignRecover,
+    C_VerifyInit,
+    C_Verify,
+    C_VerifyUpdate,
+    C_VerifyFinal,
+    C_VerifyRecoverInit,
+    C_VerifyRecover,
+    C_DigestEncryptUpdate,
+    C_DecryptDigestUpdate,
+    C_SignEncryptUpdate,
+    C_DecryptVerifyUpdate,
+    C_GenerateKey,
+    C_GenerateKeyPair,
+    C_WrapKey,
+    C_UnwrapKey,
+    C_DeriveKey,
+    C_SeedRandom,
+    C_GenerateRandom,
+    C_GetFunctionStatus,
+    C_CancelFunction,
+    C_WaitForSlotEvent
+  };
+
+  extern CK_FUNCTION_LIST functionList;
+
+  CK_RV C_Initialize ( CK_VOID_PTR pInitArgs )
+  {
+    CK_C_INITIALIZE_ARGS_PTR args =
+      reinterpret_cast<CK_C_INITIALIZE_ARGS_PTR> ( pInitArgs );
+
+    if ( appIsInited() ) {
+      return CKR_CRYPTOKI_ALREADY_INITIALIZED;
+    }
+
+    if ( args != nullptr ) {
+      if ( args->pReserved != nullptr ) {
+        return CKR_ARGUMENTS_BAD;
+      }
+
+      bool someButNotAll =
+        ! ( args->CreateMutex &&
+            args->DestroyMutex &&
+            args->LockMutex &&
+            args->UnlockMutex )
+
+        &&
+
+        ( args->CreateMutex ||
+          args->DestroyMutex ||
+          args->LockMutex ||
+          args->UnlockMutex );
+
+      if ( someButNotAll ) {
+        return CKR_ARGUMENTS_BAD;
+      }
+    }
+    try {
+      app.reset ( new Application ( std::cerr ) );
+    } catch ( TcbError & e ) {
+      std::cerr << e.what() << std::endl;
+      return e.getErrorCode();
+    }
 
-        if ( args != nullptr ) {
-            if ( args->pReserved != nullptr ) {
-                return CKR_ARGUMENTS_BAD;
-            }
-
-            bool someButNotAll =
-                ! ( args->CreateMutex &&
-                    args->DestroyMutex &&
-                    args->LockMutex &&
-                    args->UnlockMutex )
-
-                &&
-
-                ( args->CreateMutex ||
-                  args->DestroyMutex ||
-                  args->LockMutex ||
-                  args->UnlockMutex );
-
-            if ( someButNotAll ) {
-                return CKR_ARGUMENTS_BAD;
-            }
-        }
-        try {
-            app.reset ( new Application ( std::cerr ) );
-        } catch ( TcbError & e ) {
-            std::cerr << e.what() << std::endl;
-            return e.getErrorCode();
-        }
+    return CKR_OK;
+  }
 
-        return CKR_OK;
+  CK_RV C_Finalize ( CK_VOID_PTR pReserved )
+  {
+    if ( pReserved != nullptr ) {
+      return CKR_ARGUMENTS_BAD;
+    }
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_Finalize ( CK_VOID_PTR pReserved )
-    {
-        if ( pReserved != nullptr ) {
-            return CKR_ARGUMENTS_BAD;
-        }
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    app.reset ( nullptr );
+    return CKR_OK;
+  }
 
-        app.reset ( nullptr );
-        return CKR_OK;
+  CK_RV C_InitToken ( CK_SLOT_ID slotID, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen, CK_UTF8CHAR_PTR pLabel )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_InitToken ( CK_SLOT_ID slotID, CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen, CK_UTF8CHAR_PTR pLabel )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    if ( !pPin ) {
+      return CKR_ARGUMENTS_BAD;
+    }
 
-        if ( !pPin ) {
-            return CKR_ARGUMENTS_BAD;
-        }
+    if ( !pLabel ) {
+      return CKR_ARGUMENTS_BAD;
+    }
 
-        if ( !pLabel ) {
-            return CKR_ARGUMENTS_BAD;
-        }
+    try {
+      std::string label ( reinterpret_cast<char*> ( pLabel ), 32 );
+      std::string pin ( reinterpret_cast<char*> ( pPin ), ulPinLen );
+      Slot & slot = app->getSlot ( slotID );
 
-        try {
-            std::string label ( reinterpret_cast<char*> ( pLabel ), 32 );
-            std::string pin ( reinterpret_cast<char*> ( pPin ), ulPinLen );
-            Slot & slot = app->getSlot ( slotID );
-
-            slot.insertToken ( new Token ( label, pin, pin ) );
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
+      slot.insertToken ( new Token ( label, pin, pin ) );
+    } catch ( TcbError & e ) {
+      return error ( e );
+    }
 
-        return CKR_OK;
+    return CKR_OK;
+  }
+
+  CK_RV C_InitPIN ( CK_SESSION_HANDLE hSession,CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_InitPIN ( CK_SESSION_HANDLE hSession,CK_UTF8CHAR_PTR pPin, CK_ULONG ulPinLen )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    if ( !pPin ) {
+      return CKR_ARGUMENTS_BAD;
+    }
 
-        if ( !pPin ) {
-            return CKR_ARGUMENTS_BAD;
-        }
+    try {
+      std::string pin ( reinterpret_cast<char*> ( pPin ), ulPinLen );
+      app->getSession ( hSession ).getCurrentSlot().getToken().setUserPin ( pin );
+    } catch ( TcbError & e ) {
+      return error ( e );
+    }
 
-        try {
-            std::string pin ( reinterpret_cast<char*> ( pPin ), ulPinLen );
-            app->getSession ( hSession ).getCurrentSlot().getToken().setUserPin ( pin );
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
+    return CKR_OK;
 
-        return CKR_OK;
+  }
 
-    }
+  CK_RV C_SetPIN ( CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pOldPin, CK_ULONG ulOldLen, CK_UTF8CHAR_PTR pNewPin, CK_ULONG ulNewLen )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_SetPIN ( CK_SESSION_HANDLE hSession, CK_UTF8CHAR_PTR pOldPin, CK_ULONG ulOldLen, CK_UTF8CHAR_PTR pNewPin, CK_ULONG ulNewLen )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
+  CK_RV C_GetInfo ( CK_INFO_PTR pInfo )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
+    if ( pInfo == nullptr ) {
+      return CKR_ARGUMENTS_BAD;
+    }
 
-    CK_RV C_GetInfo ( CK_INFO_PTR pInfo )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
-        if ( pInfo == nullptr ) {
-            return CKR_ARGUMENTS_BAD;
-        }
+    std::string manufacturer { "NicLabs" };
+    std::string description { "Implementacion de PKCS11" };
 
-        std::string manufacturer { "NicLabs" };
-        std::string description { "Implementacion de PKCS11" };
+    pInfo->cryptokiVersion.major = 2;
+    pInfo->cryptokiVersion.minor = 20;
 
-        pInfo->cryptokiVersion.major = 2;
-        pInfo->cryptokiVersion.minor = 20;
+    std::fill ( pInfo->manufacturerID,
+        pInfo->manufacturerID + 32,
+        ' ' );
+    std::copy ( manufacturer.cbegin(),
+        manufacturer.cend(),
+        pInfo->manufacturerID );
 
-        std::fill ( pInfo->manufacturerID,
-                    pInfo->manufacturerID + 32,
-                    ' ' );
-        std::copy ( manufacturer.cbegin(),
-                    manufacturer.cend(),
-                    pInfo->manufacturerID );
+    std::fill ( pInfo->libraryDescription,
+        pInfo->libraryDescription + 32,
+        ' ' );
+    std::copy ( description.cbegin(),
+        description.cend(),
+        pInfo->libraryDescription );
 
-        std::fill ( pInfo->libraryDescription,
-                    pInfo->libraryDescription + 32,
-                    ' ' );
-        std::copy ( description.cbegin(),
-                    description.cend(),
-                    pInfo->libraryDescription );
+    pInfo->flags = 0;
 
-        pInfo->flags = 0;
+    // TODO: Delete this.
+    pInfo->libraryVersion.major = 0;
+    pInfo->libraryVersion.minor = 1;
+    //pInfo->libraryVersion.major = VERSION_MAJOR;
+    //pInfo->libraryVersion.minor = VERSION_MINOR;
 
-        // TODO: Delete this.
-        pInfo->libraryVersion.major = 0;
-        pInfo->libraryVersion.minor = 1;
-        //pInfo->libraryVersion.major = VERSION_MAJOR;
-        //pInfo->libraryVersion.minor = VERSION_MINOR;
+    return CKR_OK;
+  }
 
-        return CKR_OK;
+  CK_RV C_GetFunctionList ( CK_FUNCTION_LIST_PTR_PTR ppFunctionList )
+  {
+    if ( ppFunctionList == nullptr ) {
+      return CKR_ARGUMENTS_BAD;
     }
 
-    CK_RV C_GetFunctionList ( CK_FUNCTION_LIST_PTR_PTR ppFunctionList )
-    {
-        if ( ppFunctionList == nullptr ) {
-            return CKR_ARGUMENTS_BAD;
-        }
+    *ppFunctionList = &functionList;
 
-        *ppFunctionList = &functionList;
+    return CKR_OK;
+  }
 
-        return CKR_OK;
+  CK_RV C_GetSlotList ( CK_BBOOL tokenPresent, CK_SLOT_ID_PTR pSlotList, CK_ULONG_PTR pulCount )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_GetSlotList ( CK_BBOOL tokenPresent, CK_SLOT_ID_PTR pSlotList, CK_ULONG_PTR pulCount )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    auto const & slotList = app->getSlotList();
 
-        auto const & slotList = app->getSlotList();
-
-        unsigned long bufSize = 0;
-        if ( tokenPresent == CK_TRUE ) {
-            for ( auto const& pSlot: slotList ) {
-                if ( pSlot->isTokenPresent() ) {
-                    bufSize += 1;
-                }
-            }
-        } else {
-            bufSize = slotList.size();
+    unsigned long bufSize = 0;
+    if ( tokenPresent == CK_TRUE ) {
+      for ( auto const& pSlot: slotList ) {
+        if ( pSlot->isTokenPresent() ) {
+          bufSize += 1;
         }
+      }
+    } else {
+      bufSize = slotList.size();
+    }
 
-        if ( pulCount == nullptr ) {
-            return CKR_ARGUMENTS_BAD;
-        }
+    if ( pulCount == nullptr ) {
+      return CKR_ARGUMENTS_BAD;
+    }
 
-        if ( pSlotList == nullptr ) {
-            *pulCount = bufSize;
-            return CKR_OK;
-        }
+    if ( pSlotList == nullptr ) {
+      *pulCount = bufSize;
+      return CKR_OK;
+    }
 
-        if ( *pulCount < bufSize ) {
-            *pulCount = bufSize;
-            return CKR_BUFFER_TOO_SMALL;
-        }
+    if ( *pulCount < bufSize ) {
+      *pulCount = bufSize;
+      return CKR_BUFFER_TOO_SMALL;
+    }
 
-        int i = 0;
-        for ( auto const& pSlot: slotList ) {
-            if ( tokenPresent == CK_FALSE || pSlot->isTokenPresent() ) {
-                pSlotList[i++] = pSlot->getId();
-            }
-        }
+    int i = 0;
+    for ( auto const& pSlot: slotList ) {
+      if ( tokenPresent == CK_FALSE || pSlot->isTokenPresent() ) {
+        pSlotList[i++] = pSlot->getId();
+      }
+    }
+
+    *pulCount = bufSize;
 
-        *pulCount = bufSize;
+    return CKR_OK;
+  }
 
-        return CKR_OK;
+  CK_RV C_GetSlotInfo ( CK_SLOT_ID slotId, CK_SLOT_INFO_PTR pInfo )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
+    if ( !pInfo ) {
+      return CKR_ARGUMENTS_BAD;
+    }
 
-    CK_RV C_GetSlotInfo ( CK_SLOT_ID slotId, CK_SLOT_INFO_PTR pInfo )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
-        if ( !pInfo ) {
-            return CKR_ARGUMENTS_BAD;
-        }
+    try {
+      app->getSlot ( slotId ).getInfo ( pInfo );
+    } catch ( TcbError & e ) {
+      return error ( e );
+    }
 
-        try {
-            app->getSlot ( slotId ).getInfo ( pInfo );
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
+    return CKR_OK;
+  }
 
-        return CKR_OK;
+  CK_RV C_GetTokenInfo ( CK_SLOT_ID slotID, CK_TOKEN_INFO_PTR pInfo )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_GetTokenInfo ( CK_SLOT_ID slotID, CK_TOKEN_INFO_PTR pInfo )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    if ( pInfo == nullptr ) {
+      return CKR_ARGUMENTS_BAD;
+    }
 
-        if ( pInfo == nullptr ) {
-            return CKR_ARGUMENTS_BAD;
-        }
+    try {
+      app->getSlot ( slotID ).getToken().getInfo ( pInfo );
+    } catch ( TcbError & e ) {
+      return error ( e );
+    }
 
-        try {
-            app->getSlot ( slotID ).getToken().getInfo ( pInfo );
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
+    return CKR_OK;
 
-        return CKR_OK;
 
+  }
 
+  CK_RV C_OpenSession ( CK_SLOT_ID slotID, CK_FLAGS flags,
+      CK_VOID_PTR pApplication, CK_NOTIFY notify,
+      CK_SESSION_HANDLE_PTR phSession )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
-
-    CK_RV C_OpenSession ( CK_SLOT_ID slotID, CK_FLAGS flags,
-                          CK_VOID_PTR pApplication, CK_NOTIFY notify,
-                          CK_SESSION_HANDLE_PTR phSession )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
 
-        if ( flags == 0 ) {
-            return CKR_SESSION_PARALLEL_NOT_SUPPORTED;
-        }
+    if ( flags == 0 ) {
+      return CKR_SESSION_PARALLEL_NOT_SUPPORTED;
+    }
 
-        if ( phSession == nullptr ) {
-            return CKR_ARGUMENTS_BAD;
-        }
+    if ( phSession == nullptr ) {
+      return CKR_ARGUMENTS_BAD;
+    }
 
-        try {
-            Slot & slot = app->getSlot ( slotID );
-            if ( !slot.getToken().isInited() ) {
-                return CKR_TOKEN_NOT_RECOGNIZED;
-            }
-
-            *phSession = slot.openSession ( flags, pApplication, notify );
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
+    try {
+      Slot & slot = app->getSlot ( slotID );
+      if ( !slot.getToken().isInited() ) {
+        return CKR_TOKEN_NOT_RECOGNIZED;
+      }
 
-        return CKR_OK;
+      *phSession = slot.openSession ( flags, pApplication, notify );
+    } catch ( TcbError & e ) {
+      return error ( e );
     }
 
-    CK_RV C_CloseSession ( CK_SESSION_HANDLE hSession )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    return CKR_OK;
+  }
 
-        try {
-            app->getSessionSlot ( hSession ).closeSession ( hSession );
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
+  CK_RV C_CloseSession ( CK_SESSION_HANDLE hSession )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    }
 
-        return CKR_OK;
+    try {
+      app->getSessionSlot ( hSession ).closeSession ( hSession );
+    } catch ( TcbError & e ) {
+      return error ( e );
     }
 
-    CK_RV C_CloseAllSessions ( CK_SLOT_ID slotID )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    return CKR_OK;
+  }
 
-        try {
-            app->getSlot ( slotID ).closeAllSessions();
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
+  CK_RV C_CloseAllSessions ( CK_SLOT_ID slotID )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    }
 
-        return CKR_OK;
+    try {
+      app->getSlot ( slotID ).closeAllSessions();
+    } catch ( TcbError & e ) {
+      return error ( e );
     }
 
-    CK_RV C_GetSessionInfo ( CK_SESSION_HANDLE hSession, CK_SESSION_INFO_PTR pInfo )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    return CKR_OK;
+  }
 
-        try {
-            app->getSession ( hSession ).getSessionInfo ( pInfo );
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
+  CK_RV C_GetSessionInfo ( CK_SESSION_HANDLE hSession, CK_SESSION_INFO_PTR pInfo )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    }
 
-        return CKR_OK;
+    try {
+      app->getSession ( hSession ).getSessionInfo ( pInfo );
+    } catch ( TcbError & e ) {
+      return error ( e );
     }
 
-    CK_RV C_Login ( CK_SESSION_HANDLE hSession,
-                    CK_USER_TYPE      userType,
-                    CK_UTF8CHAR_PTR   pPin,
-                    CK_ULONG          ulPinLen )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    return CKR_OK;
+  }
 
-        try {
-            app->getSession ( hSession ).login ( userType, pPin, ulPinLen );
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
-        return CKR_OK;
+  CK_RV C_Login ( CK_SESSION_HANDLE hSession,
+      CK_USER_TYPE      userType,
+      CK_UTF8CHAR_PTR   pPin,
+      CK_ULONG          ulPinLen )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_Logout ( CK_SESSION_HANDLE hSession )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    try {
+      app->getSession ( hSession ).login ( userType, pPin, ulPinLen );
+    } catch ( TcbError & e ) {
+      return error ( e );
+    }
+    return CKR_OK;
+  }
 
-        try {
-            app->getSession ( hSession ).logout();
-        } catch ( TcbError &e ) {
-            return error ( e );
-        }
-        return CKR_OK;
+  CK_RV C_Logout ( CK_SESSION_HANDLE hSession )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_CreateObject ( CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount, CK_OBJECT_HANDLE_PTR phObject )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    try {
+      app->getSession ( hSession ).logout();
+    } catch ( TcbError &e ) {
+      return error ( e );
+    }
+    return CKR_OK;
+  }
 
-        try {
-            Session &session = app->getSession ( hSession );
+  CK_RV C_CreateObject ( CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount, CK_OBJECT_HANDLE_PTR phObject )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    }
 
-            if ( phObject == nullptr ) {
-                return CKR_ARGUMENTS_BAD;
-            }
+    try {
+      Session &session = app->getSession ( hSession );
 
-            *phObject = session.createObject ( pTemplate, ulCount );
-        } catch ( TcbError& e ) {
-            return error ( e );
-        }
+      if ( phObject == nullptr ) {
+        return CKR_ARGUMENTS_BAD;
+      }
 
-        return CKR_OK;
+      *phObject = session.createObject ( pTemplate, ulCount );
+    } catch ( TcbError& e ) {
+      return error ( e );
     }
 
-    CK_RV C_DestroyObject ( CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
-
-        try {
-            app->getSession ( hSession ).destroyObject ( hObject );
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
+    return CKR_OK;
+  }
 
-        return CKR_OK;
+  CK_RV C_DestroyObject ( CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
+    try {
+      app->getSession ( hSession ).destroyObject ( hObject );
+    } catch ( TcbError & e ) {
+      return error ( e );
+    }
 
-    CK_RV C_FindObjectsInit ( CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    return CKR_OK;
+  }
 
-        try {
-            app->getSession ( hSession ).findObjectsInit ( pTemplate, ulCount );
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
 
-        return CKR_OK;
+  CK_RV C_FindObjectsInit ( CK_SESSION_HANDLE hSession, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_FindObjects ( CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE_PTR phObject, CK_ULONG ulMaxObjectCount, CK_ULONG_PTR pulObjectCount )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    try {
+      app->getSession ( hSession ).findObjectsInit ( pTemplate, ulCount );
+    } catch ( TcbError & e ) {
+      return error ( e );
+    }
 
-        try {
-            Session & session = app->getSession ( hSession );
-
-            if ( phObject == nullptr || pulObjectCount == nullptr ) {
-                return CKR_ARGUMENTS_BAD;
-            }
-
-            std::vector<CK_OBJECT_HANDLE> handles ( session.findObjects ( ulMaxObjectCount ) );
-            // handles tiene a lo mas ulMaxObjectCount elementos, por lo que no hay que verificar.
-            int i = 0;
-            for ( auto& handle: handles ) {
-                phObject[i] = handle;
-                ++i;
-            }
-            *pulObjectCount = i;
-
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
+    return CKR_OK;
+  }
 
-        return CKR_OK;
+  CK_RV C_FindObjects ( CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE_PTR phObject, CK_ULONG ulMaxObjectCount, CK_ULONG_PTR pulObjectCount )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_FindObjectsFinal ( CK_SESSION_HANDLE hSession )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    try {
+      Session & session = app->getSession ( hSession );
 
-        try {
-            app->getSession ( hSession ).findObjectsFinal();
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
+      if ( phObject == nullptr || pulObjectCount == nullptr ) {
+        return CKR_ARGUMENTS_BAD;
+      }
+
+      std::vector<CK_OBJECT_HANDLE> handles ( session.findObjects ( ulMaxObjectCount ) );
+      // handles tiene a lo mas ulMaxObjectCount elementos, por lo que no hay que verificar.
+      int i = 0;
+      for ( auto& handle: handles ) {
+        phObject[i] = handle;
+        ++i;
+      }
+      *pulObjectCount = i;
 
-        return CKR_OK;
+    } catch ( TcbError & e ) {
+      return error ( e );
     }
 
-    CK_RV C_GetAttributeValue ( CK_SESSION_HANDLE sessionHandle, CK_OBJECT_HANDLE objectHandle, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    return CKR_OK;
+  }
 
-        try {
-            app->getSession ( sessionHandle ).getObject ( objectHandle ).copyAttributes ( pTemplate, ulCount );
-        } catch ( TcbError & e ) {
-            return error ( e );
-        }
+  CK_RV C_FindObjectsFinal ( CK_SESSION_HANDLE hSession )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    }
 
-        return CKR_OK;
+    try {
+      app->getSession ( hSession ).findObjectsFinal();
+    } catch ( TcbError & e ) {
+      return error ( e );
     }
 
-    CK_RV C_GenerateKeyPair ( CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_ATTRIBUTE_PTR pPublicKeyTemplate,
-                              CK_ULONG ulPublicKeyAttributeCount, CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount,
-                              CK_OBJECT_HANDLE_PTR phPublicKey, CK_OBJECT_HANDLE_PTR phPrivateKey )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    return CKR_OK;
+  }
 
-        try {
-            Session& session = app->getSession ( hSession );
+  CK_RV C_GetAttributeValue ( CK_SESSION_HANDLE sessionHandle, CK_OBJECT_HANDLE objectHandle, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    }
 
-            if ( phPublicKey == nullptr || phPrivateKey == nullptr ) { // Si son nulos, no calculo la llave...
-                return CKR_ARGUMENTS_BAD;
-            }
+    try {
+      app->getSession ( sessionHandle ).getObject ( objectHandle ).copyAttributes ( pTemplate, ulCount );
+    } catch ( TcbError & e ) {
+      return error ( e );
+    }
 
-            KeyPair keysHandle = session.generateKeyPair ( pMechanism,
-                                 pPublicKeyTemplate, ulPublicKeyAttributeCount,
-                                 pPrivateKeyTemplate, ulPrivateKeyAttributeCount );
+    return CKR_OK;
+  }
 
-            *phPrivateKey = keysHandle.first;
-            *phPublicKey = keysHandle.second;
+  CK_RV C_GenerateKeyPair ( CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_ATTRIBUTE_PTR pPublicKeyTemplate,
+      CK_ULONG ulPublicKeyAttributeCount, CK_ATTRIBUTE_PTR pPrivateKeyTemplate, CK_ULONG ulPrivateKeyAttributeCount,
+      CK_OBJECT_HANDLE_PTR phPublicKey, CK_OBJECT_HANDLE_PTR phPrivateKey )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
+    }
 
-        } catch ( TcbError &e ) {
-            return error ( e );
-        }
+    try {
+      Session& session = app->getSession ( hSession );
 
-        return CKR_OK;
-    }
+      if ( phPublicKey == nullptr || phPrivateKey == nullptr ) { // Si son nulos, no calculo la llave...
+        return CKR_ARGUMENTS_BAD;
+      }
 
-    CK_RV C_SignInit ( CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+      KeyPair keysHandle = session.generateKeyPair ( pMechanism,
+          pPublicKeyTemplate, ulPublicKeyAttributeCount,
+          pPrivateKeyTemplate, ulPrivateKeyAttributeCount );
 
-        try {
-            app->getSession ( hSession ).signInit ( pMechanism, hKey );
-        } catch ( TcbError &e ) {
-            return error ( e );
-        }
+      *phPrivateKey = keysHandle.first;
+      *phPublicKey = keysHandle.second;
 
-        return CKR_OK;
+    } catch ( TcbError &e ) {
+      return error ( e );
     }
-
-    CK_RV C_Sign ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature,
-                   CK_ULONG_PTR pulSignatureLen )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
 
-        try {
-            app->getSession ( hSession ).sign ( pData, ulDataLen, pSignature, pulSignatureLen );
-        } catch ( TcbError &e ) {
-            return error ( e );
-        }
+    return CKR_OK;
+  }
 
-        return CKR_OK;
+  CK_RV C_SignInit ( CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_DigestInit ( CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    try {
+      app->getSession ( hSession ).signInit ( pMechanism, hKey );
+    } catch ( TcbError &e ) {
+      return error ( e );
+    }
 
-        try {
-            app->getSession ( hSession ).digestInit ( pMechanism );
-        } catch ( TcbError &e ) {
-            return error ( e );
-        }
+    return CKR_OK;
+  }
 
-        return CKR_OK;
+  CK_RV C_Sign ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature,
+      CK_ULONG_PTR pulSignatureLen )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_Digest ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen,
-                     CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    try {
+      app->getSession ( hSession ).sign ( pData, ulDataLen, pSignature, pulSignatureLen );
+    } catch ( TcbError &e ) {
+      return error ( e );
+    }
 
-        try {
-            app->getSession ( hSession ).digest ( pData, ulDataLen, pDigest, pulDigestLen );
-        } catch ( TcbError &e ) {
-            return error ( e );
-        }
+    return CKR_OK;
+  }
 
-        return CKR_OK;
+  CK_RV C_DigestInit ( CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_SeedRandom ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    try {
+      app->getSession ( hSession ).digestInit ( pMechanism );
+    } catch ( TcbError &e ) {
+      return error ( e );
+    }
 
-        try {
-            app->getSession ( hSession ).seedRandom ( pSeed, ulSeedLen );
-        } catch ( TcbError &e ) {
-            return error ( e );
-        }
+    return CKR_OK;
+  }
 
-        return CKR_OK;
+  CK_RV C_Digest ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen,
+      CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_GenerateRandom ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen )
-    {
-        if ( !appIsInited() ) {
-            return CKR_CRYPTOKI_NOT_INITIALIZED;
-        }
+    try {
+      app->getSession ( hSession ).digest ( pData, ulDataLen, pDigest, pulDigestLen );
+    } catch ( TcbError &e ) {
+      return error ( e );
+    }
 
-        try {
-            app->getSession ( hSession ).generateRandom ( pRandomData, ulRandomLen );
-        } catch ( TcbError &e ) {
-            return error ( e );
-        }
+    return CKR_OK;
+  }
 
-        return CKR_OK;
+  CK_RV C_SeedRandom ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    // NOTE: Not implemented functions...
-    CK_RV C_GetMechanismList ( CK_SLOT_ID slotID, CK_MECHANISM_TYPE_PTR pMechanismList, CK_ULONG_PTR pulCount )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
+    try {
+      app->getSession ( hSession ).seedRandom ( pSeed, ulSeedLen );
+    } catch ( TcbError &e ) {
+      return error ( e );
     }
 
-    CK_RV C_GetMechanismInfo ( CK_SLOT_ID slotID, CK_MECHANISM_TYPE type, CK_MECHANISM_INFO_PTR pInfo )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+    return CKR_OK;
+  }
 
-    CK_RV C_GetOperationState ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
+  CK_RV C_GenerateRandom ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen )
+  {
+    if ( !appIsInited() ) {
+      return CKR_CRYPTOKI_NOT_INITIALIZED;
     }
 
-    CK_RV C_SetOperationState ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
+    try {
+      app->getSession ( hSession ).generateRandom ( pRandomData, ulRandomLen );
+    } catch ( TcbError &e ) {
+      return error ( e );
     }
 
-    CK_RV C_CopyObject ( CK_SESSION_HANDLE, CK_OBJECT_HANDLE, CK_ATTRIBUTE_PTR, CK_ULONG, CK_OBJECT_HANDLE_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+    return CKR_OK;
+  }
 
-    CK_RV C_GetObjectSize ( CK_SESSION_HANDLE, CK_OBJECT_HANDLE, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  // NOTE: Not implemented functions...
+  CK_RV C_GetMechanismList ( CK_SLOT_ID slotID, CK_MECHANISM_TYPE_PTR pMechanismList, CK_ULONG_PTR pulCount )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_SetAttributeValue ( CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_GetMechanismInfo ( CK_SLOT_ID slotID, CK_MECHANISM_TYPE type, CK_MECHANISM_INFO_PTR pInfo )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_EncryptInit ( CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_GetOperationState ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_Encrypt ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen,
-                      CK_BYTE_PTR pEncryptedData, CK_ULONG_PTR pulEncryptedDataLen )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_SetOperationState ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_EncryptUpdate ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_CopyObject ( CK_SESSION_HANDLE, CK_OBJECT_HANDLE, CK_ATTRIBUTE_PTR, CK_ULONG, CK_OBJECT_HANDLE_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_EncryptFinal ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_GetObjectSize ( CK_SESSION_HANDLE, CK_OBJECT_HANDLE, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_DecryptInit ( CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_SetAttributeValue ( CK_SESSION_HANDLE hSession, CK_OBJECT_HANDLE hObject, CK_ATTRIBUTE_PTR pTemplate, CK_ULONG ulCount )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_Decrypt ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pEncryptedData, CK_ULONG ulEncryptedDataLen,
-                      CK_BYTE_PTR pData, CK_ULONG_PTR pulDataLen )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_EncryptInit ( CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_DecryptUpdate ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_Encrypt ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen,
+      CK_BYTE_PTR pEncryptedData, CK_ULONG_PTR pulEncryptedDataLen )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_DecryptFinal ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_EncryptUpdate ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
+  CK_RV C_EncryptFinal ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_DigestUpdate ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_DecryptInit ( CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_DigestKey ( CK_SESSION_HANDLE, CK_OBJECT_HANDLE )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_Decrypt ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pEncryptedData, CK_ULONG ulEncryptedDataLen,
+      CK_BYTE_PTR pData, CK_ULONG_PTR pulDataLen )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_DigestFinal ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_DecryptUpdate ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_SignRecoverInit ( CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_DecryptFinal ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_SignRecover ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
 
-    CK_RV C_VerifyInit ( CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_DigestUpdate ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_Verify ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature,
-                     CK_ULONG ulSignatureLen )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_DigestKey ( CK_SESSION_HANDLE, CK_OBJECT_HANDLE )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_VerifyUpdate ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_DigestFinal ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pDigest, CK_ULONG_PTR pulDigestLen )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_VerifyFinal ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSignature, CK_ULONG ulSignatureLen )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_SignRecoverInit ( CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_VerifyRecoverInit ( CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_SignRecover ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_VerifyRecover ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_VerifyInit ( CK_SESSION_HANDLE hSession, CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_DigestEncryptUpdate ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_Verify ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignature,
+      CK_ULONG ulSignatureLen )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_DecryptDigestUpdate ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_VerifyUpdate ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_SignEncryptUpdate ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_VerifyFinal ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSignature, CK_ULONG ulSignatureLen )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_SignUpdate ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_VerifyRecoverInit ( CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_SignFinal ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_VerifyRecover ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_DecryptVerifyUpdate ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_DigestEncryptUpdate ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_GenerateKey ( CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_ATTRIBUTE_PTR, CK_ULONG, CK_OBJECT_HANDLE_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_DecryptDigestUpdate ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_WrapKey ( CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE,
-                      CK_BYTE_PTR, CK_ULONG_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_SignEncryptUpdate ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_UnwrapKey ( CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_BYTE_PTR, CK_ULONG,
-                        CK_ATTRIBUTE_PTR, CK_ULONG, CK_OBJECT_HANDLE_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_SignUpdate ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pPart, CK_ULONG ulPartLen )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_DeriveKey ( CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_ATTRIBUTE_PTR,
-                        CK_ULONG, CK_OBJECT_HANDLE_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_SignFinal ( CK_SESSION_HANDLE hSession, CK_BYTE_PTR pSignature, CK_ULONG_PTR pulSignatureLen )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_GetFunctionStatus ( CK_SESSION_HANDLE )
-    {
-        return CKR_FUNCTION_NOT_PARALLEL;
-    }
+  CK_RV C_DecryptVerifyUpdate ( CK_SESSION_HANDLE, CK_BYTE_PTR, CK_ULONG, CK_BYTE_PTR, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_CancelFunction ( CK_SESSION_HANDLE )
-    {
-        return CKR_FUNCTION_NOT_PARALLEL;
-    }
+  CK_RV C_GenerateKey ( CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_ATTRIBUTE_PTR, CK_ULONG, CK_OBJECT_HANDLE_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 
-    CK_RV C_WaitForSlotEvent ( CK_FLAGS, CK_SLOT_ID_PTR, CK_VOID_PTR )
-    {
-        return CKR_FUNCTION_NOT_SUPPORTED;
-    }
+  CK_RV C_WrapKey ( CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_OBJECT_HANDLE,
+      CK_BYTE_PTR, CK_ULONG_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+
+  CK_RV C_UnwrapKey ( CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_BYTE_PTR, CK_ULONG,
+      CK_ATTRIBUTE_PTR, CK_ULONG, CK_OBJECT_HANDLE_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+
+  CK_RV C_DeriveKey ( CK_SESSION_HANDLE, CK_MECHANISM_PTR, CK_OBJECT_HANDLE, CK_ATTRIBUTE_PTR,
+      CK_ULONG, CK_OBJECT_HANDLE_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
+
+  CK_RV C_GetFunctionStatus ( CK_SESSION_HANDLE )
+  {
+    return CKR_FUNCTION_NOT_PARALLEL;
+  }
+
+  CK_RV C_CancelFunction ( CK_SESSION_HANDLE )
+  {
+    return CKR_FUNCTION_NOT_PARALLEL;
+  }
+
+  CK_RV C_WaitForSlotEvent ( CK_FLAGS, CK_SLOT_ID_PTR, CK_VOID_PTR )
+  {
+    return CKR_FUNCTION_NOT_SUPPORTED;
+  }
 }
