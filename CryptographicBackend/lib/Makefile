@@ -1,4 +1,4 @@
-JAVA_PATH=/opt/java
+JAVA_PATH=/usr/lib/jvm/java-8-oracle/
 
 INCLUDE=-I$(JAVA_PATH)/include/ -I$(JAVA_PATH)/include/linux/ `pkg-config --cflags libcrypto`
 LIBS=`pkg-config --libs libcrypto`
