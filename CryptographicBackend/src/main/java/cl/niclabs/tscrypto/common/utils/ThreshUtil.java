@@ -61,11 +61,17 @@ public class ThreshUtil {
 	 * 
 	 * @return l!
 	 */
+    static private final long []factorials ={1,1,2,6,24,
+                                             120,720,5040,40320,362880,
+                                             3628800,39916800,479001600, 6227020800l,87178291200l,
+                                             1307674368000l,20922789888000l,355687428096000l,6402373705728000l,121645100408832000l,
+                                             2432902008176640000l};
 	public static BigInteger factorial(final int l) {
-		BigInteger x = BigInteger.valueOf(1l);
-		for (int i = 1; i <= l; i++)
+        if(l <= 20)
+            return BigInteger.valueOf(factorials[l]);
+		BigInteger x = BigInteger.valueOf(factorials[21]);
+		for (int i = 21; i <= l; i++)
 			x = x.multiply(BigInteger.valueOf(i));
-
 		return x;
 	}
 
