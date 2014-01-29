@@ -28,6 +28,7 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 
 #include <base64.h>
 
+#include <stdexcept>
 #include <cstdlib> // getenv
 #include <ostream>
 #include <iostream>
