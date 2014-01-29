@@ -48,9 +48,9 @@ public:
     
     Configuration() = default;
     Configuration ( std::string configurationPath );
-    Configuration ( Configuration & ) = default;
+    Configuration ( Configuration const & ) = default;
     Configuration ( Configuration && ) = default;    
-    Configuration & operator=(Configuration &) = default;
+    Configuration & operator=(Configuration const &) = default;
     Configuration & operator=(Configuration &&) = default;
 
     virtual RabbitMqConf const & getRabbitMqConf() const;

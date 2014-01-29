@@ -36,9 +36,9 @@ public:
     Database(Configuration::DatabaseConf const& conf);
     Database() = default;
     virtual ~Database();
-    Database(Database &) = default;
+    Database(Database const &) = default;
     Database(Database &&) = default;    
-    Database & operator=(Database &) = default;
+    Database & operator=(Database const &) = default;
     Database & operator=(Database &&) = default;
     
     virtual void init(Configuration::DatabaseConf const& conf);
