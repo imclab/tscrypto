@@ -1,0 +1,34 @@
+TsCypto Threshold Backend
+The TsCrypto Threshold Backend is a effort to develop a distributed solution to public key signed, our solution provides a high availability and failure tolerant system.
+
+-The source could be downloaded from https://github.com/niclabs/tscrypto
+BACKEND:
+HOW TO COMPILE
+-Using Maven, the source provide a pom.xml file, so you just need to place in /CryptographicBackend/pom.xml and execute:
+mvn compile assembly:single
+-The .jar file will be builded in /CryptographicBackend/target, the signature dealer and the nodes entry point are inside.
+
+How TO COMPILE THE NATIVE LIBRARY (optionally)
+-In /CryptographicBakend/lib we include all the necessary files. You need to specify your jdk path in the Makefile and also you need to have installed the OpenSSL library. If everything went well libjniSignWrapper.so and JniSignWrapper.o should appear.
+
+HOW TO CONFIGURE
+We include two scripts (one for the nodes and other for the Signature Dealer). Also in the  conf directory we included a few default configuration files:
+	-In rabbitmq.properties you must specify the ip address of the Rabbit MQ Server.
+	-In sd.properties you can specify the number of threads you want the Signature Dealer use, at the moment after 4 threads will not be a performance improvement. Then, you should specify how many nodes will be used (sd.l) and how many will the Signature Dealer to sign a document (sd.k), this number must be at least {floor(n/2) + 1}. Finally we include a C library you can use to improve the performance, at the moment we just use them to do Modular Exponentiation, if you want to use the library you should turn sd.useJNI into true.
+	-nodeX.properties specify the node number (X), how many threads could use and if you want to use the C library.
+	-log4j.properties specify the logger properties, you can turn off the debug mode, change it to INFO, etc.
+HOW TO USE
+-Previously builded jar must be moved to /CryptographicBackend/bin.
+-If you did the previous configuration to run the Signature Dealer you just run 'run.sh'.
+-To run the nodes you must run 'run-node.sh' and pass as parameter the node number, they must be correlative and starts from 0. You can't use two nodes with the same number.
+
+FRONTEND: /*Incomplete*/
+We include some code lines to test our backend implementation.
+HOW TO COMPILE:
+-You must create a build directory in /CriptographicFrontend.
+-Once you are in /CriptographicFrontend/build, do 'camake ..'
+-Run maken
+-Then, back to /CriptographicFrontend and run 'sqlite3 tcbhsm.db < database.sql'
+-In config.json you must specify the ip address of the RabbitMQ
+-Finally you can run the test 'build/test -c -f README -p 1234 -n 1'
+
