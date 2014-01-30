@@ -22,13 +22,20 @@ HOW TO USE
 -If you did the previous configuration to run the Signature Dealer you just run 'run.sh'.
 -To run the nodes you must run 'run-node.sh' and pass as parameter the node number, they must be correlative and starts from 0. You can't use two nodes with the same number.
 
-FRONTEND: /*Incomplete*/
-We include some code lines to test our backend implementation.
-HOW TO COMPILE:
--You must create a build directory in /CriptographicFrontend.
--Once you are in /CriptographicFrontend/build, do 'camake ..'
--Run maken
--Then, back to /CriptographicFrontend and run 'sqlite3 tcbhsm.db < database.sql'
--In config.json you must specify the ip address of the RabbitMQ
--Finally you can run the test 'build/test -c -f README -p 1234 -n 1'
+FRONTEND (pkcs#11 library): 
 
+HOW TO COMPILE:
+
+Dependencies needed: Boost 1.54, Sqlite3, rabbitmq-c
+
+-You must create a build directory in /CriptographicFrontend.
+-Once you are in /CriptographicFrontend/build, do 'cmake ..'
+-Run make
+-Then, back to /CriptographicFrontend and run 'sqlite3 tcbhsm.db < database.sql'
+-In config.json you must specify the ip address of the RabbitMQ broker.
+-You have to export the TCB_CONFIG_FILE environment variable pointing to the path of the config file.
+-- export TCB_CONFIG_FILE="config.json"
+-- It has to be the complete path in order to make the pkcs#11 library usable from from any directory.
+-Finally you can run a test 'build/test -c -f README -p 1234 -n 1', or just use the pkcs#11 library as you wish.
+
+With that library you can use OpenDNSSEC v1.3, for that consider that the inital user pin and security officer pin are 1234
