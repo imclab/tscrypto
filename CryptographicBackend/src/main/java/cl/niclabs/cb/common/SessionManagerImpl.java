@@ -16,22 +16,32 @@
     along with TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cl.niclabs.tscrypto.sigDealer;
+package cl.niclabs.cb.common;
 
-import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
-import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
-import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
+import java.util.Hashtable;
+import java.util.Map;
 
-import java.io.Closeable;
+// Singleton
+public class SessionManagerImpl implements SessionManager {
+    private final Map<String, Session> sessions;
 
-public interface KeyManager extends Closeable {
-    void addKey(KeyInfo key);
+    public SessionManagerImpl() {
+        this.sessions = new Hashtable<>();
+    }
 
-    void removeKey(String label);
+    @Override
+    public Session getSession(String handler) {
+        return sessions.get(handler); // Check for nullity
+    }
 
-    boolean containsKey(String label);
+    @Override
+    public void addSession(Session session) {
+        sessions.put(session.getHandler(), session);
+    }
 
-    TSPublicKey getPublicKey(String label);
+    @Override
+    public void deleteSession(String handler) {
+        sessions.remove(handler);
+    }
 
-    KeyMetaInfo getKeyMetaInfo(String label);
 }

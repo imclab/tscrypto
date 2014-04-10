@@ -24,7 +24,7 @@ import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
 import cl.niclabs.tscrypto.common.datatypes.Ticket;
 import cl.niclabs.tscrypto.sigDealer.KeyManager;
 import cl.niclabs.tscrypto.sigDealer.RequestManager;
-import cl.niclabs.cb.backend.Signer;
+import cl.niclabs.cb.common.Signer;
 
 import javax.crypto.NoSuchPaddingException;
 import java.math.BigInteger;

@@ -18,63 +18,43 @@
 
 package cl.niclabs.cb.jcrypto;
 
-import cl.niclabs.cb.backend.methods.MethodFactory;
-import cl.niclabs.cb.dispatcher.MethodDispatcher;
-import cl.niclabs.cb.jcrypto.methods.SimpleSignMethodFactory;
-import com.rabbitmq.client.AMQP.BasicProperties;
+import cl.niclabs.cb.common.MethodCollector;
+import cl.niclabs.cb.common.SessionManagerImpl;
+import cl.niclabs.cb.common.methods.MethodFactory;
+import cl.niclabs.cb.common.methods.MethodFactoryImpl;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
 
 public class Backend {
 
-    private static void run(String queueName, String hostName, MethodFactory methodFactory)
-            throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
+    private static void run(String hostName, String queueName)
+            throws ShutdownSignalException, ConsumerCancelledException {
         ConnectionFactory factory = new ConnectionFactory();
         factory.setHost(hostName);
         Connection connection;
-        Channel channel;
-        QueueingConsumer consumer;
-
         try {
             connection = factory.newConnection();
-            channel = connection.createChannel();
-            channel.queueDeclare(queueName, false, false, false, null);
-            channel.basicQos(1);
-            consumer = new QueueingConsumer(channel);
-            channel.basicConsume(queueName, false, consumer);
-        }
-        catch (IOException e) {
-            System.out.println("No se puede conectar al servidor...");
-            System.out.println(e.getLocalizedMessage());
-            System.exit(1);
-            return;
-        }
-
-        System.out.println("Esperando solicitudes...");
-
-        //noinspection InfiniteLoopStatement
-        while (true) {
-            QueueingConsumer.Delivery delivery = consumer.nextDelivery();
-            BasicProperties props = delivery.getProperties();
-            BasicProperties replyProps = new BasicProperties()
-                    .builder()
-                    .correlationId(props.getCorrelationId())
-                    .build();
-
-            String message = new String(delivery.getBody());
-            System.out.println(message);
-
-            String response = MethodDispatcher.dispatch(message, methodFactory);
+            MethodFactory methodFactory = new MethodFactoryImpl(
+                    new SessionManagerImpl(),
+                    new SessionFactoryImpl(),
+                    new KeyOperationsImpl(MapKeyStorage.getInstance())
+            );
+            new MethodCollector(connection, queueName, methodFactory);
             try {
-                System.out.println("Enviando " + response + "...");
-                channel.basicPublish("", props.getReplyTo(), replyProps, response.getBytes());
-                channel.basicAck(delivery.getEnvelope().getDeliveryTag(), false);
+                synchronized (Backend.class) {
+                    while (true) {
+                        Backend.class.wait();
+                    }
+                }
+            } catch (InterruptedException e) {
+                System.err.println("Error al esperar mensajes");
             }
-            catch (Exception e) {
-                System.out.println("No se pudo enviar mensaje al servidor...");
-                System.out.println(e.getLocalizedMessage());
-            }
+
+        } catch (IOException e) {
+            System.err.println("No se puede conectar al servidor...");
+            System.err.println(e.getLocalizedMessage());
+            System.exit(1);
         }
     }
 
@@ -105,7 +85,7 @@ public class Backend {
                 System.exit(1);
         }
 
-        run(queueName, hostName, SimpleSignMethodFactory.getInstance());
+        run(hostName, queueName);
 	}
 
 }

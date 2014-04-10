@@ -21,11 +21,19 @@ package cl.niclabs.tscrypto.sigDealer;
 import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
 import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
+import java.io.IOException;
 
 import java.util.Hashtable;
 import java.util.Map;
 
-public class HashTableKeyManager implements KeyManager { //TODO: check if it's thread safe...
+public class HashTableKeyManager implements KeyManager { 
+
+    @Override
+    public void close() throws IOException {
+        // Don't do anything :).
+    }
+    
+//TODO: check if it's thread safe...
 
     static public class Pair {
         TSPublicKey publicKey;

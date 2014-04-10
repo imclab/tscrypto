@@ -18,16 +18,17 @@
 
 package cl.niclabs.cb.tscrypto;
 
+import cl.niclabs.cb.common.MethodCollector;
+import cl.niclabs.cb.common.SessionManager;
+import cl.niclabs.cb.common.SessionManagerImpl;
+import cl.niclabs.cb.common.methods.MethodFactoryImpl;
 import cl.niclabs.tscrypto.common.utils.TSConnection;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
-import cl.niclabs.tscrypto.sigDealer.KeyDispatcher;
-import cl.niclabs.tscrypto.sigDealer.Dispatcher;
-import cl.niclabs.tscrypto.sigDealer.RequestManager;
-import cl.niclabs.tscrypto.sigDealer.ResultsCollector;
-import cl.niclabs.tscrypto.sigDealer.SDConfig;
+import cl.niclabs.tscrypto.sigDealer.*;
 import com.rabbitmq.client.*;
 
 import java.io.IOException;
+import java.sql.SQLException;
 
 public class Backend extends Thread {
 
@@ -36,23 +37,38 @@ public class Backend extends Thread {
     private KeyDispatcher keyDispatcher;
     private MethodCollector methodCollector;
     private ResultsCollector resultsCollector;
+    private KeyManager keyManager;
 
-    public Backend() throws IOException {
+    public Backend() throws IOException, SQLException, ClassNotFoundException {
         SDConfig config = SDConfig.getInstance();
         Connection connection = TSConnection.getConnection(config.getRabbitMQConfig());
+        String rpcQueue = config.getRpcQueue();
 
         TSLogger.sd.debug(String.format("Connected to RabbitMQ Server: %s", config.getRabbitMQConfig()));
 
+        keyManager = new H2KeyManager();
         dispatcher = new Dispatcher(connection, config.getRabbitMQConfig());
         keyDispatcher = new KeyDispatcher(connection, config.getRabbitMQConfig());
-
         RequestManager requestManager = new RequestManager(
                 dispatcher, keyDispatcher,
                 config.getRabbitMQConfig().getClientQueue(),
                 config.getRabbitMQConfig().getSignRequestAlias()
         );
 
-        methodCollector = new MethodCollector(connection, requestManager);
+        methodCollector = new MethodCollector(
+                connection,
+                rpcQueue,
+                new MethodFactoryImpl(
+                        new SessionManagerImpl(),
+                        new SessionFactoryImpl(keyManager, requestManager),
+                        new KeyOperationsImpl(
+                                config.getK(),
+                                config.getL(),
+                                requestManager,
+                                keyManager
+                        )
+                )
+        );
         resultsCollector = new ResultsCollector(connection, requestManager);
         running = true;
 
@@ -76,17 +92,19 @@ public class Backend extends Thread {
     private synchronized void stopServer()  {
         running = false;
         this.notifyAll();
+
         methodCollector.handleShutdownSignal(null, null);
         resultsCollector.handleShutdownSignal(null, null);
         try {
-            dispatcher.close();
             keyDispatcher.close();
+            dispatcher.close();
+            keyManager.close();
         } catch (IOException e) {
             TSLogger.sd.fatal("Error while closing...");
         }
     }
 
-    public static void main(String[] args) throws InterruptedException, IOException {
+    public static void main(String[] args) throws InterruptedException, IOException, SQLException, ClassNotFoundException {
         Backend backend = new Backend();
         backend.start();
         backend.join();

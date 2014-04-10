@@ -18,7 +18,7 @@
 
 package cl.niclabs.cb.jcrypto;
 
-import cl.niclabs.cb.backend.Signer;
+import cl.niclabs.cb.common.Signer;
 
 import javax.crypto.Cipher;
 import javax.crypto.NoSuchPaddingException;

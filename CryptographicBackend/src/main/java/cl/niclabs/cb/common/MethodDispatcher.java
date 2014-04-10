@@ -16,22 +16,16 @@
     along with TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cl.niclabs.tscrypto.sigDealer;
+package cl.niclabs.cb.common;
 
-import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
-import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
-import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
+import cl.niclabs.cb.common.methods.MethodFactory;
+import com.google.gson.Gson;
 
-import java.io.Closeable;
+class MethodDispatcher {
 
-public interface KeyManager extends Closeable {
-    void addKey(KeyInfo key);
+    public static String dispatch(String json, MethodFactory factory) {
+        Gson gson = MethodParser.makeGson(factory);
+        return gson.toJson(gson.fromJson(json, Method.class).execute());
+    }
 
-    void removeKey(String label);
-
-    boolean containsKey(String label);
-
-    TSPublicKey getPublicKey(String label);
-
-    KeyMetaInfo getKeyMetaInfo(String label);
 }

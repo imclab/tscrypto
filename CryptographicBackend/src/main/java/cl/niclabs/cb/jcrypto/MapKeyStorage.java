@@ -45,7 +45,7 @@ public class MapKeyStorage implements KeyStorage {
 
     private final Map<String, String[]> store = new Hashtable<>();
 
-    private MapKeyStorage() {}
+    public MapKeyStorage() {}
 
     @Override
     public String storeKeyPair(String keyType, int keySize, KeyPair pair) {

@@ -16,22 +16,24 @@
     along with TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cl.niclabs.tscrypto.sigDealer;
+package cl.niclabs.cb.common;
 
-import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
-import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
-import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
+import java.security.SecureRandom;
 
-import java.io.Closeable;
+public class RandomGeneratorImpl implements RandomGenerator {
+    private final SecureRandom secureRandom;
 
-public interface KeyManager extends Closeable {
-    void addKey(KeyInfo key);
+    public RandomGeneratorImpl() {
+        this.secureRandom = new SecureRandom();
+    }
 
-    void removeKey(String label);
+    @Override
+    public void setSeed(byte[] seed) {
+        secureRandom.setSeed(seed);
+    }
 
-    boolean containsKey(String label);
-
-    TSPublicKey getPublicKey(String label);
-
-    KeyMetaInfo getKeyMetaInfo(String label);
+    @Override
+    public byte[] generateRandom(int length) {
+        return secureRandom.generateSeed(length);
+    }
 }
