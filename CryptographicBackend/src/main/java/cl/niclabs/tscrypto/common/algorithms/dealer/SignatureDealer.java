@@ -34,7 +34,7 @@ import cl.niclabs.tscrypto.common.datatypes.SignatureShare;
 public interface SignatureDealer {
 	/**
 	 * Prepare to sign a new document.
-	 * Must be called at the beginning of a signing process
+	 * Must be called at the beginning of a messageCollector process
 	 * @param document original data
 	 * @param hashAlgorithm
 	 * @return request

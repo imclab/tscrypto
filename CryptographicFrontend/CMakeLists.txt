@@ -28,6 +28,7 @@ set(Boost_USE_STATIC_RUNTIME OFF)
 find_package(Boost 1.53 REQUIRED)
 find_package(RabbitMQ-C)
 find_package(Sqlite3)
+find_package(ZeroMQ)
 
 if (Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
@@ -44,7 +45,13 @@ endif()
 if (SQLITE3_FOUND)
     include_directories(${SQLITE3_INCLUDE_DIRS})
   else()
-    message(FATAL_ERROR "Cannot find rabbitmq-c library")
+    message(FATAL_ERROR "Cannot find sqlite3 library")
+endif()
+
+if (ZEROMQ_FOUND)
+    include_directories(${ZEROMQ_INCLUDE_DIRS})
+  else()
+    message(FATAL_ERROR "Cannot find zeromq library")
 endif()
 
 include_directories("cryptoki_compat")
@@ -97,9 +104,10 @@ set(COMMUNICATION_SRC
   communication/GenerateRandomMethod.h
   communication/GetAttributeMethod.cpp
   communication/GetAttributeMethod.h
+  communication/ZeroConnection.cpp
   )  
   
-set(HSM_SRC
+set(HSM_SRC  
   hsm/Database.cpp 
   hsm/Database.h
   hsm/Session.cpp
@@ -120,11 +128,13 @@ set(HSM_SRC
   hsm/CryptoObject.h
   hsm/Application.cpp
   hsm/Application.h
+  hsm/ZeroConnectionManager.cpp
+  hsm/ZeroConnectionManager.h
   )
   
   
 add_library(pkcs11 SHARED pkcs11.cpp ${BASE64_SRC} ${JSONCPP_SRC} ${COMMUNICATION_SRC} ${HSM_SRC})
-target_link_libraries(pkcs11 ${RABBITMQ-C_LIBRARIES} ${SQLITE3_LIBRARIES})
+target_link_libraries(pkcs11 ${RABBITMQ-C_LIBRARIES} ${SQLITE3_LIBRARIES} ${ZEROMQ_LIBRARIES})
 
 add_executable(test test.c)
 target_link_libraries(test pkcs11)

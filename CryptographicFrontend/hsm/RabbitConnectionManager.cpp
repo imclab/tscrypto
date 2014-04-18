@@ -40,7 +40,7 @@ void RabbitConnectionManager::init(const Configuration::RabbitMqConf& c)
 }
 
 
-const Connection& RabbitConnectionManager::getConnection() const
+Connection& RabbitConnectionManager::getConnection()
 {
     return connection_;
 }

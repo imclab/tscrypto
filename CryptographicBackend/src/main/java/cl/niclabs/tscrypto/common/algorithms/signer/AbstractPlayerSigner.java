@@ -12,10 +12,8 @@ import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 import java.util.Random;
 
-/**
- * Created by niclabs on 1/27/14.
- */
-public abstract class AbstractPlayerSigner implements PlayerSigner{
+
+public abstract class AbstractPlayerSigner implements PlayerSigner {
     public final static BigInteger TWO = ThreshUtil.TWO;
     public final static BigInteger FOUR = ThreshUtil.FOUR;
 

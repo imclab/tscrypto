@@ -119,7 +119,7 @@ RabbitConnection::~RabbitConnection()
     }
 }
 
-void RabbitConnection::send ( const std::string & message ) const
+void RabbitConnection::send ( const std::string & message )
 {
     amqp_basic_properties_t props;
     props._flags =
@@ -149,7 +149,7 @@ void RabbitConnection::send ( const std::string & message ) const
 }
 
 
-std::string RabbitConnection::receive() const
+std::string RabbitConnection::receive()
 {
     std::stringstream ss;
 

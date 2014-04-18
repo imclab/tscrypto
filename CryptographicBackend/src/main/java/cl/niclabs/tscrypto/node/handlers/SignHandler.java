@@ -24,8 +24,9 @@ import cl.niclabs.tscrypto.common.messages.SignShareQuery;
 import cl.niclabs.tscrypto.common.messages.SignShareAnswer;
 import cl.niclabs.tscrypto.common.messages.TSMessage;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
-import cl.niclabs.tscrypto.node.KeyShareManager;
+import cl.niclabs.tscrypto.node.NodeHandler;
 import cl.niclabs.tscrypto.node.Signer;
+import cl.niclabs.tscrypto.node.keyManagement.KeyShareManager;
 
 public class SignHandler implements NodeHandler {
 
@@ -37,17 +38,16 @@ public class SignHandler implements NodeHandler {
 	}
 
     @Override
-    public MessageAsync handle(Signer signer) {
+    public MessageAsync handle(KeyShareManager context) {
+        Signer signer = new Signer(context);
         SignatureShare signatureShare = signer.sign(message.getHashedDocument(),message.getAlias());
-
         TSLogger.node.info("Document signed");
 
-        SignShareAnswer response = new SignShareAnswer(
+        return new SignShareAnswer(
                 message.ticket,
                 signatureShare,
                 signer.getId(),
-                message.getReplyTo());
-
-        return response;
+                message.getReplyTo()
+        );
     }
 }

@@ -49,7 +49,7 @@ public class KeyFactoryJniImpl implements KeyFactory {
 		BigInteger m = pr = qr = null;
 
 		// Create the group key pair
-		TSLogger.keyFactory.info("Attempting to generate group keypair..");
+		TSLogger.keyDealer.info("Attempting to generate group keypair..");
 
 		/* Generate a Sophie Germain prime keypair */
 		// pr = generateSophieGermainPrime();
@@ -109,16 +109,11 @@ public class KeyFactoryJniImpl implements KeyFactory {
 	 * 
 	 * Computes v[i] = v^^s[i] mod n, where v is an element of QR_n <BR>
 	 * Returns the group verifier and sets the verifier in each share<br>
-	 * 
-	 * @param n
-	 *            - Size of modulo for group key
-	 * @param secrets
-	 *            - array of shares
-	 * 
+	 *
 	 * @return the group verifier
 	 */
 	private static BigInteger generateGroupVerifier(KeyMetaInfo keyMetaInfo, BigInteger n) {
-		TSLogger.keyFactory.info("Generating Group Verifier");		
+		TSLogger.keyDealer.info("Generating Group Verifier");
 
 		BigInteger rand = null;
 
@@ -131,7 +126,7 @@ public class KeyFactoryJniImpl implements KeyFactory {
 				break;
 			// Else d was not relatively prime
 			// Note: This should be very rare
-			TSLogger.keyFactory.warn("Verifier was not relatively prime");
+			TSLogger.keyDealer.warn("Verifier was not relatively prime");
 		}
 
 		// group verifier is an element of QsubN - square mod n
@@ -139,7 +134,7 @@ public class KeyFactoryJniImpl implements KeyFactory {
 	}
 	
 	private static BigInteger[] generateShareVerifiers(KeyMetaInfo keyMetaInfo, BigInteger n, BigInteger groupVerifier, KeyShares keyShares) {
-		TSLogger.keyFactory.info("Generating Share Verifiers");
+		TSLogger.keyDealer.info("Generating Share Verifiers");
 
 		BigInteger[] verifiers = new BigInteger[keyMetaInfo.getL()];
 		for (int i = 0; i < keyMetaInfo.getL(); i++) {
@@ -153,16 +148,7 @@ public class KeyFactoryJniImpl implements KeyFactory {
 	// Private Methods
 	// ............................................................................
 	/**
-	 * 
-	 * Generates secret shares for a (k,l) threshold signatures scheme<BR>
-	 * 
-	 * @param k
-	 *            - k valid signatures will verify
-	 * @param l
-	 *            - l members of the group will receive shares
-	 * 
-	 * @return An array of l secret shares
-	 * @throws ThresholdSigException
+	 * Generates secret shares for a (k,l) threshold signatures scheme
 	 */
 	private static KeyShares generateKeyShares(KeyMetaInfo keyMetaInfo, BigInteger n, final BigInteger d,
 			final BigInteger m) {

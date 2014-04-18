@@ -44,7 +44,7 @@ public:
     virtual ~RabbitConnectionManager() = default;
     
     virtual void init( const Configuration::RabbitMqConf & configuration );
-    virtual const Connection& getConnection() const;
+    virtual Connection& getConnection() override;
 };
 }
 

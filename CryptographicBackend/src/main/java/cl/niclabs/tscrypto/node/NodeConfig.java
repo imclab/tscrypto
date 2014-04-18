@@ -19,19 +19,9 @@
 package cl.niclabs.tscrypto.node;
 
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.security.KeyStore;
 import java.util.Properties;
 
-import javax.crypto.BadPaddingException;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-
-import cl.niclabs.tscrypto.common.config.RabbitMQConfig;
-import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
-import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
-import cl.niclabs.tscrypto.common.datatypes.KeyShares;
-import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
 import cl.niclabs.tscrypto.common.utils.Util;
 
@@ -39,11 +29,9 @@ import cl.niclabs.tscrypto.common.utils.Util;
  * Loads default configurations from {@code -Dcl.niclabs.threshsig.node.config}.
  */
 public class NodeConfig {
-    public static final String DEFAULT_CONFIG_PROPERTY = "cl.niclabs.tscrypto.node.config";
+    private static final String DEFAULT_CONFIG_PROPERTY = "cl.niclabs.tscrypto.node.config";
 
-	Properties conf;
-	
-	private RabbitMQConfig rconfig;
+	private Properties conf;
 
     private static NodeConfig instance = null;
 
@@ -65,21 +53,11 @@ public class NodeConfig {
 
 	private NodeConfig() throws IOException {
         TSLogger.node.info("Running with config: " + System.getProperty(DEFAULT_CONFIG_PROPERTY));
-
         this.conf = Util.loadTrimedProperties(System.getProperty(DEFAULT_CONFIG_PROPERTY));
-        this.rconfig = new RabbitMQConfig();
-	}
-
-	public RabbitMQConfig getRabbitMQConfig() {
-		return rconfig;
 	}
 
 	public int getNodeId() {
         return Integer.parseInt(conf.getProperty("node.id"));
-	}
-
-	public final String getPassword() {
-        return conf.getProperty("node.password");
 	}
 
 	public int getNumThreads() {
@@ -89,4 +67,27 @@ public class NodeConfig {
 	public boolean getUseJNI(){
         return Boolean.parseBoolean(conf.getProperty("node.useJNI"));
     }
+
+    // TODO: Extract all of this.
+    public String getManagerAddress() {
+        return "localhost";
+    }
+
+    public String getDispatcherPort() {
+        return "10001";
+    }
+
+    public String getResultsPort() {
+        return "10002";
+    }
+
+    public String getSignRequestEnvelope() { return "sign-request"; }
+
+    public String getKeyManagementEnvelope() { return "key-mgmt" + getNodeId(); }
+
+    public String getKeyStoreFilename() {
+        return "conf/node" + getNodeId() + ".jks";
+    }
+
+    public String getKeyStorePassword() { return "niclabs.13"; } // Extract all...
 }

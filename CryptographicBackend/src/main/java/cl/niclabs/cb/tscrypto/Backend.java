@@ -19,13 +19,18 @@
 package cl.niclabs.cb.tscrypto;
 
 import cl.niclabs.cb.common.MethodCollector;
-import cl.niclabs.cb.common.SessionManager;
 import cl.niclabs.cb.common.SessionManagerImpl;
 import cl.niclabs.cb.common.methods.MethodFactoryImpl;
-import cl.niclabs.tscrypto.common.utils.TSConnection;
+import cl.niclabs.tscrypto.common.datatypes.Collector;
+import cl.niclabs.tscrypto.common.encryption.KeyTool;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
-import cl.niclabs.tscrypto.sigDealer.*;
-import com.rabbitmq.client.*;
+import cl.niclabs.tscrypto.manager.RequestManager;
+import cl.niclabs.tscrypto.manager.ResultsCollector;
+import cl.niclabs.tscrypto.manager.SDConfig;
+import cl.niclabs.tscrypto.manager.keyManagement.H2KeyManager;
+import cl.niclabs.tscrypto.manager.keyManagement.KeyManager;
+import cl.niclabs.tscrypto.manager.DispatcherZero;
+import org.zeromq.ZMQ;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -33,31 +38,34 @@ import java.sql.SQLException;
 public class Backend extends Thread {
 
     private boolean running;
-    private Dispatcher dispatcher;
-    private KeyDispatcher keyDispatcher;
+    private DispatcherZero dispatcher;
     private MethodCollector methodCollector;
-    private ResultsCollector resultsCollector;
+    private Collector resultsCollector;
     private KeyManager keyManager;
+    private ZMQ.Context context;
 
     public Backend() throws IOException, SQLException, ClassNotFoundException {
         SDConfig config = SDConfig.getInstance();
-        Connection connection = TSConnection.getConnection(config.getRabbitMQConfig());
-        String rpcQueue = config.getRpcQueue();
+        /** TODO: Complete encrypted communication system
+        String[] nodeCerts = config.getNodeKeys();
+        for(int i=0; i<config.getNodeKeys().length; i++) {
+            KeyTool.getInstance().loadKey("node" + i, nodeCerts[i]);
+        }
+        **/
 
-        TSLogger.sd.debug(String.format("Connected to RabbitMQ Server: %s", config.getRabbitMQConfig()));
+        context = ZMQ.context(1);
 
         keyManager = new H2KeyManager();
-        dispatcher = new Dispatcher(connection, config.getRabbitMQConfig());
-        keyDispatcher = new KeyDispatcher(connection, config.getRabbitMQConfig());
+        dispatcher = new DispatcherZero(context);
         RequestManager requestManager = new RequestManager(
-                dispatcher, keyDispatcher,
-                config.getRabbitMQConfig().getClientQueue(),
-                config.getRabbitMQConfig().getSignRequestAlias()
+                dispatcher,
+                "",
+                config.getSignRequestEnvelope(),
+                config.getKeyManagementEnvelope() // TODO: Put this in config file.
         );
 
         methodCollector = new MethodCollector(
-                connection,
-                rpcQueue,
+                ZMQ.context(1),
                 new MethodFactoryImpl(
                         new SessionManagerImpl(),
                         new SessionFactoryImpl(keyManager, requestManager),
@@ -68,8 +76,13 @@ public class Backend extends Thread {
                                 keyManager
                         )
                 )
-        );
-        resultsCollector = new ResultsCollector(connection, requestManager);
+            );
+
+        resultsCollector = new ResultsCollector(context, requestManager);
+
+        methodCollector.start();
+        resultsCollector.start();
+
         running = true;
 
         TSLogger.sd.info("Initialization: Done");
@@ -93,15 +106,20 @@ public class Backend extends Thread {
         running = false;
         this.notifyAll();
 
-        methodCollector.handleShutdownSignal(null, null);
-        resultsCollector.handleShutdownSignal(null, null);
         try {
-            keyDispatcher.close();
+            resultsCollector.stop();
+            methodCollector.stop();
+        } catch (InterruptedException e) {
+            TSLogger.sd.fatal("Error while closing...");
+        }
+        try {
             dispatcher.close();
             keyManager.close();
+            context.term();
         } catch (IOException e) {
             TSLogger.sd.fatal("Error while closing...");
         }
+
     }
 
     public static void main(String[] args) throws InterruptedException, IOException, SQLException, ClassNotFoundException {

@@ -94,8 +94,8 @@ namespace   // Aux functions.
     return false;
   }
 
-  inline const Connection & getConnection(Session &s) {
-    s.getCurrentSlot().getApplication().getConnectionManager().getConnection();
+  inline Connection & getConnection(Session &s) {
+    return s.getCurrentSlot().getApplication().getConnectionManager().getConnection();
   }
 
   CK_SESSION_HANDLE actualHandle = 0;
@@ -108,7 +108,7 @@ Session::Session ( CK_FLAGS flags, CK_VOID_PTR pApplication,
   , flags_ ( flags ), application_ ( pApplication )
     , notify_ ( notify ), slot_ ( currentSlot )
 {
-  Connection const & connection = getConnection(*this);
+  Connection & connection = getConnection(*this);
   OpenSessionMethod method;
   uuid_ = method.execute ( connection ).getResponse().getValue<string> ( "sessionHandler" );
 }
@@ -116,7 +116,7 @@ Session::Session ( CK_FLAGS flags, CK_VOID_PTR pApplication,
 Session::~Session()
 {
 
-  Connection const & conn = getConnection(*this);
+  Connection & conn = getConnection(*this);
   Token & token = slot_.getToken();
   auto& objects = token.getObjects();
 
@@ -282,7 +282,7 @@ void Session::destroyObject ( CK_OBJECT_HANDLE hObject )
       string handler ( ( char * ) handlerAttribute->pValue,
           handlerAttribute->ulValueLen );
 
-      const Connection & connection =  getConnection(*this);
+      Connection & connection =  getConnection(*this);
       DeleteKeyPairMethod method ( handler );
       try {
         method.execute ( connection ).getResponse();
@@ -739,7 +739,7 @@ KeyPair Session::generateKeyPair ( CK_MECHANISM_PTR pMechanism,
     // case CKM_VENDOR_DEFINED:
     case CKM_RSA_PKCS_KEY_PAIR_GEN:
       try {
-        Connection const & connection ( getConnection(*this) );
+        Connection & connection ( getConnection(*this) );
 
         // RSA is the only accepted method...
         GenerateKeyPairMethod method ( "RSA", modulusBits, exponent ); 
@@ -814,7 +814,7 @@ void Session::signInit ( CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
         break;
     }
 
-    Connection const & connection ( getConnection(*this) );
+    Connection & connection ( getConnection(*this) );
     SignInitMethod method ( uuid_, mechanism, handler );
     method.execute ( connection ).getResponse();
 
@@ -832,7 +832,7 @@ void Session::sign ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignatu
   }
 
   try {
-    Connection const & connection ( getConnection(*this) );
+    Connection & connection ( getConnection(*this) );
     string encodedData ( base64::encode ( pData, ulDataLen) );
     SignMethod method ( uuid_, encodedData );
 
@@ -900,7 +900,7 @@ void Session::digestInit ( CK_MECHANISM_PTR pMechanism )
       break;
   }
 
-  Connection const & connection ( getConnection(*this) );
+  Connection & connection ( getConnection(*this) );
   DigestInitMethod method ( uuid_, mechanism );
   try {
     method.execute ( connection ).getResponse();
@@ -936,7 +936,7 @@ void Session::digest ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDiges
     throw TcbError ( "Session::digest", "pData == nullptr", CKR_ARGUMENTS_BAD );
   }
 
-  Connection const & connection ( getConnection(*this) );
+  Connection & connection ( getConnection(*this) );
   string encodedData ( base64::encode ( pData, ulDataLen ) );
   DigestMethod method ( uuid_, encodedData );
 
@@ -963,7 +963,7 @@ void Session::generateRandom ( CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen )
     throw TcbError ( "Session::generateRandom", "pRandomData == nullptr", CKR_ARGUMENTS_BAD );
   }
 
-  Connection const & connection ( getConnection(*this) );
+  Connection & connection ( getConnection(*this) );
   GenerateRandomMethod method ( uuid_, ulRandomLen );
   string encodedData = method.execute ( connection ).getResponse().getValue<string> ( "data" );
   vector<CK_BYTE> decodedData ( base64::decode ( encodedData ) );
@@ -978,7 +978,7 @@ void Session::seedRandom ( CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen )
     throw TcbError ( "Session::seedRandom", "pSeed == nullptr", CKR_ARGUMENTS_BAD );
   }
 
-  Connection const & connection ( getConnection(*this) );
+  Connection & connection ( getConnection(*this) );
   string encodedData ( base64::encode ( pSeed, ulSeedLen ) );
 
   SeedRandomMethod method ( uuid_, encodedData );

@@ -38,7 +38,7 @@ public class KeyTool {
 
 	private static KeyTool INSTANCE = new KeyTool();
 
-	private Map<String, PublicKey> publicKeys = new HashMap<String, PublicKey>();
+	private Map<String, PublicKey> publicKeys = new HashMap<>();
 
 	private KeyTool() {
 	}
@@ -50,22 +50,17 @@ public class KeyTool {
 	public void loadKey(String alias, String file) {
 		try {
 			BufferedInputStream in = new BufferedInputStream(
-					new FileInputStream(file));
+					new FileInputStream(file)
+            );
 			CertificateFactory cf = CertificateFactory.getInstance("X.509");
-
 			PublicKey publicKey = cf.generateCertificate(in).getPublicKey();
-			
 			publicKeys.put(alias, publicKey);
 
-		} catch (CertificateException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (CertificateException | IOException e) {
+            e.printStackTrace();
+        }
 
-	}
+    }
 
 	public byte[] encrypt(String alias, byte[] data) {
 		try {
@@ -73,23 +68,15 @@ public class KeyTool {
 			cipher.init(Cipher.ENCRYPT_MODE, publicKeys.get(alias));
 
 			return cipher.doFinal(data);
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		} catch (NoSuchAlgorithmException
+                | NoSuchPaddingException
+                | InvalidKeyException
+                | IllegalBlockSizeException
+                | BadPaddingException ignore)
+        {
 
-		return null;
+        }
+
+        return null;
 	}
 }

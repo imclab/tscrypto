@@ -35,8 +35,6 @@ import java.util.Properties;
 import javax.crypto.BadPaddingException;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-
-import cl.niclabs.tscrypto.common.config.RabbitMQConfig;
 import org.apache.commons.codec.binary.Base64;
 
 import com.google.gson.Gson;
@@ -353,9 +351,5 @@ public class Util {
 		gsonBuilder.registerTypeAdapter(TSMessage.class, new TSMessageParser());
 		return gsonBuilder.create();
 	}
-
-    public static String keyQueueName(RabbitMQConfig config, int id) {
-        return config.getKeysQueue() + id;
-    }
 
 }

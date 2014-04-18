@@ -70,7 +70,7 @@ public class SignatureDealerJniImpl implements SignatureDealer {
 
 	/**
 	 * Cleans-up the player's state, except the key.
-	 * This must be called before signing another document
+	 * This must be called before messageCollector another document
 	 */
 	private void reset() {
 		request = new SignatureRequest(keyMetaInfo, publicKey);

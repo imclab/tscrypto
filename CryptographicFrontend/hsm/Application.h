@@ -29,6 +29,7 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 #include "pkcs11.h"
 #include "RabbitConnectionManager.h"
 #include "Database.h"
+#include "ZeroConnectionManager.h"
 
 namespace hsm
 {
@@ -53,14 +54,14 @@ public:
     virtual Session & getSession ( CK_SESSION_HANDLE session ); // throws exception
     virtual Database & getDatabase ();
 
-    virtual ConnectionManager const & getConnectionManager() const;
+    virtual ConnectionManager & getConnectionManager();
     virtual void errorLog ( std::string message ) const;
 
 private:
     std::ostream& out_;
 
     Configuration configuration_;
-    RabbitConnectionManager connectionManager_;
+    ZeroConnectionManager connectionManager_;
     Database database_;
 
     // An application can have a variable number of slots...

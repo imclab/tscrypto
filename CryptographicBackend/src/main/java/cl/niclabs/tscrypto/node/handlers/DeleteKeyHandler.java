@@ -23,8 +23,9 @@ import cl.niclabs.tscrypto.common.messages.DeleteKeyQuery;
 import cl.niclabs.tscrypto.common.messages.MessageAsync;
 import cl.niclabs.tscrypto.common.messages.TSMessage;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
-import cl.niclabs.tscrypto.node.KeyShareManager;
-import cl.niclabs.tscrypto.node.Signer;
+import cl.niclabs.tscrypto.node.NodeConfig;
+import cl.niclabs.tscrypto.node.NodeHandler;
+import cl.niclabs.tscrypto.node.keyManagement.KeyShareManager;
 
 public class DeleteKeyHandler implements NodeHandler {
     private DeleteKeyQuery message;
@@ -35,12 +36,11 @@ public class DeleteKeyHandler implements NodeHandler {
     }
 
     @Override
-    public MessageAsync handle(Signer signer) {
-        signer.getKeyShareManager().removeKey(message.getLabel());
+    public MessageAsync handle(KeyShareManager manager) {
+        NodeConfig config = NodeConfig.getInstance();
+        manager.removeKey(message.getLabel());
         TSLogger.node.info("Key " + message.getLabel() + " deleted.");
-
-        MessageAsync answer = new DeleteKeyAnswer(message.ticket, signer.getId(), message.getReplyTo());
-        return answer;
+        return new DeleteKeyAnswer(message.ticket, config.getNodeId(), message.getReplyTo());
     }
 
 }

@@ -48,7 +48,7 @@ Application::Application ( std::ostream& out )
     }
     
     configuration_.load( configPath );
-    connectionManager_.init ( configuration_.getRabbitMqConf() );
+    // connectionManager_.init ( configuration_.getRabbitMqConf() );
     database_.init(configuration_.getDatabaseConf());
     
     // By design, we will have one slot per configured token.
@@ -118,7 +118,7 @@ Database& Application::getDatabase()
 }
 
 
-ConnectionManager const & Application::getConnectionManager() const
+ConnectionManager & Application::getConnectionManager()
 {
     return connectionManager_;
 }

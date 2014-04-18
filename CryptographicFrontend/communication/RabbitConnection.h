@@ -37,10 +37,11 @@ private:
 protected:
     RabbitConnection ( RabbitConnection const & rhs ) = delete;    
     RabbitConnection & operator= ( RabbitConnection const & rhs ) = delete;
-    virtual void send ( const std::string & message ) const;
-    virtual std::string receive() const;
+    void send ( const std::string & message );
+    std::string receive();
 
 public:
+	// Move semantics
     RabbitConnection();
     RabbitConnection ( const std::string & host, int port, const std::string & exchange,
                        const std::string & routingKey, amqp_channel_t channel );

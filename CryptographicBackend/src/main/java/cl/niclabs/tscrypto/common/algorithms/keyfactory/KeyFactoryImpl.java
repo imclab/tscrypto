@@ -48,7 +48,7 @@ public class KeyFactoryImpl implements KeyFactory {
 		BigInteger m = pr = qr = null;
 
 		// Create the group key pair
-		TSLogger.keyFactory.info("Attempting to generate group keypair..");
+		TSLogger.keyDealer.info("Attempting to generate group keypair..");
 
 		/* Generate a Sophie Germain prime keypair */
 		// pr = generateSophieGermainPrime();
@@ -117,7 +117,7 @@ public class KeyFactoryImpl implements KeyFactory {
 	 * @return the group verifier
 	 */
 	private static BigInteger generateGroupVerifier(KeyMetaInfo keyMetaInfo, BigInteger n) {
-		TSLogger.keyFactory.info("Generating Group Verifier");		
+		TSLogger.keyDealer.info("Generating Group Verifier");
 
 		BigInteger rand = null;
 
@@ -130,7 +130,7 @@ public class KeyFactoryImpl implements KeyFactory {
 				break;
 			// Else d was not relatively prime
 			// Note: This should be very rare
-			TSLogger.keyFactory.warn("Verifier was not relatively prime");
+			TSLogger.keyDealer.warn("Verifier was not relatively prime");
 		}
 
 		// group verifier is an element of QsubN - square mod n
@@ -138,7 +138,7 @@ public class KeyFactoryImpl implements KeyFactory {
 	}
 	
 	private static BigInteger[] generateShareVerifiers(KeyMetaInfo keyMetaInfo, BigInteger n, BigInteger groupVerifier, KeyShares keyShares) {
-		TSLogger.keyFactory.info("Generating Share Verifiers");
+		TSLogger.keyDealer.info("Generating Share Verifiers");
 
 		BigInteger[] verifiers = new BigInteger[keyMetaInfo.getL()];
 		for (int i = 0; i < keyMetaInfo.getL(); i++) {

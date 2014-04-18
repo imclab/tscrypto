@@ -1,19 +1,20 @@
 /*
-Copyright 2013 NIC Chile Research Labs.
-This file is part of PKCS11-TsCrypto.
+   Copyright 2013 NIC Chile Research Labs.
+   This file is part of PKCS11-TsCrypto.
 
-PKCS11-TsCrypto is free software: you can redistribute it and/or modify
-it under the terms of the GNU Lesser General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
+   PKCS11-TsCrypto is free software: you can redistribute it and/or modify
+   it under the terms of the GNU Lesser General Public License as published by
+   the Free Software Foundation, either version 3 of the License, or
+   (at your option) any later version.
 
-PKCS11-TsCrypto is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU Lesser General Public License for more details.
+   PKCS11-TsCrypto is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU Lesser General Public License for more details.
 
-You should have received a copy of the GNU Lesser General Public License
-along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
+   You should have received a copy of the GNU Lesser General Public License
+   along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
+
 */
 
 #ifndef COMMUNICATION_RESPONSEMESSAGE_H
@@ -28,26 +29,26 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 namespace communication
 {
 
-class ResponseMessage
-{
-private:
-    argument::Map values_;
+	class ResponseMessage
+	{
+		private:
+			argument::Map values_;
 
-public:
-    ResponseMessage() = default;
-    ResponseMessage ( ResponseMessage const & other ) = default;
-    ResponseMessage ( ResponseMessage && other ) = default;
-    ResponseMessage & operator= ( ResponseMessage const & rhs ) = default;
-    ResponseMessage & operator= ( ResponseMessage && rhs ) = default;
+		public:
+			ResponseMessage() = default;
+			ResponseMessage ( ResponseMessage const & other ) = default;
+			ResponseMessage ( ResponseMessage && other ) = default;
+			ResponseMessage & operator= ( ResponseMessage const & rhs ) = default;
+			ResponseMessage & operator= ( ResponseMessage && rhs ) = default;
 
-    void addValue ( argument::Name name, argument::Value value );
+			void addValue ( argument::Name name, argument::Value value );
 
-    template <typename T> // Hiding the implementation (?)
-    T getValue ( const argument::Name & name ) const {
-        return argument::get<T>( values_.at ( name ) );
-    }
+			template <typename T> // Hiding the implementation (?)
+				T getValue ( const argument::Name & name ) const {
+					return argument::get<T>( values_.at ( name ) );
+				}
 
-};
+	};
 
 }
 

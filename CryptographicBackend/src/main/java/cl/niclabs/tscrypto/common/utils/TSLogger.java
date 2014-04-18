@@ -41,55 +41,25 @@ import org.apache.log4j.PropertyConfigurator;
  * Convenient log4j interface utility.
  * 
  * @author vramiro
+ * @author fcifuentes
  */
-public class TSLogger {
-        //TODO these variables should be private and logger should be accessed through getters.
-    
-	public static Logger node = Logger.getLogger("cl.niclabs.tscrypto.node");
-	public static Logger sd = Logger.getLogger("cl.niclabs.threshsig.sd");
-	public static Logger keyFactory = Logger.getLogger("cl.niclabs.threshsig.keyDealer");
-    public static Logger methodCollector = Logger.getLogger("cl.niclabs.cb.methodCollector");
+public final class TSLogger {
+	public final static Logger node = Logger.getLogger("cl.niclabs.tscrypto.node");
+	public final static Logger sd = Logger.getLogger("cl.niclabs.threshsig.sd");
+	public final static Logger keyDealer = Logger.getLogger("cl.niclabs.threshsig.keyDealer");
+    public final static Logger methodCollector = Logger.getLogger("cl.niclabs.cb.methodCollector");
 
 	static {
 		init();
 	}
 
 	public static void init() {
+		PropertyConfigurator.configure(System.getProperty("log4j.configuration"));
 
-		PropertyConfigurator.configure(System
-				.getProperty("log4j.configuration"));
-
-		if ((node == null) || (sd == null) || (keyFactory == null) || (methodCollector == null)) {
+		if ((node == null) || (sd == null) || (keyDealer == null) || (methodCollector == null)) {
 			new Error(
 					"No configuration file for logging properties: log4j.configuration");
 		}
 	}
-        
-    public Logger getNode(){
-        if (node == null)
-            init();
-        
-        return node;
-    }
-    
-    public Logger getSD(){
-        if (sd == null)
-            init();
 
-        return sd;
-    }
-    
-    public Logger getKeyFactory(){
-        if (keyFactory == null)
-            init();
-
-        return keyFactory;
-    }
-
-    public Logger getMethodCollector() {
-        if (methodCollector == null)
-            init();
-
-        return methodCollector;
-    }
 }

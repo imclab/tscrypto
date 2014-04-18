@@ -22,8 +22,8 @@ import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureRequest;
 import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
 import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
 import cl.niclabs.tscrypto.common.datatypes.Ticket;
-import cl.niclabs.tscrypto.sigDealer.KeyManager;
-import cl.niclabs.tscrypto.sigDealer.RequestManager;
+import cl.niclabs.tscrypto.manager.keyManagement.KeyManager;
+import cl.niclabs.tscrypto.manager.RequestManager;
 import cl.niclabs.cb.common.Signer;
 
 import javax.crypto.NoSuchPaddingException;
@@ -81,10 +81,10 @@ public class SignerImpl implements Signer {
         TSPublicKey publicKey = keyManager.getPublicKey(privateKeyHandler);
 
         Ticket ticket = requestManager.sign(keyMetaInfo, publicKey, hashAlgorithm, data, privateKeyHandler);
-
         SignatureRequest request = requestManager.getSignatureRequest(ticket);
         request.waitUntilReady();
         BigInteger signature = request.getSignature();
+        requestManager.removeRequest(ticket);
 
         algorithm = "";
         privateKeyHandler = "";

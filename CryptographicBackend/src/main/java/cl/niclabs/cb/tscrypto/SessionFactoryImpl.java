@@ -1,8 +1,8 @@
 package cl.niclabs.cb.tscrypto;
 
 import cl.niclabs.cb.common.*;
-import cl.niclabs.tscrypto.sigDealer.KeyManager;
-import cl.niclabs.tscrypto.sigDealer.RequestManager;
+import cl.niclabs.tscrypto.manager.keyManagement.KeyManager;
+import cl.niclabs.tscrypto.manager.RequestManager;
 
 public class SessionFactoryImpl implements SessionFactory {
     private final KeyManager keyManager;

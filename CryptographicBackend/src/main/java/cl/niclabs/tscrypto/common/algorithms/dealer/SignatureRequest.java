@@ -39,7 +39,7 @@ public class SignatureRequest {
 	/** signature share sent by players */
 	private SignatureShare[] signatureShares;
 	
-	/** statistics of the signing process */
+	/** statistics of the messageCollector process */
 	private Stats stats;
 	/** lock for stats */
 	private Object lockStats = new Object();

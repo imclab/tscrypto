@@ -49,7 +49,7 @@ protected:
     virtual ResponseMessage parseResponse (Json::Value const & value) = 0;
 
 public:
-    Method & execute ( Connection const & connection ); // throw (ConnectionException);
+    Method & execute ( Connection & connection ); // throw (ConnectionException);
     const ResponseMessage & getResponse();
     virtual ~Method() = default;
 

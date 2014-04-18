@@ -5,7 +5,11 @@ import cl.niclabs.tscrypto.common.algorithms.keyfactory.KeyFactory;
 import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.datatypes.Ticket;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
-import cl.niclabs.tscrypto.sigDealer.*;
+import cl.niclabs.tscrypto.manager.requests.DeleteKeyRequest;
+import cl.niclabs.tscrypto.manager.requests.KeyDispatchRequest;
+import cl.niclabs.tscrypto.manager.keyManagement.KeyFactoryFactory;
+import cl.niclabs.tscrypto.manager.keyManagement.KeyManager;
+import cl.niclabs.tscrypto.manager.RequestManager;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.IOException;
@@ -29,10 +33,10 @@ public class KeyOperationsImpl implements KeyOperations {
 
     @Override
     public GenerationResult generateKeys(String keyType, int keySize, String publicExponent) throws NoSuchAlgorithmException, InvalidAlgorithmParameterException, IOException, InterruptedException {
-        TSLogger.keyFactory.debug("KeyPair Generation with k="+k+" and l="+l);
+        TSLogger.keyDealer.debug("KeyPair Generation with k="+k+" and l="+l);
         KeyFactory keyFactory = KeyFactoryFactory.getInstance();
         KeyInfo keyInfo = keyFactory.generateKeys(keySize / 2, k, l);
-        TSLogger.keyFactory.debug("KeyPair Generation successful");
+        TSLogger.keyDealer.debug("KeyPair Generation successful");
         String handler = keyInfo.getKeyMetaInfo().getAlias();
         Ticket ticket = requestManager.dispatchKey(keyInfo);
         KeyDispatchRequest request = requestManager.getKeyDispatchRequest(ticket);

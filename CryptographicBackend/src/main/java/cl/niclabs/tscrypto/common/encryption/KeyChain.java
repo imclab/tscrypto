@@ -50,7 +50,7 @@ public class KeyChain {
 	private KeyStore keyStore;
 	private ProtectionParameter protection;
 
-	private Map<String, PrivateKey> privateKeys = new HashMap<String, PrivateKey>();
+	private Map<String, PrivateKey> privateKeys = new HashMap<>();
 
 	private KeyChain() {
 	}
@@ -59,7 +59,7 @@ public class KeyChain {
 		return INSTANCE;
 	}
 	
-	public void loadKeyStoreFile(String filename, char[] password) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, FileNotFoundException, IOException {
+	public void loadKeyStoreFile(String filename, char[] password) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
 		keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
 		keyStore.load(new FileInputStream(filename), password);
 
@@ -73,29 +73,16 @@ public class KeyChain {
 			Cipher decipher = Cipher.getInstance("RSA");
 			decipher.init(Cipher.DECRYPT_MODE, getPrivateKey(rsaKeyAlias));
 			decrypted = decipher.doFinal(Base64.decodeBase64(encryptedData));
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UnrecoverableEntryException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (KeyStoreException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
+		} catch (NoSuchAlgorithmException
+                | UnrecoverableEntryException
+                | KeyStoreException
+                | NoSuchPaddingException
+                | InvalidKeyException
+                | IllegalBlockSizeException
+                | BadPaddingException e) {
 			e.printStackTrace();
 		}
-		return decrypted;
+        return decrypted;
 	}
 
 	private PrivateKey getPrivateKey(String rsaKeyAlias)
@@ -114,8 +101,10 @@ public class KeyChain {
 
 	public static void consoleSetup(String filename) {
 		Console console = System.console();
-		if (null == console)
-			System.exit(-1);
+		if (null == console) {
+            System.err.println("There is not console under this system.");
+            System.exit(-1);
+        }
 
 		char[] password = console.readPassword("Enter keystore password: ");
 		KeyChain keyChain = KeyChain.getInstance();

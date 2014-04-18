@@ -22,70 +22,31 @@ import cl.niclabs.cb.common.MethodCollector;
 import cl.niclabs.cb.common.SessionManagerImpl;
 import cl.niclabs.cb.common.methods.MethodFactory;
 import cl.niclabs.cb.common.methods.MethodFactoryImpl;
-import com.rabbitmq.client.*;
 
-import java.io.IOException;
+import org.zeromq.ZMQ;
+
 
 public class Backend {
 
-    private static void run(String hostName, String queueName)
-            throws ShutdownSignalException, ConsumerCancelledException {
-        ConnectionFactory factory = new ConnectionFactory();
-        factory.setHost(hostName);
-        Connection connection;
-        try {
-            connection = factory.newConnection();
-            MethodFactory methodFactory = new MethodFactoryImpl(
-                    new SessionManagerImpl(),
-                    new SessionFactoryImpl(),
-                    new KeyOperationsImpl(MapKeyStorage.getInstance())
-            );
-            new MethodCollector(connection, queueName, methodFactory);
+	public static void main(String[] args) throws  InterruptedException {
+        MethodFactory methodFactory = new MethodFactoryImpl(
+                new SessionManagerImpl(),
+                new SessionFactoryImpl(),
+                new KeyOperationsImpl(MapKeyStorage.getInstance())
+        );
+
+        MethodCollector collector = new MethodCollector(ZMQ.context(1), methodFactory);
+        collector.start();
+        while (!Thread.currentThread().isInterrupted()) {
             try {
                 synchronized (Backend.class) {
-                    while (true) {
-                        Backend.class.wait();
-                    }
+                    Backend.class.wait();
                 }
             } catch (InterruptedException e) {
                 System.err.println("Error al esperar mensajes");
             }
-
-        } catch (IOException e) {
-            System.err.println("No se puede conectar al servidor...");
-            System.err.println(e.getLocalizedMessage());
-            System.exit(1);
         }
-    }
-
-	public static void main(String[] args) 
-			throws ShutdownSignalException, ConsumerCancelledException, InterruptedException {
-        String queueName = "";
-        String hostName = "";
-
-        // Manejo de argumentos...
-        switch (args.length) {
-            case 0:
-                hostName = "localhost";
-                queueName = "rpc_queue";
-                break;
-
-            case 1:
-                hostName = args[0];
-                queueName = "rpc_queue";
-                break;
-
-            case 2:
-                hostName = args[0];
-                queueName = args[1];
-                break;
-
-            default:
-                System.err.println("Muchos argumentos.");
-                System.exit(1);
-        }
-
-        run(hostName, queueName);
+        collector.stop();
 	}
 
 }

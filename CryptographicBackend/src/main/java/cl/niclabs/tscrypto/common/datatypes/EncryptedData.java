@@ -49,6 +49,7 @@ public class EncryptedData extends JsonFormat {
 	/** alias of the RSA's public key used to encrypt/decrypt the AES key */
 	public String rsaKeyAlias;
 
+
 	/**
 	 * Constructor for encrypted data
 	 * @param rsaKeyAlias alias of the RSA's public key of the receiver
@@ -96,7 +97,7 @@ public class EncryptedData extends JsonFormat {
 		return  (T) gson.fromJson(new String(encryptedData.decrypt()), theClass);
 	}
 
-	final private byte[] encryptAES(SecretKeySpec skeySpec, byte[] data) {
+	private byte[] encryptAES(SecretKeySpec skeySpec, byte[] data) {
 
 		byte[] encrypted = null;
 
@@ -106,27 +107,18 @@ public class EncryptedData extends JsonFormat {
 			cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
 
 			encrypted = cipher.doFinal(data);
-		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (NoSuchPaddingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (InvalidKeyException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IllegalBlockSizeException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (BadPaddingException e) {
-			// TODO Auto-generated catch block
+		} catch (NoSuchAlgorithmException
+                | NoSuchPaddingException
+                | InvalidKeyException
+                | IllegalBlockSizeException
+                | BadPaddingException e) {
 			e.printStackTrace();
 		}
 
-		return encrypted;
+        return encrypted;
 	}
 
-	final private static SecretKeySpec generateAESKey() {
+	private static SecretKeySpec generateAESKey() {
 		SecretKeySpec skeySpec = null;
 		try {
 			KeyGenerator keyGen = KeyGenerator.getInstance("AES");
@@ -137,14 +129,13 @@ public class EncryptedData extends JsonFormat {
 
 			skeySpec = new SecretKeySpec(secretKey.getEncoded(), "AES");
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 		return skeySpec;
 	}
 
-	final private byte[] encrypt(byte[] data) {
+	private byte[] encrypt(byte[] data) {
 		return KeyTool.getInstance().encrypt(this.rsaKeyAlias, data);
 	}
 

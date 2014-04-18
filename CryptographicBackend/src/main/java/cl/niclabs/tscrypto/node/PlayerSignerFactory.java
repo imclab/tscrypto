@@ -3,7 +3,7 @@ package cl.niclabs.tscrypto.node;
 import cl.niclabs.tscrypto.common.algorithms.signer.*;
 import cl.niclabs.tscrypto.common.datatypes.KeyShareInfo;
 
-public class PlayerSignerFactory {
+class PlayerSignerFactory {
     static public PlayerSigner getInstance(KeyShareInfo keyShareInfo, int id) {
         NodeConfig config = NodeConfig.getInstance();
         boolean useJNI = config.getUseJNI();

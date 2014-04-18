@@ -36,7 +36,7 @@ void Method::addArgument ( argument::Name name, argument::Value value )
 }
 
 
-Method& Method::execute ( const Connection& connection ) // throw (ConnectionException)
+Method& Method::execute ( Connection & connection ) // throw (ConnectionException)
 {
     std::string responseJson ( connection.executeRpc ( message_.toJson() ) );
 

@@ -22,9 +22,10 @@ import java.math.BigInteger;
 import cl.niclabs.tscrypto.common.algorithms.signer.PlayerSigner;
 import cl.niclabs.tscrypto.common.datatypes.SignatureShare;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
+import cl.niclabs.tscrypto.node.keyManagement.KeyShareManager;
 
 public class Signer {
-    private KeyShareManager keyManager;
+    private final KeyShareManager keyManager;
 
     public Signer(KeyShareManager keyManager) {
         this.keyManager = keyManager;
@@ -35,22 +36,14 @@ public class Signer {
 	}
 
     public SignatureShare sign(BigInteger document, String alias) {
-        SignatureShare signatureShare = null;
         TSLogger.node.debug("document: " + document);
-
-        PlayerSigner playerSigner = PlayerSignerFactory.getInstance(keyManager.getKeyShareInfo(alias), getId());
-
         try {
-            signatureShare = playerSigner.sign(document);
+            PlayerSigner playerSigner = PlayerSignerFactory.getInstance(keyManager.getKeyShareInfo(alias), getId());
+            return playerSigner.sign(document);
         } catch (final java.security.NoSuchAlgorithmException e) {
             TSLogger.node.error("Provider could not locate SHA message digest .");
+            return null;
         }
-
-        return signatureShare;
-    }
-
-    public KeyShareManager getKeyShareManager() {
-        return keyManager;
     }
 
 }

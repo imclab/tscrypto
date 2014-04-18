@@ -29,11 +29,12 @@ namespace hsm
 
 class Configuration;
 
+// TODO: change this into a template.
 class ConnectionManager
 {  
 public:
     virtual ~ConnectionManager() = default;
-    virtual const Connection & getConnection() const = 0;
+    virtual Connection & getConnection() = 0;
 };
 
 }

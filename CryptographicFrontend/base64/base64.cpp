@@ -39,7 +39,7 @@ namespace base64
 
   string encode ( vector<byte> inputBuffer )
   {
-    string encodedString;
+    string encodedString;   
     encodedString.reserve ( ( ( inputBuffer.size() /3 ) + ( inputBuffer.size() % 3 > 0 ) ) * 4 );
     uint64_t temp;
     vector<byte>::iterator cursor = inputBuffer.begin();

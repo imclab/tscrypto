@@ -33,7 +33,6 @@ public class RSASign {
 	BigInteger n, e, d;
 
 	public RSASign(BigInteger n, BigInteger e, BigInteger d) {
-		// TODO Auto-generated constructor stub
 		this.n = n;
 		this.e = e;
 		this.d = d;
