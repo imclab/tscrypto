@@ -19,30 +19,44 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef HSM_CONNECTIONMANAGER_H
 #define HSM_CONNECTIONMANAGER_H
 
-#include <Connection.h>
+#include <RPC.h>
+#include <memory>
 using namespace communication;
 
 namespace hsm
 {
-struct IConnectionManager {
-    virtual ~IConnectionManager() = default;
-    virtual IConnection & getConnection() = 0;
+struct AbstractRPCManager {
+    virtual ~AbstractRPCManager() = default;
+    virtual AbstractRPC & getRPC() = 0;
 };
     
     
-template<typename ConnectionImpl>
-class ConnectionManager : public IConnectionManager
+template<typename Connection>
+class RPCManager : public AbstractRPCManager
 {   
-    Connection<ConnectionImpl> conn_;
+    using RPCPtr = std::unique_ptr<RPC<Connection>>;
+    RPCPtr rpc_;
 public:
     template<typename... Args>
-    ConnectionManager(Args... args) : conn_(args...) {}
+    RPCManager(Args... args) : rpc_(new RPC<Connection>(args...)) {}
+    RPCManager() = default;
+    RPCManager(RPCManager &&) = default;
+    RPCManager & operator=(RPCManager &&) = default;
     
-    ~ConnectionManager() = default;
-    IConnection & getConnection() override {
-	return conn_;
-    }
+    
+    ~RPCManager() = default;
+    AbstractRPC & getRPC() override;
+private:
+    RPCManager(RPCManager &) = delete;
+    RPCManager & operator=(RPCManager &) = delete;
 };
+
+template<typename Connection>
+AbstractRPC& RPCManager<Connection>::getRPC()
+{
+    return *rpc_;
+}
+
 
 }
 

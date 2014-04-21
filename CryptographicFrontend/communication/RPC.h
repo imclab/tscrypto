@@ -28,17 +28,17 @@ namespace communication
 
 struct ConnectionException : std::exception {};
 
-struct IConnection {
-    virtual ~IConnection() = default;
-    virtual std::string executeRpc(const std::string & message) = 0;
+struct AbstractRPC {
+    virtual ~AbstractRPC() = default;
+    virtual std::string execute(const std::string & message) = 0;
 };
 
 
-template<class Impl> 
-class Connection : public IConnection
+template<class Connection> 
+class RPC : public AbstractRPC
 {
 private:
-    Impl impl_;
+    Connection conn_;
 public:
     class BadResponseException : public ConnectionException
     {
@@ -55,13 +55,13 @@ public:
     };
 
     template<typename... Args>
-    Connection(Args... args) : impl_(args...) {}
+    RPC(Args... args) : conn_(args...) {}
     
-    ~Connection() = default;
+    ~RPC() = default;
 
-    std::string executeRpc ( const std::string &message ) override { // throw (ConnectionException)
-        impl_.send ( message );
-        return impl_.receive();
+    std::string execute ( const std::string &message ) override { // throw (ConnectionException)
+        conn_.send ( message );
+        return conn_.receive();
     }
 
 };

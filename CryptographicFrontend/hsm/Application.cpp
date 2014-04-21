@@ -36,30 +36,40 @@ using namespace hsm;
 
 
 Application::Application ( std::ostream& out )
-    : out_ ( out ), connectionManager_("localhost", "10000")
+    : out_ ( out )
 {
     // First, read and setup the configuration.
     char const * configPath = std::getenv ( "TCB_CONFIG_FILE" );
     if ( configPath == nullptr ) {
         throw TcbError ( "Application::Application",
-                         "TCB_CONFIG_FILE environment variable hasn't setted yet",
+                         "TCB_CONFIG_FILE environment variable has not setted yet",
                          CKR_DEVICE_ERROR );
     }
-    
+
     configuration_.load( configPath );
-    // connectionManager_.init ( configuration_.getRabbitMqConf() );
-    database_.init(configuration_.getDatabaseConf());
-    
+
+    // Using move semantics...
+    rpcManager_ =
+        RPCManager<ZeroConnection>(
+            configuration_.getConnectionConf().host,
+            configuration_.getConnectionConf().port
+        );
+
+    database_ =
+        Database(
+            configuration_.getDatabaseConf().path
+        );
+
     // By design, we will have one slot per configured token.
     // The tokens are owned by the slots.
     CK_SLOT_ID i = 0;
     for ( Configuration::SlotConf const & slotConf: configuration_.getSlotConf() ) {
-	Slot * slot = new Slot(i, *this);
-	
-	slot->insertToken(database_.getToken(slotConf.label));
-	
+        Slot * slot = new Slot(i, *this);
+
+        slot->insertToken(database_.getToken(slotConf.label));
+
         slots_.push_back ( SlotPtr(slot) );
-	++i;
+        ++i;
     }
 
 
@@ -117,7 +127,7 @@ Database& Application::getDatabase()
 }
 
 
-IConnectionManager & Application::getConnectionManager()
+AbstractRPCManager & Application::getRPCManager()
 {
-    return connectionManager_;
+    return rpcManager_;
 }

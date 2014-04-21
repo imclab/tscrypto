@@ -45,26 +45,32 @@ namespace {
 
 }
 
-Database::Database(const Configuration::DatabaseConf& conf) 
+Database::Database(std::string path) 
 {
-    int rc;
-    rc = sqlite3_open(conf.path.c_str(), &db_);
-    if(rc) {
-	sqlite3_close(db_);
-	throw TcbError("Database::Database", "Couldn't open database", CKR_GENERAL_ERROR);
-    }    
-    
+    init(path);    
 }
+
+Database::Database(Database&& db)
+{
+    std::swap(db_, db.db_);
+}
+
+Database& Database::operator=(Database&& db)
+{
+    std::swap(db_, db.db_);
+    return *this;
+}
+
 
 Database::~Database()
 {
     sqlite3_close(db_);
 }
 
-void Database::init(const Configuration::DatabaseConf& conf)
+void Database::init(std::string path)
 {
     int rc;
-    rc = sqlite3_open(conf.path.c_str(), &db_);
+    rc = sqlite3_open(path.c_str(), &db_);
     if(rc) {
 	sqlite3_close(db_);
 	throw TcbError("Database::init", "Couldn't open database", CKR_GENERAL_ERROR);

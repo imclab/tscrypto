@@ -355,6 +355,7 @@ main ( int argc, char **argv )
     int howMany = 1;
     
     int c;
+    int pinLen;
     while ((c = getopt(argc, argv, "cn:p:f:")) != -1) {
 	switch (c) {
 	    case 'c':
@@ -368,7 +369,8 @@ main ( int argc, char **argv )
 		filename = strdup(optarg);
 		break;
 	    case 'p':
-		pinValue = strdup(optarg);
+		pinLen = strlen(optarg);
+		pinValue = memcpy(malloc(pinLen), optarg, pinLen);
 		break;
 	    default:
 		abort();

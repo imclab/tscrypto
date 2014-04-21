@@ -29,7 +29,7 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 #include "pkcs11.h"
 #include "Database.h"
 
-#include <ConnectionManager.h>
+#include <RPCManager.h>
 #include <ZeroConnection.h>
 
 namespace hsm
@@ -55,14 +55,14 @@ public:
     virtual Session & getSession ( CK_SESSION_HANDLE session ); // throws exception
     virtual Database & getDatabase ();
 
-    virtual IConnectionManager & getConnectionManager();
+    virtual AbstractRPCManager & getRPCManager();
     virtual void errorLog ( std::string message ) const;
 
 private:  
     std::ostream& out_;
     Configuration configuration_;
     
-    ConnectionManager<ZeroConnection> connectionManager_;
+    RPCManager<ZeroConnection> rpcManager_;
     
     Database database_;
 

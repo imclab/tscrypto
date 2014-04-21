@@ -31,17 +31,18 @@ class Database : public hsm::TokenSerializer
 {
     // TODO: GET MAX CRYPTO OBJECT ID
     sqlite3 * db_;    
+    void init(std::string path);
     
 public:
-    Database(Configuration::DatabaseConf const& conf);
+    Database(std::string path);
     Database() = default;
     virtual ~Database();
-    Database(Database const &) = default;
-    Database(Database &&) = default;    
-    Database & operator=(Database const &) = default;
-    Database & operator=(Database &&) = default;
+    Database(Database const &) = delete;
+    Database(Database &&);    
+    Database & operator=(Database const &) = delete;
+    Database & operator=(Database &&);
     
-    virtual void init(Configuration::DatabaseConf const& conf);
+    
     virtual hsm::Token* getToken(std::string label);
     virtual void saveToken(hsm::Token& token);
     virtual void saveCryptoObject(Token& token, CryptoObject& object);

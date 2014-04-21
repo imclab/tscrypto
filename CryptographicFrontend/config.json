@@ -1,4 +1,5 @@
 {
+  "connection" : { "host" : "localhost", "port" : "10000" },
   "database" : { "path" : "tcbhsm.db" },
   "slots" : [
     // Token definitions...

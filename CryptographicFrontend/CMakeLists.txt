@@ -65,14 +65,18 @@ set(JSONCPP_SRC
 set(COMMUNICATION_SRC
   communication/Method.cpp
   communication/Method.h
+  communication/MethodFactory.cpp
+  communication/MethodFactory.h
   communication/MethodMessage.cpp
   communication/MethodMessage.h
+  communication/ResponseMessage.h
+  communication/ResponseMessage.cpp
   communication/Argument.h
-  communication/Connection.h
+  communication/RPC.h
   communication/ZeroConnection.cpp
   )  
   
-set(HSM_SRC  
+set(HSM_SRC   
   hsm/Database.cpp 
   hsm/Database.h
   hsm/Session.cpp

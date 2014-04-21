@@ -19,7 +19,6 @@
 
 #ifndef ZEROCONNECTION_H
 #define ZEROCONNECTION_H
-#include "Connection.h"
 #include <zmq.hpp>
 
 namespace communication {
@@ -30,6 +29,12 @@ private:
     zmq::socket_t socket_;
 public:
     ZeroConnection(std::string host, std::string port);
+    ZeroConnection() = default;
+    ZeroConnection(ZeroConnection && other);
+    ZeroConnection & operator=(ZeroConnection && rhs);
+    
+    ZeroConnection & operator=(ZeroConnection &) = delete;
+    ZeroConnection(ZeroConnection & other) = delete;
     std::string receive();
     void send(const std::string& message);
     ~ZeroConnection() = default;

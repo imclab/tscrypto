@@ -19,6 +19,25 @@
 
 #include "ZeroConnection.h"
 
+communication::ZeroConnection::ZeroConnection(std::string host, std::string port)
+: context_(1) , socket_(context_, ZMQ_REQ)
+{
+    socket_.connect(("tcp://" + host + ":" + port).data());;    
+}
+
+communication::ZeroConnection::ZeroConnection(communication::ZeroConnection&& other)
+: context_(std::move(other.context_)), socket_(std::move(other.socket_))
+{    
+}
+
+
+communication::ZeroConnection& communication::ZeroConnection::operator=(communication::ZeroConnection&& rhs)
+{
+    std::swap(context_, rhs.context_);
+    std::swap(socket_, rhs.socket_);
+    return *this;
+}
+
 std::string communication::ZeroConnection::receive()
 {
     zmq::message_t reply;
@@ -39,10 +58,3 @@ void communication::ZeroConnection::send(const std::string& message)
     
     socket_.send(zmqMessage);
 }
-
-communication::ZeroConnection::ZeroConnection(std::string host, std::string port)
-: context_(1) , socket_(context_, ZMQ_REQ)
-{
-    socket_.connect(("tcp://" + host + ":" + port).data());;    
-}
-

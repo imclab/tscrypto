@@ -54,6 +54,10 @@ void Configuration::load(std::string configurationPath)
 	ptree & token = v.second;
 	slotConf_.push_back({ token.get<string>("label") });
     }
+    
+    ptree connection = root.get_child("connection");
+    connectionConf_.host = connection.get<string>("host");
+    connectionConf_.port = connection.get<string>("port");
 }
 
 std::vector<Configuration::SlotConf> const & Configuration::getSlotConf() const
@@ -64,4 +68,9 @@ std::vector<Configuration::SlotConf> const & Configuration::getSlotConf() const
 Configuration::DatabaseConf const & Configuration::getDatabaseConf() const
 {
     return databaseConf_;
+}
+
+const Configuration::ConnectionConf& Configuration::getConnectionConf() const
+{
+    return connectionConf_;
 }

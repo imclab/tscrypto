@@ -16,7 +16,6 @@ You should have received a copy of the GNU Lesser General Public License
 along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-#include <Connection.h>
 #include <ResponseMessage.h>
 
 #include "Slot.h"
@@ -24,7 +23,6 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 #include "Token.h"
 #include "TcbError.h"
 #include "Configuration.h"
-#include "ConnectionManager.h"
 #include "Application.h"
 
 
