@@ -46,11 +46,6 @@ void Configuration::load(std::string configurationPath)
 	throw TcbError("Configuration::load", e.what(), CKR_GENERAL_ERROR);
     }
 
-    ptree rabbitmq = root.get_child("rabbitmq");    
-    rabbitMqConf_.hostname = rabbitmq.get<string>("hostname");
-    rabbitMqConf_.port = rabbitmq.get<string>("port");
-    rabbitMqConf_.rpcQueue = rabbitmq.get<string>("rpc_queue");
-
     ptree database = root.get_child("database");          
     databaseConf_.path = database.get<string>("path");
 
@@ -59,12 +54,6 @@ void Configuration::load(std::string configurationPath)
 	ptree & token = v.second;
 	slotConf_.push_back({ token.get<string>("label") });
     }
-}
-
-
-Configuration::RabbitMqConf const & Configuration::getRabbitMqConf() const
-{
-    return rabbitMqConf_;
 }
 
 std::vector<Configuration::SlotConf> const & Configuration::getSlotConf() const

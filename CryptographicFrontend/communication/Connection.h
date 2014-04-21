@@ -21,46 +21,52 @@
 #define COMMUNICATION_CONNECTION_H
 
 #include <string>
-#include <memory>
 #include <exception>
 
 namespace communication
 {
 
-	struct ConnectionException : std::exception {};
+struct ConnectionException : std::exception {};
 
-	class Connection
-	{
-		protected:
-			virtual void send ( const std::string &message ) = 0;
-			virtual std::string receive() = 0;
-		public:
-			class BadResponseException : public ConnectionException
-		{
-			const char *what() const throw() {
-				return "Error al recibir respuesta";
-			}
-		};
-
-			class CannotConnectException : public ConnectionException
-		{
-			const char *what() const throw() {
-				return "No se puede conectar";
-			}
-		};
-
-			virtual ~Connection() = default;
-
-			// Template method...
-			std::string executeRpc ( const std::string &message ) { // throw (ConnectionException)
-				send ( message );
-				return receive();
-			}
+struct IConnection {
+    virtual ~IConnection() = default;
+    virtual std::string executeRpc(const std::string & message) = 0;
+};
 
 
-	};
+template<class Impl> 
+class Connection : public IConnection
+{
+private:
+    Impl impl_;
+public:
+    class BadResponseException : public ConnectionException
+    {
+        const char *what() const throw() {
+            return "Error al recibir respuesta";
+        }
+    };
+
+    class CannotConnectException : public ConnectionException
+    {
+        const char *what() const throw() {
+            return "No se puede conectar";
+        }
+    };
+
+    template<typename... Args>
+    Connection(Args... args) : impl_(args...) {}
+    
+    ~Connection() = default;
+
+    std::string executeRpc ( const std::string &message ) override { // throw (ConnectionException)
+        impl_.send ( message );
+        return impl_.receive();
+    }
+
+};
 
 }
 
 #endif // Connection_H_
-// kate: indent-mode cstyle; replace-tabs on; 
+// kate: indent-mode cstyle; replace-tabs on;

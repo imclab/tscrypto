@@ -27,18 +27,19 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 #include <iosfwd>
 
 #include "pkcs11.h"
-#include "RabbitConnectionManager.h"
 #include "Database.h"
-#include "ZeroConnectionManager.h"
+
+#include <ConnectionManager.h>
+#include <ZeroConnection.h>
 
 namespace hsm
 {
 class Slot;
 class Session;
 class Configuration;
-class ConnectionManager;
 
 using SlotPtr = std::unique_ptr<Slot>;
+using namespace communication;
 
 /** La aplicacion tiene slots y algunas funcionalidades de ayuda... **/
 class Application
@@ -54,14 +55,15 @@ public:
     virtual Session & getSession ( CK_SESSION_HANDLE session ); // throws exception
     virtual Database & getDatabase ();
 
-    virtual ConnectionManager & getConnectionManager();
+    virtual IConnectionManager & getConnectionManager();
     virtual void errorLog ( std::string message ) const;
 
-private:
+private:  
     std::ostream& out_;
-
     Configuration configuration_;
-    ZeroConnectionManager connectionManager_;
+    
+    ConnectionManager<ZeroConnection> connectionManager_;
+    
     Database database_;
 
     // An application can have a variable number of slots...

@@ -23,16 +23,16 @@
 #include <zmq.hpp>
 
 namespace communication {
-class ZeroConnection : public Connection
+class ZeroConnection
 {    
 private:
     zmq::context_t context_;
     zmq::socket_t socket_;
 public:
     ZeroConnection(std::string host, std::string port);
-    virtual std::string receive() override;
-    virtual void send(const std::string& message) override;
-    virtual ~ZeroConnection() = default;
+    std::string receive();
+    void send(const std::string& message);
+    ~ZeroConnection() = default;
 };
 
 }

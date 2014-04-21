@@ -22,17 +22,13 @@ import java.io.Console;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.KeyStore;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.UnrecoverableEntryException;
+import java.security.*;
 import java.security.KeyStore.PrivateKeyEntry;
 import java.security.KeyStore.ProtectionParameter;
 import java.security.cert.CertificateException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
@@ -84,6 +80,16 @@ public class KeyChain {
 		}
         return decrypted;
 	}
+
+    public byte[] sign(String rsaKeyAlias, byte[] data) throws UnrecoverableEntryException,
+            NoSuchAlgorithmException, KeyStoreException, InvalidKeyException, SignatureException {
+        Signature sign = Signature.getInstance("SHA1WithRsa");
+        sign.initSign(getPrivateKey(rsaKeyAlias));
+        sign.update(data);
+
+        byte[] signature = sign.sign();
+        return signature;
+    }
 
 	private PrivateKey getPrivateKey(String rsaKeyAlias)
 			throws NoSuchAlgorithmException, UnrecoverableEntryException,

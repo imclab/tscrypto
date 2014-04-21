@@ -27,11 +27,6 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 #include <vector>
 #include <utility>
 
-namespace communication
-{
-class Connection;
-}
-
 namespace hsm
 {
 

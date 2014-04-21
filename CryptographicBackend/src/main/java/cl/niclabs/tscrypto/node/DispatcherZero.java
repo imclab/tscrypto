@@ -3,7 +3,6 @@ package cl.niclabs.tscrypto.node;
 import cl.niclabs.tscrypto.common.messages.TSMessage;
 import org.zeromq.ZMQ;
 
-import javax.xml.soap.Node;
 import java.io.Closeable;
 import java.io.IOException;
 

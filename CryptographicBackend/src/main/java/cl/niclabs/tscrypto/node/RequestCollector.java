@@ -43,8 +43,8 @@ public class RequestCollector implements Collector, Closeable {
 
         handlerFactory = new HandlerFactory<>();
         handlerFactory.addHandler(DeleteKeyQuery.class, DeleteKeyHandler.class);
-        // handlerFactory.addHandler(SendKeyQuery.class, AddKeyHandler.class);
-        handlerFactory.addHandler(EncryptedData.class, AddKeyHandler.class);
+        handlerFactory.addHandler(SendKeyQuery.class, AddKeyHandler.class);
+        // handlerFactory.addHandler(EncryptedData.class, AddKeyHandler.class);
         handlerFactory.addHandler(SignShareQuery.class, SignHandler.class);
 
         running = false;

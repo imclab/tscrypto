@@ -350,7 +350,7 @@ main ( int argc, char **argv )
     
     char * howManyValue = NULL;
     char * filename = NULL;
-    char * pinValue = NULL;
+    CK_BYTE_PTR pinValue = NULL;
     int createKeys = 0;
     int howMany = 1;
     

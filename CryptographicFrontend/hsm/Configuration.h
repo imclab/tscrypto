@@ -22,21 +22,11 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <vector>
 
-namespace communication
-{
-class Connection;
-}
-
 namespace hsm
 {
 class Configuration
 {
 public:
-    struct RabbitMqConf {
-        std::string hostname;
-        std::string port;
-        std::string rpcQueue;
-    };
 
     struct SlotConf {
         std::string label;
@@ -53,14 +43,12 @@ public:
     Configuration & operator=(Configuration const &) = default;
     Configuration & operator=(Configuration &&) = default;
 
-    virtual RabbitMqConf const & getRabbitMqConf() const;
     virtual std::vector<SlotConf> const & getSlotConf() const;
     virtual DatabaseConf const & getDatabaseConf() const;
     virtual void load(std::string configurationPath);
 
     virtual ~Configuration() = default;
 private:
-    RabbitMqConf rabbitMqConf_;
     std::vector<SlotConf> slotConf_;
     DatabaseConf databaseConf_;
 };

@@ -17,8 +17,6 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 #include <Connection.h>
-#include <OpenSessionMethod.h>
-#include <CloseSessionMethod.h>
 #include <ResponseMessage.h>
 
 #include "Slot.h"

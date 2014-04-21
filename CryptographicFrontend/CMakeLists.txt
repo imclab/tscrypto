@@ -18,15 +18,14 @@ include_directories("${PROJECT_BINARY_DIR}/hsm")
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-include(FindRabbitMQ-C)
 include(FindSqlite3)
+include(FindZeroMQ)
 
 set(Boost_USE_STATIC_LIBS OFF)
 set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 
 find_package(Boost 1.53 REQUIRED)
-find_package(RabbitMQ-C)
 find_package(Sqlite3)
 find_package(ZeroMQ)
 
@@ -34,12 +33,6 @@ if (Boost_FOUND)
     include_directories(${Boost_INCLUDE_DIRS})
 else()
     message(FATAL_ERROR "Cannot find boost library")
-endif()
-
-if (RABBITMQ-C_FOUND)
-    include_directories(${RABBITMQ-C_INCLUDE_DIRS})
-  else()
-    message(FATAL_ERROR "Cannot find rabbitmq-c library")
 endif()
 
 if (SQLITE3_FOUND)
@@ -74,36 +67,8 @@ set(COMMUNICATION_SRC
   communication/Method.h
   communication/MethodMessage.cpp
   communication/MethodMessage.h
-  communication/OpenSessionMethod.cpp
-  communication/OpenSessionMethod.h
-  communication/RabbitConnection.cpp
-  communication/RabbitConnection.h
-  communication/ResponseMessage.cpp
-  communication/ResponseMessage.h
-  communication/SeedRandomMethod.cpp
-  communication/SeedRandomMethod.h
-  communication/SignInitMethod.cpp
-  communication/SignInitMethod.h
-  communication/SignMethod.cpp
-  communication/SignMethod.h
   communication/Argument.h
-  communication/CloseSessionMethod.cpp
-  communication/CloseSessionMethod.h
   communication/Connection.h
-  communication/DeleteKeyPairMethod.cpp
-  communication/DeleteKeyPairMethod.h
-  communication/DigestInitMethod.cpp
-  communication/DigestInitMethod.h
-  communication/DigestMethod.cpp
-  communication/DigestMethod.h
-  communication/FindKeyMethod.cpp
-  communication/FindKeyMethod.h
-  communication/GenerateKeyPairMethod.cpp
-  communication/GenerateKeyPairMethod.h
-  communication/GenerateRandomMethod.cpp
-  communication/GenerateRandomMethod.h
-  communication/GetAttributeMethod.cpp
-  communication/GetAttributeMethod.h
   communication/ZeroConnection.cpp
   )  
   
@@ -121,15 +86,11 @@ set(HSM_SRC
   hsm/TokenSerializer.h
   hsm/Configuration.cpp
   hsm/Configuration.h
-  hsm/ConnectionManager.h
-  hsm/RabbitConnectionManager.h
-  hsm/RabbitConnectionManager.cpp
+  hsm/ConnectionManager.h 
   hsm/CryptoObject.cpp
   hsm/CryptoObject.h
   hsm/Application.cpp
   hsm/Application.h
-  hsm/ZeroConnectionManager.cpp
-  hsm/ZeroConnectionManager.h
   )
   
   

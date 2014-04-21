@@ -24,18 +24,7 @@
 #include <base64.h>
 
 #include <Method.h>
-#include <OpenSessionMethod.h>
-#include <CloseSessionMethod.h>
-#include <DeleteKeyPairMethod.h>
-#include <DigestInitMethod.h>
-#include <DigestMethod.h>
-#include <GenerateKeyPairMethod.h>
-#include <GenerateRandomMethod.h>
-#include <RabbitConnection.h>
 #include <ResponseMessage.h>
-#include <SignInitMethod.h>
-#include <SignMethod.h>
-#include <SeedRandomMethod.h>
 
 #include <pkcs11.h>
 
@@ -94,12 +83,13 @@ namespace   // Aux functions.
     return false;
   }
 
-  inline Connection & getConnection(Session &s) {
+  inline IConnection & getConnection(Session &s) {
     return s.getCurrentSlot().getApplication().getConnectionManager().getConnection();
   }
 
   CK_SESSION_HANDLE actualHandle = 0;
-
+  
+  MethodFactory methodFactory;
 }
 
 Session::Session ( CK_FLAGS flags, CK_VOID_PTR pApplication,
@@ -108,15 +98,15 @@ Session::Session ( CK_FLAGS flags, CK_VOID_PTR pApplication,
   , flags_ ( flags ), application_ ( pApplication )
     , notify_ ( notify ), slot_ ( currentSlot )
 {
-  Connection & connection = getConnection(*this);
-  OpenSessionMethod method;
+  IConnection & connection = getConnection(*this);
+  Method method = methodFactory.openSession();
   uuid_ = method.execute ( connection ).getResponse().getValue<string> ( "sessionHandler" );
 }
 
 Session::~Session()
 {
 
-  Connection & conn = getConnection(*this);
+  IConnection & conn = getConnection(*this);
   Token & token = slot_.getToken();
   auto& objects = token.getObjects();
 
@@ -134,7 +124,7 @@ Session::~Session()
         // Neitherless if it's only one instance stored in the backend.
         char * value = static_cast<char *> ( handlerAttribute->pValue );
         string handler ( value, handlerAttribute->ulValueLen );
-        DeleteKeyPairMethod method ( handler );
+	Method method = methodFactory.deleteKeyPair(handler);
         try {
           method.execute ( conn ).getResponse();
         } catch ( std::runtime_error& e ) {
@@ -146,7 +136,7 @@ Session::~Session()
     }
   }
 
-  CloseSessionMethod method ( uuid_ );
+  Method method = methodFactory.closeSession(uuid_);
   try {
     method.execute ( conn ).getResponse();
   } catch ( ... ) {
@@ -282,8 +272,8 @@ void Session::destroyObject ( CK_OBJECT_HANDLE hObject )
       string handler ( ( char * ) handlerAttribute->pValue,
           handlerAttribute->ulValueLen );
 
-      Connection & connection =  getConnection(*this);
-      DeleteKeyPairMethod method ( handler );
+      IConnection & connection =  getConnection(*this);
+      Method method = methodFactory.deleteKeyPair(handler);
       try {
         method.execute ( connection ).getResponse();
       } catch ( std::exception& e ) {
@@ -739,10 +729,10 @@ KeyPair Session::generateKeyPair ( CK_MECHANISM_PTR pMechanism,
     // case CKM_VENDOR_DEFINED:
     case CKM_RSA_PKCS_KEY_PAIR_GEN:
       try {
-        Connection & connection ( getConnection(*this) );
+        IConnection & connection ( getConnection(*this) );
 
         // RSA is the only accepted method...
-        GenerateKeyPairMethod method ( "RSA", modulusBits, exponent ); 
+        Method method = methodFactory.generateKeyPair( "RSA", modulusBits, exponent ); 
         const ResponseMessage & response = method.execute ( connection ).getResponse();
         string keyHandler = response.getValue<string> ( "keyHandler" );
         string modulusB64 = response.getValue<string>( "modulus" );
@@ -814,8 +804,8 @@ void Session::signInit ( CK_MECHANISM_PTR pMechanism, CK_OBJECT_HANDLE hKey )
         break;
     }
 
-    Connection & connection ( getConnection(*this) );
-    SignInitMethod method ( uuid_, mechanism, handler );
+    IConnection & connection ( getConnection(*this) );
+    Method method = methodFactory.signInit(uuid_, mechanism, handler);
     method.execute ( connection ).getResponse();
 
     signInitialized_ = true;
@@ -832,9 +822,9 @@ void Session::sign ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignatu
   }
 
   try {
-    Connection & connection ( getConnection(*this) );
+    IConnection & connection ( getConnection(*this) );
     string encodedData ( base64::encode ( pData, ulDataLen) );
-    SignMethod method ( uuid_, encodedData );
+    Method method = methodFactory.sign(uuid_, encodedData);
 
     const string & signedData = method.execute ( connection ).getResponse().getValue<string> ( "signedData" );
 
@@ -900,8 +890,8 @@ void Session::digestInit ( CK_MECHANISM_PTR pMechanism )
       break;
   }
 
-  Connection & connection ( getConnection(*this) );
-  DigestInitMethod method ( uuid_, mechanism );
+  IConnection & connection ( getConnection(*this) );
+  Method method = methodFactory.digestInit(uuid_, mechanism);
   try {
     method.execute ( connection ).getResponse();
   } catch ( std::exception& e ) {
@@ -936,9 +926,9 @@ void Session::digest ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDiges
     throw TcbError ( "Session::digest", "pData == nullptr", CKR_ARGUMENTS_BAD );
   }
 
-  Connection & connection ( getConnection(*this) );
+  IConnection & connection ( getConnection(*this) );
   string encodedData ( base64::encode ( pData, ulDataLen ) );
-  DigestMethod method ( uuid_, encodedData );
+  Method method = methodFactory.digest(uuid_, encodedData);
 
   string encodedDigest;
   try {
@@ -963,8 +953,8 @@ void Session::generateRandom ( CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen )
     throw TcbError ( "Session::generateRandom", "pRandomData == nullptr", CKR_ARGUMENTS_BAD );
   }
 
-  Connection & connection ( getConnection(*this) );
-  GenerateRandomMethod method ( uuid_, ulRandomLen );
+  IConnection & connection ( getConnection(*this) );
+  Method method = methodFactory.generateRandom(uuid_, ulRandomLen);
   string encodedData = method.execute ( connection ).getResponse().getValue<string> ( "data" );
   vector<CK_BYTE> decodedData ( base64::decode ( encodedData ) );
   CK_BYTE_PTR data = decodedData.data();
@@ -978,10 +968,10 @@ void Session::seedRandom ( CK_BYTE_PTR pSeed, CK_ULONG ulSeedLen )
     throw TcbError ( "Session::seedRandom", "pSeed == nullptr", CKR_ARGUMENTS_BAD );
   }
 
-  Connection & connection ( getConnection(*this) );
+  IConnection & connection ( getConnection(*this) );
   string encodedData ( base64::encode ( pSeed, ulSeedLen ) );
 
-  SeedRandomMethod method ( uuid_, encodedData );
+  Method method = methodFactory.seedRandom(uuid_, encodedData);
   method.execute ( connection ).getResponse();
 }
 

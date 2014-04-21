@@ -23,7 +23,6 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 #include "Slot.h"
 #include "Token.h"
 #include "TcbError.h"
-#include "RabbitConnectionManager.h"
 #include "TokenSerializer.h"
 
 #include <base64.h>
@@ -37,7 +36,7 @@ using namespace hsm;
 
 
 Application::Application ( std::ostream& out )
-    : out_ ( out )
+    : out_ ( out ), connectionManager_("localhost", "10000")
 {
     // First, read and setup the configuration.
     char const * configPath = std::getenv ( "TCB_CONFIG_FILE" );
@@ -118,7 +117,7 @@ Database& Application::getDatabase()
 }
 
 
-ConnectionManager & Application::getConnectionManager()
+IConnectionManager & Application::getConnectionManager()
 {
     return connectionManager_;
 }

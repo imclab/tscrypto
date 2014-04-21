@@ -36,7 +36,7 @@ void Method::addArgument ( argument::Name name, argument::Value value )
 }
 
 
-Method& Method::execute ( Connection & connection ) // throw (ConnectionException)
+Method& Method::execute ( IConnection & connection ) // throw (ConnectionException)
 {
     std::string responseJson ( connection.executeRpc ( message_.toJson() ) );
 
@@ -64,3 +64,168 @@ const ResponseMessage & Method::getResponse()
 {
     return responseMessage_;
 }
+
+ResponseMessage Method::parseResponse(const Json::Value& value)
+{
+    if(parser) {
+	return parser(value);
+    } else {
+	return ResponseMessage();
+    }
+}
+
+
+namespace {    
+    ResponseMessage emptyParser(const Json::Value &) {
+	return ResponseMessage();
+    }
+}
+
+Method MethodFactory::closeSession(string sessionHandler)
+{
+    Method method("CloseSession");
+    method.addArgument("sessionHandler", sessionHandler);    
+    method.parser = emptyParser;    
+    return method;
+}
+
+Method MethodFactory::deleteKeyPair(string keyHandler)
+{
+    Method method("DeleteKeyPair");
+    method.addArgument("keyHandler", keyHandler);
+    method.parser = emptyParser; 
+
+    return method;
+}
+
+Method MethodFactory::digestInit(string sessionHandler, string mechanism)
+{
+    Method method("DigestInit");
+    method.addArgument("sessionHandler", sessionHandler);
+    method.addArgument("mechanism", mechanism);
+    method.parser = emptyParser;
+    
+    return method;
+}
+
+Method MethodFactory::digest(string sessionHandler, string data)
+{
+    Method method("Digest");
+    method.addArgument("sessionHandler", sessionHandler);
+    method.addArgument("data", data);
+    method.parser = [](Json::Value const& value) {
+	ResponseMessage responseMessage;
+	responseMessage.addValue ( "digest", value["digest"].asString() );
+	return responseMessage;
+    };
+    
+    return method;
+}
+
+Method MethodFactory::findKey(string keyHandler)
+{
+    Method method("FindKey");
+    method.addArgument("keyHandler", keyHandler);
+    method.parser = [](Json::Value const& value) {
+	ResponseMessage response;
+	response.addValue ( "key", value["key"].asString() );
+	return response;
+    };
+    
+    return method;
+}
+
+Method MethodFactory::generateKeyPair(string keyType, long int keySize, string publicExponent)
+{
+    Method method("GenerateKeyPair");
+    method.addArgument("keyType", keyType);
+    method.addArgument("keySize", keySize);
+    method.addArgument("publicExponent", publicExponent);
+    
+    method.parser = [](Json::Value const& value) {
+	ResponseMessage response;
+	response.addValue ( "keyHandler", value["keyHandler"].asString() );
+	response.addValue ( "modulus", value["modulus"].asString() );
+	response.addValue ( "publicExponent", value["publicExponent"].asString() );
+	return response;
+    };
+
+    return method;
+}
+
+Method MethodFactory::generateRandom(string sessionHandler, long int length)
+{
+    Method method("GenerateRandom");
+    method.addArgument("sessionHandler", sessionHandler);
+    method.addArgument("length", length);
+    method.parser = [](Json::Value const& value) {
+	ResponseMessage response;
+	response.addValue ( "data", value["data"].asString() );
+	return response;
+    };
+    
+    return method;
+}
+
+Method MethodFactory::getAttribute(string attribute, string handler)
+{
+    Method method("GetAttribute");
+    method.addArgument("attribute", attribute);
+    method.addArgument("handler", handler);
+    method.parser = [](Json::Value const& value) {
+	ResponseMessage response;
+	response.addValue ( "attributeValue", value["attributeValue"].asString() );
+	return response;
+    };
+    
+    return method;
+}
+
+Method MethodFactory::openSession()
+{
+    Method method("OpenSession");
+    method.parser = [](Json::Value const& value) {
+	ResponseMessage response;
+	response.addValue ( "sessionHandler", value["sessionHandler"].asString() );
+	return response;
+    };
+    
+    return method;
+}
+
+Method MethodFactory::seedRandom(string sessionHandler, string seed)
+{
+    Method method("SeedRandom");
+    method.addArgument("sessionHandler", sessionHandler);
+    method.addArgument("seed", seed);
+    method.parser = emptyParser;
+    
+    return method;
+}
+
+Method MethodFactory::signInit(string sessionHandler, string mechanism, string keyHandler)
+{
+    Method method("SignInit");
+    method.addArgument("sessionHandler", sessionHandler);
+    method.addArgument("mechanism", mechanism);
+    method.addArgument("keyHandler", keyHandler);
+    method.parser = emptyParser;
+    
+    return method;
+}
+
+Method MethodFactory::sign(string sessionHandler, string data)
+{
+    Method method("Sign");
+    method.addArgument("sessionHandler", sessionHandler);
+    method.addArgument("data", data);
+    
+    method.parser = [](Json::Value const& value) {
+	ResponseMessage response;
+	response.addValue ( "signedData", value["signedData"].asString() );
+	return response;
+    };
+    
+    return method;
+}
+

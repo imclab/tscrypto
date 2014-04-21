@@ -32,8 +32,6 @@ namespace hsm
 
 class Application;
 
-class ConnectionManager;
-
 class Token;
 class Session;
 class Configuration;

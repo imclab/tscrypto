@@ -33,27 +33,47 @@ class Value;
 
 namespace communication
 {
+using namespace std;
+struct IConnection;
 
-class Connection;
 class Method
 {
-private:
+    using Parser = std::function<ResponseMessage(Json::Value const&)>;
+    friend class MethodFactory;
     MethodMessage message_;
     ResponseMessage responseMessage_;
+    Parser parser;
 protected:
-    Method ( const std::string & name );
-
-    virtual void addArgument(argument::Name name, argument::Value value);
-
+    Method ( const string & name );
+    void addArgument(argument::Name name, argument::Value value);
+    
     // Factory Method of the responses.
-    virtual ResponseMessage parseResponse (Json::Value const & value) = 0;
+    virtual ResponseMessage parseResponse (Json::Value const & value);
 
 public:
-    Method & execute ( Connection & connection ); // throw (ConnectionException);
+    Method & execute ( IConnection & connection ); // throw (ConnectionException);
     const ResponseMessage & getResponse();
     virtual ~Method() = default;
-
 };
+
+struct MethodFactory
+{
+    virtual Method closeSession(string sessionHandler);
+    virtual Method deleteKeyPair(string keyHandler);
+    virtual Method digestInit(string sessionHandler, string mechanism);
+    virtual Method digest(string sessionHandler, string data);
+    virtual Method findKey(string keyHandler);
+    virtual Method generateKeyPair(string keyType, long keySize, string publicExponent);
+    virtual Method generateRandom(string sessionHandler, long length);
+    virtual Method getAttribute(string attribute, string handler);
+    virtual Method openSession();
+    virtual Method seedRandom(string sessionHandler, string seed);
+    virtual Method signInit(string sessionHandler, string mechanism, string keyHandler);
+    virtual Method sign(string sessionHandler, string data);   
+    
+    virtual ~MethodFactory() = default;
+};
+
 
 }
 

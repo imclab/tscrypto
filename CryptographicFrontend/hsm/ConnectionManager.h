@@ -19,22 +19,29 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 #ifndef HSM_CONNECTIONMANAGER_H
 #define HSM_CONNECTIONMANAGER_H
 
-namespace communication {
-  class Connection;
-}
-using communication::Connection;
+#include <Connection.h>
+using namespace communication;
 
 namespace hsm
 {
-
-class Configuration;
-
-// TODO: change this into a template.
-class ConnectionManager
-{  
+struct IConnectionManager {
+    virtual ~IConnectionManager() = default;
+    virtual IConnection & getConnection() = 0;
+};
+    
+    
+template<typename ConnectionImpl>
+class ConnectionManager : public IConnectionManager
+{   
+    Connection<ConnectionImpl> conn_;
 public:
-    virtual ~ConnectionManager() = default;
-    virtual Connection & getConnection() = 0;
+    template<typename... Args>
+    ConnectionManager(Args... args) : conn_(args...) {}
+    
+    ~ConnectionManager() = default;
+    IConnection & getConnection() override {
+	return conn_;
+    }
 };
 
 }
