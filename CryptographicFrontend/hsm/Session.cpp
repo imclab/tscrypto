@@ -101,7 +101,7 @@ Session::Session ( CK_FLAGS flags, CK_VOID_PTR pApplication,
 {
     AbstractRPC & connection = getRPC(*this);
     Method method = methodFactory.openSession();
-    uuid_ = method.execute ( connection ).getResponse().getValue<string> ( "sessionHandler" );
+    uuid_ = method.execute ( connection ).getResponse().get<string> ( "sessionHandler" );
 }
 
 Session::~Session()
@@ -735,9 +735,9 @@ KeyPair Session::generateKeyPair ( CK_MECHANISM_PTR pMechanism,
             // RSA is the only accepted method...
             Method method = methodFactory.generateKeyPair( "RSA", modulusBits, exponent );
             const ResponseMessage & response = method.execute ( connection ).getResponse();
-            string keyHandler = response.getValue<string> ( "keyHandler" );
-            string modulusB64 = response.getValue<string>( "modulus" );
-            string publicExponentB64 = response.getValue<string>( "publicExponent" );
+            string keyHandler = response.get<string> ( "keyHandler" );
+            string modulusB64 = response.get<string>( "modulus" );
+            string publicExponentB64 = response.get<string>( "publicExponent" );
 
             vector<CK_BYTE> modulus = base64::decode(modulusB64);
             vector<CK_BYTE> publicExponent = base64::decode(publicExponentB64);
@@ -827,7 +827,7 @@ void Session::sign ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pSignatu
         string encodedData ( base64::encode ( pData, ulDataLen) );
         Method method = methodFactory.sign(uuid_, encodedData);
 
-        const string & signedData = method.execute ( connection ).getResponse().getValue<string> ( "signedData" );
+        const string & signedData = method.execute ( connection ).getResponse().get<string> ( "signedData" );
 
         vector<CK_BYTE> responseDecoded ( base64::decode ( signedData ) );
         unsigned long responseSize = responseDecoded.size();
@@ -933,7 +933,7 @@ void Session::digest ( CK_BYTE_PTR pData, CK_ULONG ulDataLen, CK_BYTE_PTR pDiges
 
     string encodedDigest;
     try {
-        encodedDigest = method.execute ( connection ).getResponse().getValue<string> ( "digest" );
+        encodedDigest = method.execute ( connection ).getResponse().get<string> ( "digest" );
     } catch ( std::exception & e ) {
         throw TcbError ( "Session::digest", e.what(), CKR_GENERAL_ERROR );
     }
@@ -956,7 +956,7 @@ void Session::generateRandom ( CK_BYTE_PTR pRandomData, CK_ULONG ulRandomLen )
 
     AbstractRPC & connection ( getRPC(*this) );
     Method method = methodFactory.generateRandom(uuid_, ulRandomLen);
-    string encodedData = method.execute ( connection ).getResponse().getValue<string> ( "data" );
+    string encodedData = method.execute ( connection ).getResponse().get<string> ( "data" );
     vector<CK_BYTE> decodedData ( base64::decode ( encodedData ) );
     CK_BYTE_PTR data = decodedData.data();
 

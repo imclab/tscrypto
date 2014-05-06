@@ -41,7 +41,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import cl.niclabs.tscrypto.common.datatypes.BigIntegerBase64TypeAdapter;
-import cl.niclabs.tscrypto.common.datatypes.EncryptedData;
+import cl.niclabs.tscrypto.common.messages.EncryptedData;
 import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
 import cl.niclabs.tscrypto.common.datatypes.KeyShares;
@@ -61,24 +61,8 @@ public class Util {
 	private Util() {
 		// this class should not be instantiated
 	}
-	
-	/**
-	 * Returns a uniform distributed value inside the ball(r,epsilon)
-	 * 
-	 * @param r
-	 *            center of the ball
-	 * @param epsilon
-	 *            radius of the ball
-	 * @return a random value in [r-epsilon, r+epsilon]
-	 */
-	public static long randomInBall(long r, long epsilon) {
-		long x = r - epsilon;
-		long y = r + epsilon;
 
-		return x + (long) (Math.random() * (y - x + 1));
-	}
-
-	/**
+    /**
 	 * Function that reads a file from disk to a String
 	 * 
 	 * @param filename
@@ -98,82 +82,7 @@ public class Util {
 		return buffer.toString();
 	}
 
-	public static enum State {
-		enabled {
-			public String toString() {
-				return "enabled";
-			}
-		},
-
-		disabled {
-			public String toString() {
-				return "disabled";
-			}
-		},
-
-		blocked {
-			public String toString() {
-				return "blocked";
-			}
-		}
-	}
-
-	/**
-	 * Returns a List with N elements in a given range
-	 * 
-	 * @param a
-	 *            lower bound
-	 * @param b
-	 *            upper bound
-	 * @return ArrayList with elements a<= x < b
-	 */
-	public static List<Integer> range(int a, int b) {
-		List<Integer> l = new ArrayList<Integer>(b - a);
-
-		for (int i = a; i < b; i++) {
-			l.add(i);
-		}
-
-		return l;
-	}
-
-	/**
-	 * Return a (uniform) random element from the list
-	 * 
-	 * @param aList
-	 *            list of elements
-	 * @return a random elemnt from the list
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T randomFromList(List<T> aList) {
-		if ((aList == null) || aList.isEmpty()) {
-			return null;
-		}
-
-		Object[] arr = aList.toArray();
-		int rand = (int) (Math.random() * arr.length);
-
-		return (T) arr[rand % arr.length];
-	}
-
-	/**
-	 * Converts an Array to a List
-	 * 
-	 * @param arr
-	 *            array of elements
-	 * @return a list representation of the array
-	 */
-	public static <T> List<T> listFromArray(T[] arr) {
-		List<T> list = new ArrayList<T>();
-
-		for (T t : arr) {
-			list.add(t);
-		}
-
-		return list;
-	}
-
-	/**
+    /**
 	 * Helper to create a List with one element
 	 * 
 	 * @param e
@@ -205,6 +114,7 @@ public class Util {
 
 	}
 
+    /*
 	public static KeyMetaInfo loadKeyMetaInfoFromFile(String filename)
 			throws IOException {
 		String json = readFile(filename);
@@ -218,6 +128,7 @@ public class Util {
 
 		return key;
 	}
+
 
 	public static TSPublicKey loadPublicKeyFromFile(String filename)
 			throws IOException {
@@ -260,6 +171,7 @@ public class Util {
 
 		return keyShares;
 	}
+	*(
 	
 	public static KeyInfo loadKeyFromFile(String string) throws IOException {
 		// TODO file extensions should not be hardcoded
@@ -341,6 +253,7 @@ public class Util {
 		fw.write("---END PUBLIC KEY---");
 		fw.close();
 	}
+	*/
 
 	public static Gson GsonFactory(boolean pretty) {
 		GsonBuilder gsonBuilder = new GsonBuilder();

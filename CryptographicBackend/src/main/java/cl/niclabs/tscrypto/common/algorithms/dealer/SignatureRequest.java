@@ -46,11 +46,9 @@ public class SignatureRequest {
 
 	private KeyMetaInfo keyMetaInfo;
 
-	private TSPublicKey publicKey;
 
-	public SignatureRequest(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey) {
+	public SignatureRequest(KeyMetaInfo keyMetaInfo) {
 		this.keyMetaInfo = keyMetaInfo;
-		this.publicKey = publicKey;
         signatureShares = new SignatureShare[keyMetaInfo.getL()];
 		stats = new Stats(keyMetaInfo);
 	}
@@ -59,17 +57,7 @@ public class SignatureRequest {
 		return signature;
 	}
 
-	public byte[] getSignatureAsByte() {
-		
-		byte aux[] = signature.toByteArray();
-		int size = (int) Math.ceil(publicKey.n.bitLength() / 8);
-		byte[] byteSignature = new byte[size];
-		System.arraycopy(aux, aux.length - size, byteSignature, 0, size);
-		
-		return byteSignature;
-	}
-	
-	/** Hashes the document using the specified hash algorithm.
+    /** Hashes the document using the specified hash algorithm.
 	 * Currently only "NONE" and "Sha1" are supported
 	 * @param blob data to be hashed
 	 * @param hashAlgorithm hash algorithm to be used
@@ -139,20 +127,10 @@ public class SignatureRequest {
 	public synchronized void setSignature(BigInteger signature) {
 		this.signature = signature;
 		stats.finished();
+
         // With this, we notify all who is waiting for signature that's ready...
         this.notifyAll();
 	}
-
-    public void waitUntilReady() throws InterruptedException {
-        while(signature == null) {
-            synchronized (this) {
-                while(signature == null) {
-                    TSLogger.sd.info("Waiting for signature share.");
-                    wait(2000);
-                }
-            }
-        }
-    }
 
 	public boolean isReady() {
         return stats.getValidSignatureShares() >= keyMetaInfo.getK();

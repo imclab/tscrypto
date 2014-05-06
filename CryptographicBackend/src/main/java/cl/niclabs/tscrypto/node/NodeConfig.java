@@ -18,10 +18,16 @@
 
 package cl.niclabs.tscrypto.node;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Properties;
 
+import cl.niclabs.tscrypto.common.encryption.KeyChain;
+import cl.niclabs.tscrypto.common.encryption.KeyTool;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
 import cl.niclabs.tscrypto.common.utils.Util;
 
@@ -33,21 +39,19 @@ public class NodeConfig {
 
 	private Properties conf;
 
-    private static NodeConfig instance = null;
+    private static final NodeConfig INSTANCE;
+    static  { // static initialization of singleton class.
+        try {
+            INSTANCE = new NodeConfig();
+            KeyChain.init(INSTANCE.getKeyStore(), INSTANCE.getProtectionParameter());
+            KeyTool.init(INSTANCE.getKeyStore());
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot open SD configuration", e);
+        }
+    }
 
     public static NodeConfig getInstance() {
-        if (instance == null) {
-            synchronized (NodeConfig.class) {
-                if (instance == null) {
-                    try {
-                        instance = new NodeConfig();
-                    } catch (IOException e) {
-                        throw new RuntimeException("Cannot open node configuration.", e);
-                    }
-                }
-            }
-        }
-        return instance;
+        return INSTANCE;
     }
 
 
@@ -85,9 +89,51 @@ public class NodeConfig {
 
     public String getKeyManagementEnvelope() { return "key-mgmt" + getNodeId(); }
 
-    public String getKeyStoreFilename() {
-        return "conf/node" + getNodeId() + ".jks";
+    public String getOutgoingRoutingPort() { return "11000"; }
+
+    public String getIncomingRoutingPort() {
+        return "11001";
     }
 
-    public String getKeyStorePassword() { return "niclabs.13"; } // Extract all...
+    public byte[] getIdentity(int node) {
+        return ("node-" + node).getBytes();
+    }
+
+    public byte[] getIdentity() {
+        return getIdentity(getNodeId());
+    }
+
+    public char[] getKeyPassword() {
+        return conf.getProperty("node.key.password").toCharArray();
+    }
+
+    public KeyStore.ProtectionParameter getProtectionParameter() {
+        return new KeyStore.PasswordProtection(getKeyPassword());
+    }
+
+    public String getKeyAlias() {
+        return conf.getProperty("node.key.alias");
+    }
+
+    public String getManagerCertAlias() { return "manager"; }
+
+    public KeyStore getKeyStore() {
+        String path = conf.getProperty("node.keystore.path");
+        char[] password = conf.getProperty("node.keystore.password").toCharArray();
+        KeyStore keyStore = null;
+        try {
+            keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            try (FileInputStream fis = new FileInputStream(path)) {
+                keyStore.load(fis, password);
+            }
+
+        } catch (KeyStoreException
+                | IOException
+                | CertificateException
+                | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return keyStore;
+    }
 }

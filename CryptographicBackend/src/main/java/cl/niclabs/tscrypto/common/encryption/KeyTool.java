@@ -21,9 +21,8 @@ package cl.niclabs.tscrypto.common.encryption;
 import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
+import java.security.*;
+import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
 import java.security.cert.CertificateFactory;
 import java.util.HashMap;
@@ -36,46 +35,31 @@ import javax.crypto.NoSuchPaddingException;
 
 public class KeyTool {
 
-	private static KeyTool INSTANCE = new KeyTool();
+	private static final KeyTool INSTANCE = new KeyTool();
 
-	private Map<String, PublicKey> publicKeys = new HashMap<>();
+    public static KeyTool getInstance() {
+        return INSTANCE;
+    }
 
-	private KeyTool() {
-	}
+    private KeyStore keyStore;
 
-	public static KeyTool getInstance() {
-		return INSTANCE;
-	}
-
-	public void loadKey(String alias, String file) {
-		try {
-			BufferedInputStream in = new BufferedInputStream(
-					new FileInputStream(file)
-            );
-			CertificateFactory cf = CertificateFactory.getInstance("X.509");
-			PublicKey publicKey = cf.generateCertificate(in).getPublicKey();
-			publicKeys.put(alias, publicKey);
-
-		} catch (CertificateException | IOException e) {
-            e.printStackTrace();
-        }
-
+    public static void init(KeyStore keyStore) {
+        INSTANCE.keyStore = keyStore;
     }
 
 	public byte[] encrypt(String alias, byte[] data) {
 		try {
+            Certificate certificate = keyStore.getCertificate(alias);
 			Cipher cipher = Cipher.getInstance("RSA");
-			cipher.init(Cipher.ENCRYPT_MODE, publicKeys.get(alias));
+			cipher.init(Cipher.ENCRYPT_MODE, certificate);
 
 			return cipher.doFinal(data);
 		} catch (NoSuchAlgorithmException
                 | NoSuchPaddingException
                 | InvalidKeyException
                 | IllegalBlockSizeException
-                | BadPaddingException ignore)
-        {
-
-        }
+                | BadPaddingException
+                | KeyStoreException ignore) {} // TODO: Show some message.
 
         return null;
 	}

@@ -45,7 +45,7 @@ public class KeyFactoryImpl implements KeyFactory {
 		
 		BigInteger pr, qr, p, q, d, e;
 		BigInteger groupSize;
-		BigInteger m = pr = qr = null;
+		BigInteger m;
 
 		// Create the group key pair
 		TSLogger.keyDealer.info("Attempting to generate group keypair..");
@@ -111,8 +111,6 @@ public class KeyFactoryImpl implements KeyFactory {
 	 * 
 	 * @param n
 	 *            - Size of modulo for group key
-	 * @param secrets
-	 *            - array of shares
 	 * 
 	 * @return the group verifier
 	 */
@@ -155,13 +153,7 @@ public class KeyFactoryImpl implements KeyFactory {
 	 * 
 	 * Generates secret shares for a (k,l) threshold signatures scheme<BR>
 	 * 
-	 * @param k
-	 *            - k valid signatures will verify
-	 * @param l
-	 *            - l members of the group will receive shares
-	 * 
 	 * @return An array of l secret shares
-	 * @throws ThresholdSigException
 	 */
 	private static KeyShares generateKeyShares(KeyMetaInfo keyMetaInfo, BigInteger n, final BigInteger d,
 			final BigInteger m) {

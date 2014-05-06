@@ -19,6 +19,7 @@
 package cl.niclabs.tscrypto.manager;
 
 import java.io.IOException;
+import java.math.BigInteger;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
@@ -26,12 +27,12 @@ import cl.niclabs.tscrypto.common.datatypes.*;
 import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureDealer;
 import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureRequest;
 import cl.niclabs.tscrypto.common.exceptions.InvalidKey;
-import cl.niclabs.tscrypto.common.messages.DeleteKeyQuery;
-import cl.niclabs.tscrypto.common.messages.SendKeyQuery;
-import cl.niclabs.tscrypto.common.messages.SignShareQuery;
+import cl.niclabs.tscrypto.common.messages.*;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
 import cl.niclabs.tscrypto.manager.requests.DeleteKeyRequest;
 import cl.niclabs.tscrypto.manager.requests.KeyDispatchRequest;
+import cl.niclabs.tscrypto.manager.requests.SignRequest;
+import zmq.Req;
 
 
 /**
@@ -41,8 +42,8 @@ import cl.niclabs.tscrypto.manager.requests.KeyDispatchRequest;
 public class RequestManager {
 
     // Refactor this. // Make a proxy that implements the Request interface
-	private final HashMap<String, SignatureDealer> signingRequests = new LinkedHashMap<>();
-    private final Map<String, Request> requests = new Hashtable<>();
+	// private final HashMap<String, SignatureDealer> signingRequests = new LinkedHashMap<>();
+    private final Map<Ticket, Request> requests = new Hashtable<>();
 
 	// communication
 	private Dispatcher dispatcher;
@@ -60,51 +61,34 @@ public class RequestManager {
         this.keyEnvelope = keyEnvelope;
     }
 
-    private void submitRequest(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey, String hashAlgorithm, byte[] blob, String alias, Ticket ticket)
+    public Ticket sign(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey, String hashAlgorithm, byte[] dataToBeSigned, String alias)
             throws IOException, InvalidKey, NoSuchAlgorithmException {
 
+        Ticket ticket = Ticket.getNextTicket();
+
         SignatureDealer signatureDealer = SignatureDealerFactory.getInstance(keyMetaInfo, publicKey);
+        BigInteger hashedDocument = signatureDealer.prepareSignature(dataToBeSigned, hashAlgorithm).getHashedDocument();
 
-        SignatureRequest request = signatureDealer.prepareSignature(blob, hashAlgorithm);
-
-        synchronized (signingRequests){
-            signingRequests.put(ticket.getId(), signatureDealer);
+        synchronized (requests) {
+            requests.put(ticket, new SignRequest(signatureDealer));
         }
-
-
-        // Timer timerRequest = new Timer();
-
-        // synchronized (timerRequests) {
-        //     timerRequests.put(ticket, timerRequest);
-        // }
-
-        // TODO check if timer is still needed
-        // TimerTask timeoutTask = new TimeoutTask(signingRequest);
-        // timerRequest.schedule(timeoutTask, SIGNING_TIMEOUT);
 
         SignShareQuery message = new SignShareQuery(
                 ticket,
-                request.getHashedDocument(),
+                hashedDocument,
                 alias,
                 replyTo
         );
 
         dispatcher.dispatch(envelope, message);
-    }
 
-    public Ticket sign(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey, String hashAlgorithm, byte[] dataToBeSigned, String alias)
-            throws IOException, InvalidKey, NoSuchAlgorithmException {
-
-        Ticket ticket = Ticket.getNextTicket();
-        submitRequest(keyMetaInfo, publicKey, hashAlgorithm, dataToBeSigned, alias, ticket);
         return ticket;
     }
 
     public Ticket dispatchKey(KeyInfo keyInfo) throws IOException {
         Ticket ticket = Ticket.getNextTicket();
 
-        Request request = new KeyDispatchRequest(keyInfo);
-        requests.put(ticket.getId(), request);
+        requests.put(ticket, new KeyDispatchRequest(keyInfo));
 
         String label = keyInfo.getKeyMetaInfo().getAlias();
 
@@ -122,8 +106,9 @@ public class RequestManager {
                     keyEnvelope
             );
 
-            TSLogger.keyDealer.debug("Sending message: " + query.toJson());
-            dispatcher.dispatch(keyEnvelope + i, query);
+
+            EncryptedData encryptedData = new EncryptedData("node" + i, query.toJson().getBytes());
+            dispatcher.dispatch(keyEnvelope + i, encryptedData);
         }
 
         return ticket;
@@ -133,7 +118,7 @@ public class RequestManager {
         TSLogger.sd.debug("Deleting key with label: " + label);
         Ticket ticket = Ticket.getNextTicket();
         Request request = new DeleteKeyRequest();
-        requests.put(ticket.getId(), request);
+        requests.put(ticket, request);
 
         DeleteKeyQuery query = new DeleteKeyQuery(label, ticket, replyTo);
         dispatcher.dispatch(envelope, query);
@@ -141,33 +126,16 @@ public class RequestManager {
         return ticket;
     }
 
-    public SignatureDealer getSigningRequest(Ticket ticket) {
-        synchronized (signingRequests) {
-            return signingRequests.get(ticket.getId());
-        }
-    }
-
-    public SignatureRequest getSignatureRequest(Ticket ticket) {
-        synchronized (signingRequests) {
-            return signingRequests.get(ticket.getId()).getRequest();
-        }
-    }
-
-    public KeyDispatchRequest getKeyDispatchRequest(Ticket ticket) {
+    // Automatic upcast (?)
+    public <T extends Request> T getRequest(Ticket ticket) {
         synchronized (requests) {
-            return (KeyDispatchRequest) requests.get(ticket.getId());
-        }
-    }
-
-    public DeleteKeyRequest getDeleteKeyRequest(Ticket ticket) {
-        synchronized (requests) {
-            return (DeleteKeyRequest) requests.get(ticket.getId());
+            Request request = requests.get(ticket);
+            return (T) request;
         }
     }
 
     public synchronized void removeRequest(Ticket ticket) {
-        signingRequests.remove(ticket.getId());
-        requests.remove(ticket.getId());
+        requests.remove(ticket);
     }
 }
 

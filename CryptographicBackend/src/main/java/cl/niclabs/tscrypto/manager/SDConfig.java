@@ -18,31 +18,37 @@
 
 package cl.niclabs.tscrypto.manager;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
 import java.util.Properties;
 
+import cl.niclabs.tscrypto.common.encryption.KeyChain;
+import cl.niclabs.tscrypto.common.encryption.KeyTool;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
 import cl.niclabs.tscrypto.common.utils.Util;
 
-public class SDConfig {
+import static java.security.KeyStore.PasswordProtection;
+import static java.security.KeyStore.ProtectionParameter;
 
+public class SDConfig {
     // Configuration now is a singleton.
-    private static SDConfig instance = null;
+    private static final SDConfig INSTANCE;
+    static  { // static initialization of singleton class.
+        try {
+            INSTANCE = new SDConfig();
+            KeyChain.init(INSTANCE.getKeyStore(), INSTANCE.getProtectionParameter());
+            KeyTool.init(INSTANCE.getKeyStore());
+        } catch (IOException e) {
+            throw new RuntimeException("Cannot open SD configuration", e);
+        }
+    }
 
     public static SDConfig getInstance() {
-        if (instance == null) {
-            synchronized (SDConfig.class) {
-                if (instance == null) {
-                    try {
-                        instance = new SDConfig();
-                    } catch (IOException e) {
-                        throw new RuntimeException("Cannot open SD configuration", e);
-                    }
-                }
-            }
-        }
-
-        return instance;
+        return INSTANCE;
     }
 
 
@@ -74,22 +80,62 @@ public class SDConfig {
     }
 
     public String getMethodCollectorPort() {
-        return "10000";
+        return conf.getProperty("sd.connection.method_collector.port");
     }
 
     public String getDispatcherPort() {
-        return "10001";
+        return  conf.getProperty("sd.connection.dispatcher.port");
     }
 
     public String getResultsPort() {
-        return "10002";
+        return conf.getProperty("sd.connection.results.port");
     }
 
     public String getSignRequestEnvelope() { return "sign-request"; }
 
     public String getKeyManagementEnvelope() { return "key-mgmt"; }
 
-    public String[] getNodeKeys() {
-        return "conf/node0.cer,conf/node1.cer,conf/node2.cer".split(",");
+    public String getIncomingRoutingPort() {
+        return conf.getProperty("sd.connection.router.reqs.port");
+    }
+
+    public String getOutgoingRoutingPort() {
+        return conf.getProperty("sd.connection.router.reps.port");
+    }
+
+    public String getNodeAlias(int node) {
+        return "node" + node;
+    }
+
+    public String getKeyAlias() {
+        return conf.getProperty("sd.key.alias");
+    }
+
+    public char[] getKeyPassword() {
+        return conf.getProperty("sd.key.password").toCharArray();
+    }
+
+    public ProtectionParameter getProtectionParameter() {
+        return new PasswordProtection(getKeyPassword());
+    }
+
+    KeyStore getKeyStore() {
+        String path = conf.getProperty("sd.keystore.path");
+        char[] password = getKeyPassword();
+        KeyStore keyStore = null;
+        try {
+            keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            try (FileInputStream fis = new FileInputStream(path)) {
+                keyStore.load(fis, password);
+            }
+
+        } catch (KeyStoreException
+                | IOException
+                | CertificateException
+                | NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+
+        return keyStore;
     }
 }

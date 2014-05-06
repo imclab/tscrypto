@@ -21,7 +21,7 @@ package cl.niclabs.tscrypto.manager.handlers;
 import cl.niclabs.tscrypto.common.messages.SendKeyAnswer;
 import cl.niclabs.tscrypto.common.messages.TSMessage;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
-import cl.niclabs.tscrypto.manager.requests.KeyDispatchRequest;
+import cl.niclabs.tscrypto.manager.Request;
 import cl.niclabs.tscrypto.manager.DealerHandler;
 import cl.niclabs.tscrypto.manager.RequestManager;
 
@@ -36,8 +36,7 @@ public class KeyReceivedHandler implements DealerHandler {
 
     @Override
     public void handle(RequestManager manager) {
-        KeyDispatchRequest request =
-                manager.getKeyDispatchRequest(message.ticket);
+        Request request = manager.getRequest(message.ticket);
 
         request.setReady(message.getNodeId());
         TSLogger.keyDealer.info("Node " + message.getNodeId() + " added the key to it's manager.");

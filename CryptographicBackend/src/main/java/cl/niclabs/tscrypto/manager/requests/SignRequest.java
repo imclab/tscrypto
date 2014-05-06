@@ -1,33 +1,45 @@
 package cl.niclabs.tscrypto.manager.requests;
 
-import cl.niclabs.tscrypto.manager.Request;
-import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureDealerImpl;
+import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureDealer;
 import cl.niclabs.tscrypto.common.algorithms.dealer.SignatureRequest;
-import cl.niclabs.tscrypto.common.datatypes.KeyMetaInfo;
-import cl.niclabs.tscrypto.common.datatypes.TSPublicKey;
+import cl.niclabs.tscrypto.common.utils.TSLogger;
+import cl.niclabs.tscrypto.manager.Request;
 
 import java.security.NoSuchAlgorithmException;
 
-public class SignRequest implements Request {
-    private final SignatureDealerImpl signatureDealer;
-    private final SignatureRequest signatureRequest;
+// Signature Request Wrapper to user the Request interface.
+public class SignRequest extends Request {
+    private final SignatureDealer dealer;
 
-    public SignRequest(KeyMetaInfo keyMetaInfo, TSPublicKey publicKey, byte[] blob, String hashAlgorithm) throws NoSuchAlgorithmException {
-        signatureDealer = new SignatureDealerImpl(keyMetaInfo, publicKey);
-        signatureRequest = signatureDealer.prepareSignature(blob, hashAlgorithm);
+    public SignRequest(SignatureDealer dealer) throws NoSuchAlgorithmException {
+        this.dealer = dealer;
     }
 
     @Override
     public void setReady(int nodeId) {
+        throw new UnsupportedOperationException();
     }
 
     @Override
-    public boolean isReady() {
-        return false;
+    protected boolean isReady() {
+        return getDealer().isDone();
     }
 
     @Override
     public void waitUntilReady() throws InterruptedException {
-
+        SignatureRequest request = dealer.getRequest();
+        while(!isReady()) {
+            synchronized (request) {
+                while(!isReady()) {
+                    TSLogger.sd.debug("Waiting node signature shares.");
+                    request.wait();
+                }
+            }
+        }
     }
+
+    public SignatureDealer getDealer() {
+        return dealer;
+    }
+
 }

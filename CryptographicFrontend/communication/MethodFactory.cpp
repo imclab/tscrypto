@@ -62,7 +62,7 @@ Method MethodFactory::digest(string sessionHandler, string data)
     method.addArgument("data", data);
     method.parser = [](Json::Value const& value) {
         ResponseMessage responseMessage;
-        responseMessage.addValue ( "digest", value["digest"].asString() );
+        responseMessage.add ( "digest", value["digest"].asString() );
         return responseMessage;
     };
 
@@ -75,7 +75,7 @@ Method MethodFactory::findKey(string keyHandler)
     method.addArgument("keyHandler", keyHandler);
     method.parser = [](Json::Value const& value) {
         ResponseMessage response;
-        response.addValue ( "key", value["key"].asString() );
+        response.add ( "key", value["key"].asString() );
         return response;
     };
 
@@ -91,9 +91,9 @@ Method MethodFactory::generateKeyPair(string keyType, long int keySize, string p
 
     method.parser = [](Json::Value const& value) {
         ResponseMessage response;
-        response.addValue ( "keyHandler", value["keyHandler"].asString() );
-        response.addValue ( "modulus", value["modulus"].asString() );
-        response.addValue ( "publicExponent", value["publicExponent"].asString() );
+        response.add ( "keyHandler", value["keyHandler"].asString() );
+        response.add ( "modulus", value["modulus"].asString() );
+        response.add ( "publicExponent", value["publicExponent"].asString() );
         return response;
     };
 
@@ -107,7 +107,7 @@ Method MethodFactory::generateRandom(string sessionHandler, long int length)
     method.addArgument("length", length);
     method.parser = [](Json::Value const& value) {
         ResponseMessage response;
-        response.addValue ( "data", value["data"].asString() );
+        response.add ( "data", value["data"].asString() );
         return response;
     };
 
@@ -121,7 +121,7 @@ Method MethodFactory::getAttribute(string attribute, string handler)
     method.addArgument("handler", handler);
     method.parser = [](Json::Value const& value) {
         ResponseMessage response;
-        response.addValue ( "attributeValue", value["attributeValue"].asString() );
+        response.add ( "attributeValue", value["attributeValue"].asString() );
         return response;
     };
 
@@ -133,7 +133,7 @@ Method MethodFactory::openSession()
     Method method("OpenSession");
     method.parser = [](Json::Value const& value) {
         ResponseMessage response;
-        response.addValue ( "sessionHandler", value["sessionHandler"].asString() );
+        response.add ( "sessionHandler", value["sessionHandler"].asString() );
         return response;
     };
 
@@ -169,7 +169,7 @@ Method MethodFactory::sign(string sessionHandler, string data)
 
     method.parser = [](Json::Value const& value) {
         ResponseMessage response;
-        response.addValue ( "signedData", value["signedData"].asString() );
+        response.add ( "signedData", value["signedData"].asString() );
         return response;
     };
 

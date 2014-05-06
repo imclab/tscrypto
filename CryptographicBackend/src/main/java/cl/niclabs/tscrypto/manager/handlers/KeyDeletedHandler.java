@@ -21,6 +21,7 @@ package cl.niclabs.tscrypto.manager.handlers;
 import cl.niclabs.tscrypto.common.messages.DeleteKeyAnswer;
 import cl.niclabs.tscrypto.common.messages.TSMessage;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
+import cl.niclabs.tscrypto.manager.Request;
 import cl.niclabs.tscrypto.manager.requests.DeleteKeyRequest;
 import cl.niclabs.tscrypto.manager.DealerHandler;
 import cl.niclabs.tscrypto.manager.RequestManager;
@@ -35,7 +36,7 @@ public class KeyDeletedHandler implements DealerHandler {
 
     @Override
     public void handle(RequestManager manager) {
-        DeleteKeyRequest request = manager.getDeleteKeyRequest(message.ticket);
+        Request request = manager.getRequest(message.ticket);
         request.setReady(message.getNodeId());
         TSLogger.keyDealer.info("Node " + message.getNodeId() + " deleted the key from it's manager.");
     }

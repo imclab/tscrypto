@@ -60,7 +60,7 @@ Method& Method::execute ( AbstractRPC & connection ) // throw (ConnectionExcepti
     return *this;
 }
 
-const ResponseMessage & Method::getResponse()
+const communication::ResponseMessage& Method::getResponse()
 {
     return responseMessage_;
 }

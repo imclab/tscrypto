@@ -41,26 +41,22 @@ import cl.niclabs.tscrypto.common.utils.TSLogger;
 
 public class KeyChain {
 
-	private static KeyChain INSTANCE = new KeyChain();
-	
+	private static final KeyChain INSTANCE = new KeyChain();
+
 	private KeyStore keyStore;
-	private ProtectionParameter protection;
+    private ProtectionParameter protection;
 
 	private Map<String, PrivateKey> privateKeys = new HashMap<>();
-
-	private KeyChain() {
-	}
 	
 	public static KeyChain getInstance() {
 		return INSTANCE;
 	}
-	
-	public void loadKeyStoreFile(String filename, char[] password) throws KeyStoreException, NoSuchAlgorithmException, CertificateException, IOException {
-		keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		keyStore.load(new FileInputStream(filename), password);
 
-		protection = new KeyStore.PasswordProtection(password);
-	}
+    public static void init(KeyStore keyStore, ProtectionParameter protection) {
+        INSTANCE.keyStore = keyStore;
+        INSTANCE.protection = protection;
+    }
+
 
 	public byte[] decrypt(String rsaKeyAlias, String encryptedData) {
 		byte[] decrypted = null;
@@ -98,29 +94,9 @@ public class KeyChain {
 		PrivateKey privateKey = privateKeys.get(rsaKeyAlias);
 
 		if (null == privateKey) {
-			privateKey = ((PrivateKeyEntry) keyStore
-					.getEntry(rsaKeyAlias, protection)).getPrivateKey();
+			privateKey = ((PrivateKeyEntry) keyStore.getEntry(rsaKeyAlias, protection)).getPrivateKey();
 			privateKeys.put(rsaKeyAlias, privateKey);
 		}
 		return privateKey;
-	}
-
-	public static void consoleSetup(String filename) {
-		Console console = System.console();
-		if (null == console) {
-            System.err.println("There is not console under this system.");
-            System.exit(-1);
-        }
-
-		char[] password = console.readPassword("Enter keystore password: ");
-		KeyChain keyChain = KeyChain.getInstance();
-		try {
-			keyChain.loadKeyStoreFile(filename, password);
-		} catch (Exception e) {
-			TSLogger.node.error("Could not load KeyStore");
-			System.exit(-1);
-			e.printStackTrace();
-		}
-		TSLogger.node.info("Successfuly loaded KeyStore");
 	}
 }

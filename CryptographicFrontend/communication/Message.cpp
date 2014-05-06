@@ -21,7 +21,7 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 #include <sstream>
 #include <iostream>
 #include <json/json.h>
-#include "MethodMessage.h"
+#include "Message.h"
 
 using std::string;
 using std::vector;
@@ -29,12 +29,12 @@ using std::stringstream;
 
 namespace communication {
 
-MethodMessage::MethodMessage ( const string & name )
+Message::Message ( const string & name )
 {
     name_ = name;
 }
 
-void MethodMessage::addArgument ( argument::Name name, argument::Value value )
+void Message::addArgument ( argument::Name name, argument::Value value )
 {
     argMap_[name] = value;
 }
@@ -52,7 +52,7 @@ struct ToJson : boost::static_visitor<> {
 };
 }
 
-string MethodMessage::toJson()
+string Message::toJson()
 {      
     using boost::apply_visitor;
     

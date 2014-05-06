@@ -16,7 +16,7 @@
     along with TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package cl.niclabs.tscrypto.common.datatypes;
+package cl.niclabs.tscrypto.common.messages;
 
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -29,6 +29,7 @@ import javax.crypto.NoSuchPaddingException;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 
+import cl.niclabs.tscrypto.common.messages.TSMessage;
 import org.apache.commons.codec.binary.Base64;
 
 import com.google.gson.Gson;
@@ -38,14 +39,13 @@ import cl.niclabs.tscrypto.common.encryption.KeyChain;
 import cl.niclabs.tscrypto.common.encryption.KeyTool;
 import cl.niclabs.tscrypto.common.utils.Util;
 
-public class EncryptedData extends JsonFormat {
+public class EncryptedData extends TSMessage {
 	private static final int KEYSIZE_AES = 128;
 
 	/** data encrypted using AES */
 	public String encryptedData;
 	/** AES key encrypted with RSA's public key specified by the alias */
 	public String encryptedKey;
-
 	/** alias of the RSA's public key used to encrypt/decrypt the AES key */
 	public String rsaKeyAlias;
 
@@ -56,6 +56,7 @@ public class EncryptedData extends JsonFormat {
 	 * @param blob data to be encrypted
 	 */
 	public EncryptedData(String rsaKeyAlias, byte[] blob) {
+        super("encrypted-data", "1.0");
 		this.rsaKeyAlias = rsaKeyAlias;
 		addData(blob);
 	}
@@ -70,31 +71,12 @@ public class EncryptedData extends JsonFormat {
 	 * @throws BadPaddingException
 	 */
 	public byte[] decrypt() throws NoSuchAlgorithmException, NoSuchPaddingException, InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+
 		byte[] plainAESKey = KeyChain.getInstance().decrypt(rsaKeyAlias, encryptedKey);
 		SecretKeySpec skeySpec = new SecretKeySpec(plainAESKey, "AES");
 		Cipher cipher = Cipher.getInstance("AES");
 		cipher.init(Cipher.DECRYPT_MODE, skeySpec);
 		return cipher.doFinal(Base64.decodeBase64(encryptedData));
-	}
-	
-	/**
-	 * Creates an object of the Class specified
-	 * @param <T> Type of object to create
-	 * @param json encrypted data
-	 * @param theClass type of the object to create
-	 * @return Newly object of type T (theClass)
-	 * @throws JsonSyntaxException
-	 * @throws InvalidKeyException
-	 * @throws NoSuchAlgorithmException
-	 * @throws NoSuchPaddingException
-	 * @throws IllegalBlockSizeException
-	 * @throws BadPaddingException
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T> T createObject(String json, Class<?> theClass) throws JsonSyntaxException, InvalidKeyException, NoSuchAlgorithmException, NoSuchPaddingException, IllegalBlockSizeException, BadPaddingException {
-		Gson gson = Util.GsonFactory(true);
-		EncryptedData encryptedData = gson.fromJson(json, EncryptedData.class);
-		return  (T) gson.fromJson(new String(encryptedData.decrypt()), theClass);
 	}
 
 	private byte[] encryptAES(SecretKeySpec skeySpec, byte[] data) {

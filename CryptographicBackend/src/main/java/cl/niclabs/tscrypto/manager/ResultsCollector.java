@@ -33,6 +33,10 @@ import org.zeromq.ZMQ;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.math.BigInteger;
+import java.security.*;
+import java.security.cert.*;
+import java.security.cert.Certificate;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -84,11 +88,54 @@ public class ResultsCollector implements Collector, Closeable {
     }
 
     private class CollectorThread extends Thread {
+        SDConfig config = SDConfig.getInstance();
+
+        private boolean verify(KeyStore keyStore, int node, byte[] data, byte[] signature)
+                throws KeyStoreException, NoSuchProviderException, NoSuchAlgorithmException,
+                InvalidKeyException, SignatureException {
+
+            Signature verifier = Signature.getInstance("SHA256WithRSA");
+            Certificate certificate = keyStore.getCertificate(config.getNodeAlias(node));
+            verifier.initVerify(certificate);
+            verifier.update(data);
+            return verifier.verify(signature);
+        }
+
         @Override
         public void run() {
             while (running) {
                 String message = socket.recvStr();
+                int nodeNumber = Integer.parseInt(socket.recvStr());
+                byte[] signature = socket.recv();
+
+                TSLogger.sd.debug("Received: " + message);
+                TSLogger.sd.debug("From: " + nodeNumber);
+                TSLogger.sd.debug("Signature: " + new BigInteger(signature));
+
+                KeyStore keyStore = config.getKeyStore();
+                if (keyStore != null) {
+                    try {
+                        if(verify(keyStore, nodeNumber, message.getBytes(), signature)) {
+                            TSLogger.node.debug("Message verified.");
+                            executor.execute(new Handler(message));
+                        } else {
+                            TSLogger.node.debug("Message discarded.");
+                        }
+                    } catch (KeyStoreException e) {
+                        TSLogger.node.fatal("Cannot get node certificate. Is it configured correctly?", e);
+                    } catch (NoSuchProviderException | NoSuchAlgorithmException e) {
+                        TSLogger.node.fatal("Cannot get signature verifier.", e);
+                    } catch (InvalidKeyException | SignatureException e) {
+                        TSLogger.node.fatal("Cannot initialize verifier.", e);
+                    }
+                } else {
+                    TSLogger.node.fatal("Cannot get the keystore. Is it configured correctly?");
+                }
+
+
+
                 executor.submit(new Handler(message));
+
             }
         }
     }

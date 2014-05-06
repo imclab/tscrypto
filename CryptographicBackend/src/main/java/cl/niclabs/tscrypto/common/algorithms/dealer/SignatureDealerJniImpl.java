@@ -59,7 +59,7 @@ public class SignatureDealerJniImpl implements SignatureDealer {
 	public SignatureRequest prepareSignature(byte[] document, String hashAlgorithm) throws NoSuchAlgorithmException {
 		reset();
 
-		request = new SignatureRequest(keyMetaInfo, publicKey);
+		request = new SignatureRequest(keyMetaInfo);
 		request.setDocument(document, hashAlgorithm);
 		generateX();
 		generateDelta();
@@ -73,7 +73,7 @@ public class SignatureDealerJniImpl implements SignatureDealer {
 	 * This must be called before messageCollector another document
 	 */
 	private void reset() {
-		request = new SignatureRequest(keyMetaInfo, publicKey);
+		request = new SignatureRequest(keyMetaInfo);
 
 		w = eprime = x = delta = null;
 		xtilde = null;

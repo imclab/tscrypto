@@ -22,7 +22,7 @@ import cl.niclabs.tscrypto.common.datatypes.KeyInfo;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
 import cl.niclabs.tscrypto.manager.Request;
 
-public class KeyDispatchRequest implements Request {
+public class KeyDispatchRequest extends Request {
     private final boolean[] dispatchedKeys;
 
     public KeyDispatchRequest(KeyInfo keyInfo) {
@@ -39,7 +39,6 @@ public class KeyDispatchRequest implements Request {
         notifyAll();
     }
 
-    @Override
     public boolean isReady() {
         for(boolean ready: dispatchedKeys) {
             if(!ready)
@@ -47,18 +46,5 @@ public class KeyDispatchRequest implements Request {
         }
         return true;
     }
-
-    @Override
-    public void waitUntilReady() throws InterruptedException {
-        while (!isReady()) {
-            synchronized (this) {
-                while (!isReady()) {
-                    TSLogger.keyDealer.info("Waiting nodes to notify they added the key...");
-                    wait(2000);
-                }
-            }
-        }
-    }
-
 
 }

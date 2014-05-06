@@ -22,7 +22,7 @@ import cl.niclabs.tscrypto.common.utils.TSLogger;
 import cl.niclabs.tscrypto.manager.Request;
 import cl.niclabs.tscrypto.manager.SDConfig;
 
-public class DeleteKeyRequest implements Request {
+public class DeleteKeyRequest extends Request {
     private final boolean[] deletedKeys;
 
     public DeleteKeyRequest() {
@@ -39,7 +39,6 @@ public class DeleteKeyRequest implements Request {
         notifyAll();
     }
 
-    @Override
     public boolean isReady() {
         for(boolean ready: deletedKeys) {
             if(!ready)
@@ -48,15 +47,4 @@ public class DeleteKeyRequest implements Request {
         return true;
     }
 
-    @Override
-    public void waitUntilReady() throws InterruptedException {
-        while (!isReady()) {
-            synchronized (this) {
-                while (!isReady()) {
-                    TSLogger.sd.info("Waiting nodes to notify they've delete the key...");
-                    wait(2000); // TODO: refactor this.
-                }
-            }
-        }
-    }
 }

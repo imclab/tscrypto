@@ -22,14 +22,13 @@ import cl.niclabs.cb.common.MethodCollector;
 import cl.niclabs.cb.common.SessionManagerImpl;
 import cl.niclabs.cb.common.methods.MethodFactoryImpl;
 import cl.niclabs.tscrypto.common.datatypes.Collector;
-import cl.niclabs.tscrypto.common.encryption.KeyTool;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
+import cl.niclabs.tscrypto.manager.PublishDispatcher;
 import cl.niclabs.tscrypto.manager.RequestManager;
 import cl.niclabs.tscrypto.manager.ResultsCollector;
 import cl.niclabs.tscrypto.manager.SDConfig;
 import cl.niclabs.tscrypto.manager.keyManagement.H2KeyManager;
 import cl.niclabs.tscrypto.manager.keyManagement.KeyManager;
-import cl.niclabs.tscrypto.manager.DispatcherZero;
 import org.zeromq.ZMQ;
 
 import java.io.IOException;
@@ -38,7 +37,7 @@ import java.sql.SQLException;
 public class Backend extends Thread {
 
     private boolean running;
-    private DispatcherZero dispatcher;
+    private PublishDispatcher dispatcher;
     private MethodCollector methodCollector;
     private Collector resultsCollector;
     private KeyManager keyManager;
@@ -46,17 +45,11 @@ public class Backend extends Thread {
 
     public Backend() throws IOException, SQLException, ClassNotFoundException {
         SDConfig config = SDConfig.getInstance();
-        /** TODO: Complete encrypted communication system
-        String[] nodeCerts = config.getNodeKeys();
-        for(int i=0; i<config.getNodeKeys().length; i++) {
-            KeyTool.getInstance().loadKey("node" + i, nodeCerts[i]);
-        }
-        **/
 
         context = ZMQ.context(1);
 
         keyManager = new H2KeyManager();
-        dispatcher = new DispatcherZero(context);
+        dispatcher = new PublishDispatcher(context);
         RequestManager requestManager = new RequestManager(
                 dispatcher,
                 "",

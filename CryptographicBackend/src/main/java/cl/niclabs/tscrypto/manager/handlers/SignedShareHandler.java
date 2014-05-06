@@ -26,6 +26,7 @@ import cl.niclabs.tscrypto.common.messages.TSMessage;
 import cl.niclabs.tscrypto.common.utils.TSLogger;
 import cl.niclabs.tscrypto.manager.DealerHandler;
 import cl.niclabs.tscrypto.manager.RequestManager;
+import cl.niclabs.tscrypto.manager.requests.SignRequest;
 
 public class SignedShareHandler implements DealerHandler {
 
@@ -39,13 +40,14 @@ public class SignedShareHandler implements DealerHandler {
 	
 	@Override
 	public void handle(RequestManager manager) {
-		SignatureDealer request = manager.getSigningRequest(message.ticket);
-		if (request == null) {
+        SignRequest request = manager.getRequest(message.ticket);
+        SignatureDealer dealer = request.getDealer();
+		if (dealer == null) {
 			TSLogger.sd.info("Could not find signing request " + message.ticket);
 			return;
 		}
 		
-		if (request.isDone()) {
+		if (dealer.isDone()) {
 			TSLogger.sd.info("Signature Share will not used: | Node: " + message.node_id + "| Ticket: "
 					+ message.ticket.getId());
 			return;
@@ -55,7 +57,7 @@ public class SignedShareHandler implements DealerHandler {
 				+ message.ticket.getId());
 
 		try {
-			request.joinSignatureShare(message.signature, message.node_id);
+            dealer.joinSignatureShare(message.signature, message.node_id);
 		} catch (NoSuchAlgorithmException e) {
 			TSLogger.sd.error("Could not find hash algorithm:" + e.getMessage());
 		}

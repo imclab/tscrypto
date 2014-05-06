@@ -67,8 +67,8 @@ set(COMMUNICATION_SRC
   communication/Method.h
   communication/MethodFactory.cpp
   communication/MethodFactory.h
-  communication/MethodMessage.cpp
-  communication/MethodMessage.h
+  communication/Message.cpp
+  communication/Message.h
   communication/ResponseMessage.h
   communication/ResponseMessage.cpp
   communication/Argument.h
@@ -90,7 +90,7 @@ set(HSM_SRC
   hsm/TokenSerializer.h
   hsm/Configuration.cpp
   hsm/Configuration.h
-  hsm/ConnectionManager.h 
+  hsm/RPCManager.h 
   hsm/CryptoObject.cpp
   hsm/CryptoObject.h
   hsm/Application.cpp

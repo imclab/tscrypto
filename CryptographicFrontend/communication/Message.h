@@ -25,18 +25,18 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 namespace communication
 {
 
-class MethodMessage
+class Message
 {
 private:
     std::string name_;
     argument::Map argMap_;
 
 public:
-    MethodMessage ( const std::string & name );
-    MethodMessage (MethodMessage && message) = default;
-    MethodMessage (const MethodMessage & message) = default;
+    Message ( const std::string & name );
+    Message (Message && message) = default;
+    Message (const Message & message) = default;
 
-    virtual ~MethodMessage() = default;
+    virtual ~Message() = default;
     virtual void addArgument(argument::Name name, argument::Value value);
     virtual std::string toJson();
 };

@@ -27,7 +27,7 @@
 #include "Argument.h"
 
 namespace communication
-{
+{    
 
 class ResponseMessage
 {
@@ -35,21 +35,15 @@ private:
     argument::Map values_;
 
 public:
-    ResponseMessage() = default;
-    ResponseMessage ( ResponseMessage const & other ) = default;
-    ResponseMessage ( ResponseMessage && other ) = default;
-    ResponseMessage & operator= ( ResponseMessage const & rhs ) = default;
-    ResponseMessage & operator= ( ResponseMessage && rhs ) = default;
-
-    void addValue ( argument::Name name, argument::Value value );
+    void add ( argument::Name name, argument::Value value );
 
     template <typename T> // Hiding the implementation (?)
-    T getValue ( const argument::Name & name ) const;        
+    T get ( const argument::Name & name ) const;        
 
 };
 
 template <typename T> // Hiding the implementation (?)
-T ResponseMessage::getValue(const argument::Name& name) const
+T ResponseMessage::get(const argument::Name& name) const
 {
     return argument::get<T>( values_.at ( name ) );
 }

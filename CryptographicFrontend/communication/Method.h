@@ -22,7 +22,7 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 #include <string>
 #include <stdexcept>
 
-#include "MethodMessage.h"
+#include "Message.h"
 #include "ResponseMessage.h"
 
 namespace Json
@@ -40,7 +40,7 @@ class Method
 {
     using Parser = std::function<ResponseMessage(Json::Value const&)>;
     friend class MethodFactory;
-    MethodMessage message_;
+    Message message_;
     ResponseMessage responseMessage_;
     Parser parser;
 protected:

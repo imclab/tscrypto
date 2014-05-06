@@ -37,8 +37,10 @@ public class TSMessageParser implements JsonDeserializer<TSMessage> {
         String version = jobject.get("version").getAsString();
 
         // TODO check version
-        
-        if (type.matches(".*-query")) {
+
+        if (type.equals("encrypted-data")) {
+            return context.deserialize(json, EncryptedData.class);
+        } else if (type.matches(".*-query")) {
                 return parseQuery(type, version, json, context);
         } else if (type.matches(".*-answer")) {
             return parseAnswer(type, version, json, context);

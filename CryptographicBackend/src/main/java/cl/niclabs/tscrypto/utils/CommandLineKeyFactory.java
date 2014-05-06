@@ -89,7 +89,7 @@ public class CommandLineKeyFactory {
 		
 		// write to files
 		try {
-			Util.saveKeyToFile(key, outputFile, rsaKeys);
+			// Util.saveKeyToFile(key, outputFile, rsaKeys);
 		} catch (Exception e) {
 			System.err.println("Error: " + e.getMessage());
 		}

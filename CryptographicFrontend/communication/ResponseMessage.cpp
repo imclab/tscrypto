@@ -21,7 +21,7 @@ along with PKCS11-TsCrypto.  If not, see <http://www.gnu.org/licenses/>.
 
 using namespace communication;
 
-void ResponseMessage::addValue ( argument::Name name, argument::Value value )
+void ResponseMessage::add ( argument::Name name, argument::Value value )
 {
     values_[name] = value;
 }

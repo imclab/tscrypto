@@ -8,5 +8,5 @@ import java.io.IOException;
  * Created by franchoco on 17-04-14.
  */
 public interface Dispatcher {
-    void send(TSMessage message, String replyTo) throws IOException;
+    void send(TSMessage message) throws IOException;
 }
